@@ -2,6 +2,8 @@ import seed from "../data/history.json";
 import type { History } from "../lib/types";
 import { QuoteProbe } from "../components/QuoteProbe";
 import { Reveal } from "../components/motion";
+import { WalletSwap } from "../components/WalletSwap";
+import { LiveFeed } from "../components/LiveFeed";
 
 const H = seed as unknown as History;
 
@@ -32,6 +34,40 @@ export function TryIt() {
           </p>
           <QuoteProbe hook={H.hook as `0x${string}`} poolId={H.poolB.poolId as `0x${string}`}
                       baseFee={H.baseFee} maxTotalFee={H.maxTotalFee} />
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="panel">
+          <h2>Swap it yourself</h2>
+          <p className="sub">
+            Reading a quote proves the hook has an opinion. Executing a swap proves the chain
+            enforces it — the fee on your receipt is set by <code>beforeSwap</code>, and nothing on
+            this page can influence it. The demo tokens mint freely, so you can fund yourself in one
+            click.
+          </p>
+          <WalletSwap
+            hook={H.hook as `0x${string}`}
+            token0={"0x2975200DA18f21bF8ecE746Bed6281e4B373D548"}
+            token1={"0x5906F35B86A6AC0281A5655933eE37253aA42ef4"}
+            tickSpacing={H.poolA.tickSpacing}
+          />
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel">
+          <h2>Swaps landing now</h2>
+          <p className="sub">
+            Both pools, newest first, polled from chain. Anything the hook flagged is marked with the
+            signal that fired and the fee it drew.
+          </p>
+          <LiveFeed
+            hook={H.hook as `0x${string}`}
+            pools={[
+              { id: H.poolA.poolId as `0x${string}`, label: "pool A" },
+              { id: H.poolB.poolId as `0x${string}`, label: "pool B" },
+            ]}
+          />
         </section>
       </Reveal>
     </>

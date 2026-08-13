@@ -141,3 +141,59 @@ export async function quoteSwap(
     threshold: pct(thresholdScore),
   };
 }
+
+export type Activity = {
+  poolLabel: string;
+  poolId: string;
+  n: number;
+  block: number;
+  tx: string;
+  signal: string | null;
+  penalty: number;
+  observed: number | null;
+  baseFee: number;
+};
+
+/**
+ * Recent swaps across every pool the hook serves, newest first.
+ *
+ * Deliberately scoped to a short trailing window rather than the pool's whole history: this runs on
+ * a timer, and re-reading thousands of blocks every few seconds to display twelve rows would be
+ * rude to a public RPC and would eventually trip the same range limit that broke the history fetch.
+ */
+export async function fetchRecentActivity(
+  hook: `0x${string}`,
+  pools: Array<{ id: `0x${string}`; label: string }>,
+  baseFee = 3000,
+  lookback = 4_000n
+): Promise<Activity[]> {
+  const head = await client.getBlockNumber();
+  const fromBlock = head > lookback ? head - lookback : 0n;
+
+  const perPool = await Promise.all(
+    pools.map(async ({ id, label }) => {
+      const [baseline, toxic] = await Promise.all([
+        client.getLogs({ address: hook, event: BASELINE_UPDATED, args: { poolId: id }, fromBlock, toBlock: head }),
+        client.getLogs({ address: hook, event: TOXIC_FLOW, args: { poolId: id }, fromBlock, toBlock: head }),
+      ]);
+      const flagged = new Map(toxic.map((l) => [l.transactionHash, l.args]));
+
+      return baseline.map((l) => {
+        const d = flagged.get(l.transactionHash);
+        return {
+          poolLabel: label,
+          poolId: id,
+          n: Number(l.args.sampleCount),
+          block: Number(l.blockNumber),
+          tx: l.transactionHash,
+          signal: d ? SIGNALS[Number(d.signal)] : null,
+          penalty: d ? Number(d.penaltyPips) : 0,
+          observed: d ? pct(d.observedScore!) : null,
+          baseFee,
+        } as Activity;
+      });
+    })
+  );
+
+  return perPool.flat().sort((a, b) => b.block - a.block || b.n - a.n);
+}
