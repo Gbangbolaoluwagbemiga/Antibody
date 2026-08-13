@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { unichainSepolia } from "../lib/chain";
+import { unichainSepolia, watchLeg, type LegResult } from "../lib/chain";
 
 /**
  * Fire a real sandwich at the live pool, from the page.
@@ -14,17 +14,24 @@ import { unichainSepolia } from "../lib/chain";
 
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
 
-type Leg = { role: string; tx: string; block: number; signal: string | null; penalty: number };
-type Result = { legs: Leg[]; sameBlock: boolean; caught: boolean; note: string };
+type Pending = { role: string; tx: `0x${string}` };
+
+const ORDER: Record<string, number> = { "front-run": 0, victim: 1, exit: 2 };
 
 export function AttackButton({ baseFee }: { baseFee: number }) {
-  const [state, setState] = useState<"idle" | "running" | "done" | "error">("idle");
-  const [result, setResult] = useState<Result | null>(null);
+  const [state, setState] = useState<"idle" | "running" | "confirming" | "done" | "error">("idle");
+  const [legs, setLegs] = useState<LegResult[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Derived rather than reported by the server: the client is what actually observed the receipts.
+  const exit = legs.find((l) => l.role === "exit");
+  const front = legs.find((l) => l.role === "front-run");
+  const sameBlock = Boolean(front && exit && front.block === exit.block);
+  const caught = exit?.signal === "SandwichExit";
 
   async function run() {
     setState("running");
-    setResult(null);
+    setLegs([]);
     setMessage(null);
     try {
       const res = await fetch("/api/attack", { method: "POST" });
@@ -40,7 +47,16 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
         setState("error");
         return;
       }
-      setResult(body as Result);
+      // Hashes are back; now watch each land and reveal it as it confirms.
+      setState("confirming");
+      const pending = body.legs as Pending[];
+      await Promise.all(
+        pending.map((p) =>
+          watchLeg(p.role, p.tx)
+            .then((r) => setLegs((prev) => [...prev, r].sort((a, b) => ORDER[a.role] - ORDER[b.role])))
+            .catch(() => undefined)
+        )
+      );
       setState("done");
     } catch {
       setMessage("Could not reach the attack endpoint — this only runs on the deployed site.");
@@ -51,15 +67,15 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
   return (
     <div className="attack">
       <div className="attack-bar">
-        <button className="btn btn-primary" onClick={run} disabled={state === "running"}>
-          {state === "running" ? "Attacking…" : "Run a live sandwich attack"}
+        <button className="btn btn-primary" onClick={run} disabled={state === "running" || state === "confirming"}>
+          {state === "running" ? "Broadcasting…" : state === "confirming" ? "Waiting for blocks…" : "Run a live sandwich attack"}
         </button>
         <span className="attack-note">
           three real transactions on Unichain Sepolia · takes about 15 seconds
         </span>
       </div>
 
-      {state === "running" && (
+      {(state === "running" || state === "confirming") && (
         <motion.div className="attack-progress" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
           <motion.span
             className="attack-sweep"
@@ -72,10 +88,10 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
       {message && <p className="ws-error">{message}</p>}
 
       <AnimatePresence>
-        {result && (
+        {legs.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="attack-result">
             <ul className="feed">
-              {result.legs.map((l, i) => (
+              {legs.map((l, i) => (
                 <motion.li
                   key={l.tx}
                   initial={{ opacity: 0, x: -8 }}
@@ -94,10 +110,15 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
                 </motion.li>
               ))}
             </ul>
-            <p className={`attack-verdict ${result.caught ? "is-caught" : ""}`}>
-              {result.caught ? "Caught. " : "Not a sandwich this run. "}
-              {result.note}
-            </p>
+            {state === "done" && (
+              <p className={`attack-verdict ${caught ? "is-caught" : ""}`}>
+                {caught
+                  ? `Caught. The attacker's legs shared block ${front?.block}, and the exit was classified SandwichExit at the ceiling.`
+                  : sameBlock
+                    ? "The legs shared a block but no third party traded between them — a round trip, not a sandwich. The hook declined to call it one."
+                    : `The legs split across blocks ${front?.block} and ${exit?.block}, so this was not a sandwich. The hook declined to call it one. Run it again.`}
+              </p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
