@@ -92,7 +92,7 @@ not statistical.
 
 | Signal | Condition | Confidence | Penalty |
 |---|---|---|---|
-| **1 — `SandwichExit`** | same trader, same pool, same block, opposite direction to its own prior swap | High. Structural signature. | Maximum |
+| **1 — `SandwichExit`** | same trader, same block, opposite direction to its own prior swap, **and a different address traded the pool in between** | High. Structural signature. | Maximum |
 | **2 — `BlockReversal`** | pool reversed direction in-block under a *different* address | Medium. Honest same-block arbitrage looks identical. | Half |
 | **3 — `SizeAnomaly`** | `sizeRatio > μ + kδ` and `sampleCount ≥ minSamples` | Graduated by distance past the band. | Proportional + recency surcharge |
 
@@ -202,7 +202,7 @@ mapping(PoolId => mapping(address => TraderRecord)) traders;
 Every row is written **before** the code it covers. Every row maps to a specific claim in the pitch
 or a specific Orbitwork mistake.
 
-**Status: 43 passing, 0 failing.** Written before the code they cover, per the discipline section.
+**Status: 47 passing, 0 failing.** Written before the code they cover, per the discipline section.
 
 | # | Test | Proves | Orbitwork mistake | ✔ |
 |---|---|---|---|---|
@@ -234,7 +234,7 @@ detection, since transient storage cannot span a sandwich's three transactions. 
 permanent cost paid by every swapper, and the submission should quote it rather than let a judge
 find it. The test asserts a 120,000 ceiling so a regression can't quietly erode the tradeoff.
 
-### Two bugs the tests caught before they shipped
+### Bugs caught before they shipped
 
 - **EWMA dead zone.** Any gap under 16 truncated to a zero step, so after a regime shift the
   baseline stalled short of the truth *permanently* — a static rule set reintroduced through a
@@ -244,6 +244,19 @@ find it. The test asserts a 120,000 ceiling so a regression can't quietly erode 
   a swap failing outright rather than overpaying. Now clamps before multiplying.
 
 Both were found by tests, not by reading the code.
+
+### Three more the tests did NOT catch — the chain did
+
+Documented in full in [DEPLOYMENT.md](DEPLOYMENT.md). In short: `SandwichExit` originally lacked
+the "a third party traded in between" clause and flagged 23 of 23 ordinary calibration swaps at
+maximum penalty; the emitted penalty could exceed the chargeable ceiling because the recency
+surcharge was added after the cap; and `SizeAnomaly` turned out to price the sandwich *victim* too
+when their trade was itself unusually large.
+
+The first is the instructive one. Every calibration helper in the test suite called `vm.roll`
+between swaps, so the same-block round-trip case never arose in testing — the suite was proving
+something narrower than it appeared to. A test suite is evidence about the cases it constructs,
+never about the ones it never builds.
 
 Mistake #5 (zero tests) is covered by the matrix existing. #6 (committed stubs) and #7 (hardcoded
 addresses) are commit-time rules, enforced in CI: build must pass, no `TODO`/`revert("unimplemented")`

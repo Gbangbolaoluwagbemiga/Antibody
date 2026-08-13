@@ -256,10 +256,23 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         TraderRecord memory tr = traderRecords[poolId][trader];
         PoolLastSwap memory pl = poolLastSwap[poolId];
 
-        // ── Signal 1: this address reversed its own position, same block, same pool.
-        // The on-chain signature of a sandwich's exit leg. Structural, so it is live from the
-        // pool's very first swap — it needs no statistical history to be meaningful.
-        if (tr.lastBlock == uint32(block.number) && tr.lastZeroForOne != zeroForOne) {
+        // ── Signal 1: this address reversed its own position in the same block, AND somebody
+        // else traded the pool in between.
+        //
+        // That last clause is the whole difference between a sandwich and a round trip. A sandwich
+        // is defined by its victim: attacker buys, a third party fills at the worsened price,
+        // attacker sells. Without an intervening trade there is no one to extract from — the
+        // position simply opened and closed, which is ordinary behaviour for a rebalancing market
+        // maker or a multi-hop route that revisits the same pool.
+        //
+        // Omitting this check flagged 23 consecutive ordinary swaps at the maximum penalty on
+        // Unichain Sepolia before it was caught. `poolLastSwap` records the most recent swap in
+        // this pool from any address, so "someone else went between my two legs" is exactly
+        // `pl.lastTrader != trader` within the current block.
+        if (
+            tr.lastBlock == uint32(block.number) && tr.lastZeroForOne != zeroForOne
+                && pl.lastBlock == uint32(block.number) && pl.lastTrader != trader
+        ) {
             return (IAntibodySignal.Signal.SandwichExit, MAX_TOTAL_FEE - baseFee, thresholdScore);
         }
 
@@ -277,10 +290,21 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
             uint256 excess = ratio - thresholdScore;
             // Penalty scales with how far past the pool's own band the trade sits, reaching the
             // ceiling at 2x the threshold. Proportional, not a cliff.
-            uint256 scaled = (uint256(MAX_TOTAL_FEE - baseFee) * excess) / thresholdScore;
-            uint24 anomalyPenalty = scaled > MAX_TOTAL_FEE - baseFee ? MAX_TOTAL_FEE - baseFee : uint24(scaled);
+            uint24 ceiling = MAX_TOTAL_FEE - baseFee;
+            uint256 scaled = (uint256(ceiling) * excess) / thresholdScore;
+            uint256 total = (scaled > ceiling ? ceiling : scaled) + _recencySurcharge(tr);
 
-            return (IAntibodySignal.Signal.SizeAnomaly, anomalyPenalty + _recencySurcharge(tr), thresholdScore);
+            // Cap AFTER adding the surcharge, not before. Capping only the anomaly component let
+            // the sum exceed the ceiling: the swap was still charged correctly, because
+            // `_beforeSwap` clamps the final fee — but the emitted event reported a penalty that
+            // was never applied (observed on-chain at 70500 against a 47000 ceiling). That event
+            // is the public signal this hook exists to publish, and a router or a dashboard
+            // consuming it would have been reading a number the chain never charged.
+            return (
+                IAntibodySignal.Signal.SizeAnomaly,
+                total > ceiling ? ceiling : uint24(total),
+                thresholdScore
+            );
         }
 
         return (IAntibodySignal.Signal.None, 0, thresholdScore);

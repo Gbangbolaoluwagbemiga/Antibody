@@ -36,7 +36,7 @@ POOL_FEE=8388608   # LPFeeLibrary.DYNAMIC_FEE_FLAG
 TICK_SPACING=60
 
 ATTACK_SIZE=${ATTACK_SIZE:-2000000000000000000}   # 2.0
-VICTIM_SIZE=${VICTIM_SIZE:-500000000000000000}    # 0.5
+VICTIM_SIZE=${VICTIM_SIZE:-100000000000000000}    # 0.1 — matches the calibrated norm exactly
 DEADLINE=$(( $(date +%s) + 3600 ))
 
 SIG='swapExactTokensForTokens(uint256,uint256,bool,(address,address,uint24,int24,address),bytes,address,uint256)'
@@ -58,10 +58,17 @@ RAW1=$(mk "$DEMO_ATTACKER_KEY" "$AN"       "$ATTACK_SIZE" true  "$DEMO_ATTACKER"
 RAW3=$(mk "$DEMO_ATTACKER_KEY" "$((AN+1))" "$ATTACK_SIZE" false "$DEMO_ATTACKER")  # exit
 RAW2=$(mk "$DEMO_VICTIM_KEY"   "$VN"       "$VICTIM_SIZE" true  "$DEMO_VICTIM")    # victim
 
-echo "Publishing concurrently..."
+# Published in narrative order with a short stagger, NOT all at once. Fully concurrent
+# publishing leaves arrival order to the race, and the sequencer put the victim *after* the
+# attacker's exit — which correctly reads as a round trip rather than a sandwich, because the
+# corrected detector requires a third party BETWEEN the two legs. 50ms is long enough to fix
+# arrival order and far short of a ~1s block, so the three still land together.
+echo "Publishing in order (front-run -> victim -> exit), 50ms apart..."
 TMP=$(mktemp -d)
 cast publish "$RAW1" --rpc-url "$RPC" --async > "$TMP/1" 2>&1 &
+sleep 0.05
 cast publish "$RAW2" --rpc-url "$RPC" --async > "$TMP/2" 2>&1 &
+sleep 0.05
 cast publish "$RAW3" --rpc-url "$RPC" --async > "$TMP/3" 2>&1 &
 wait
 

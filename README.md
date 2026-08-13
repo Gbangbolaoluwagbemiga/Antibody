@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 43 passing tests
+Deployed on **Unichain Sepolia** · 47 passing tests
 
 ---
 
@@ -38,11 +38,11 @@ hashes and [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
 
 ## Caught in the wild
 
-A real sandwich, all three legs in **block 59765166** on Unichain Sepolia:
+A real sandwich, all three legs in **block 59767385** on Unichain Sepolia:
 
 | leg | signal | penalty |
 |---|---|---|
-| front-run (attacker) | `SizeAnomaly` | +1.02% |
+| front-run (attacker) | `SizeAnomaly` | +4.11% |
 | **victim** | **not flagged** | **0** |
 | **exit (attacker)** | **`SandwichExit`** | **+4.70% — 16x the base fee** |
 
@@ -52,8 +52,10 @@ The victim pays nothing extra. The mechanism prices the attacker, not the person
 
 | after | swaps seen | mean | deviation | threshold |
 |---|---|---|---|---|
-| 19 swaps | 19 | 8.945e14 | 2.799e14 | *none — uncalibrated* |
-| 26 swaps | 26 | 8.945e14 | **1.781e14** | **1.429e15** |
+| 19 swaps | 19 | 0.0895% | 0.0280% | *none — uncalibrated* |
+| 26 swaps | 26 | 0.0895% | **0.0178%** | **0.1429%** |
+
+Sizes are expressed as a fraction of pool liquidity. **Zero of those 26 swaps were flagged.**
 
 Below `minSamples` the hook publishes **no threshold at all** — a baseline with insufficient data
 reports no opinion rather than a misleading one. Then it appears, and the band *tightens* as
@@ -63,7 +65,7 @@ consistent flow arrives.
 
 | signal | condition | confidence | penalty |
 |---|---|---|---|
-| `SandwichExit` | same trader, same block, opposite direction to its own prior swap | structural, near-zero false positives | maximum |
+| `SandwichExit` | same trader, same block, opposite direction — **and a third party traded in between** | structural | maximum |
 | `BlockReversal` | pool reversed direction in-block under a *different* address | catches multi-EOA attackers; honest arbitrage looks the same | half |
 | `SizeAnomaly` | size-to-liquidity outside the pool's own `μ + kδ` band | graduated by distance past the band | proportional + recency surcharge |
 
@@ -111,7 +113,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             43 tests
+  test/                             47 tests
   script/                           deploy, calibrate, attack, inspect
 ```
 
@@ -119,11 +121,24 @@ contracts/
 cd contracts && forge test
 ```
 
+## What running it on a real chain caught
+
+Three defects the test suite had not, all now fixed and regression-tested. The most important:
+**an earlier build flagged 23 of 23 ordinary calibration swaps as sandwiches.** `SandwichExit` was
+defined as *same trader, same block, opposite direction* — which is also what a rebalancing market
+maker or a multi-hop route looks like. A sandwich is defined by its victim, so the rule now requires
+that a *different* address traded in between. The tests missed it because every helper advanced a
+block between swaps, so the same-block case never arose.
+
+Full account, including the two negative results kept deliberately, in [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Known limitations
 
 - The statistical detector can be **desensitised** by an attacker who repeatedly trades large sizes,
   dragging the band wider. It does not defeat sandwich detection — the structural signals consult no
   baseline.
+- **`SizeAnomaly` does not distinguish attacker from victim.** A sandwich victim making an unusually
+  large trade pays the anomaly fee too. Only the structural detectors tell the two apart.
 - Identity is `tx.origin`, a heuristic grouping key and never an authorization check. Account-
   abstraction bundles don't resolve to a stable identity; `BlockReversal` covers that gap at the
   pool level.
