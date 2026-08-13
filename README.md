@@ -115,11 +115,32 @@ contracts/
   src/interfaces/IAntibodySignal.sol
   test/                             47 tests
   script/                           deploy, calibrate, attack, inspect
+frontend/
+  src/components/BaselineChart.tsx  the threshold, as the pool learned it
+  src/lib/chain.ts                  reads BaselineUpdated / ToxicFlowDetected from chain
 ```
 
 ```bash
 cd contracts && forge test
+cd frontend  && pnpm install && pnpm dev
 ```
+
+## Demo
+
+The page plots the deployed pool's own history, decoded from `BaselineUpdated` and
+`ToxicFlowDetected` logs — a bundled snapshot paints instantly, then it refreshes live from
+Unichain Sepolia. Three things it shows that copy alone cannot:
+
+- The threshold is **absent** for the first 19 swaps, not flat at zero. The hook has no opinion and
+  the chart does not invent one.
+- A magnified inset on the calibration window, because on the main axis the attack pushes the
+  ceiling to ~1.6% and flattens the `0.168% → 0.143%` narrowing into a straight line. That narrowing
+  is the clearest evidence the baseline is learning.
+- Each flagged swap drawn as a stem from the threshold it breached up to where it actually landed.
+  The gap is the violation.
+
+Colours were validated for colourblind separation and contrast against both surfaces rather than
+picked by eye; every series carries a direct label and the same data is available as a table.
 
 ## What running it on a real chain caught
 
