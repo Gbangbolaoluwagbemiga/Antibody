@@ -3,6 +3,7 @@ import seed from "./data/history.json";
 import type { History, Point } from "./lib/types";
 import { fetchHistory, unichainSepolia } from "./lib/chain";
 import { BaselineChart } from "./components/BaselineChart";
+import { BeforeAfter } from "./components/BeforeAfter";
 
 const H = seed as History;
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
@@ -92,7 +93,7 @@ export default function App() {
             {stats.sandwich ? `${((H.baseFee + stats.sandwich.penalty) / 10000).toFixed(2)}%` : "—"}
           </div>
           <div className="note">
-            vs {(H.baseFee / 10000).toFixed(2)}% base — {stats.sandwich ? Math.round((H.baseFee + stats.sandwich.penalty) / H.baseFee) : 0}× · paid to LPs
+            vs {(H.baseFee / 10000).toFixed(2)}% base — {stats.sandwich ? ((H.baseFee + stats.sandwich.penalty) / H.baseFee).toFixed(1) : 0}× · paid to LPs
           </div>
         </div>
         <div className="tile">
@@ -166,10 +167,21 @@ export default function App() {
       </section>
 
       <section className="panel">
-        <h2>What happened to the sandwich</h2>
+        <h2>What the attack cost, with and without</h2>
         <p className="sub">
-          A real attack, all three legs in one block. The attacker's exit is priced at the ceiling;
-          the victim is untouched. Antibody prices the attacker, not the person being attacked.
+          The same three swaps, the same sizes, one variable changed: the fee. Everything here is
+          decoded from the pool's own <code>Swap</code> events.
+        </p>
+        <BeforeAfter data={H.sandwich} />
+      </section>
+
+      <section className="panel">
+        <h2>Every detection in this pool</h2>
+        <p className="sub">
+          The complete log, across every attack run — not just the successful one. Note that only
+          one is a <code>SandwichExit</code>: in the earlier runs the attacker's legs landed in
+          different blocks, and the hook correctly declined to call those sandwiches. A detector
+          that fires on everything proves nothing.
         </p>
         <div className="table-scroll">
           <table>

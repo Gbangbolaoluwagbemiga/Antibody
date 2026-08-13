@@ -186,3 +186,27 @@ tr.flagged td { background: color-mix(in srgb, var(--status-flagged) 9%, transpa
 
 .footnote { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
 a { color: var(--accent); }
+
+/* ── before / after ─────────────────────────────────────────────────────── */
+
+.ba-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch; margin-bottom: 16px; }
+.ba-col { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+.ba-col.is-primary { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft); }
+.ba-head { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 10px; }
+.ba-figure { font-family: var(--mono); font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.ba-col.is-primary .ba-figure { color: var(--accent); }
+.ba-cap { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; }
+.ba-detail { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: grid; gap: 6px; }
+.ba-row { display: flex; justify-content: space-between; gap: 12px; font-size: 12.5px; color: var(--text-secondary); }
+.ba-row span:last-child { font-family: var(--mono); color: var(--text-primary); }
+.ba-row .pos { color: var(--series-mean); }
+.ba-row .neg { color: var(--status-flagged); }
+.ba-arrow { display: flex; align-items: center; justify-content: center; }
+.ba-verdict { background: var(--accent-soft); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 15px; font-size: 13.5px; color: var(--text-secondary); margin-bottom: 18px; }
+.ba-verdict strong { color: var(--text-primary); font-family: var(--mono); }
+.ba-tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--series-mean); border: 1px solid currentColor; border-radius: 4px; padding: 1px 5px; margin-left: 8px; font-family: var(--sans); }
+
+@media (max-width: 720px) {
+  .ba-grid { grid-template-columns: 1fr; }
+  .ba-arrow { transform: rotate(90deg); }
+}

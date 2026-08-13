@@ -54,7 +54,7 @@ All three legs in **block 59767385**.
 | **victim** | **none — not flagged** | **0** | [`0x6add1d94…`](https://sepolia.uniscan.xyz/tx/0x6add1d94591594a04c2c37211ae75d63a979d03c1eec3442bf1fe3deb76113f3) |
 | **exit (attacker)** | **`SandwichExit`** | **+4.70% (ceiling)** | [`0xdaf90907…`](https://sepolia.uniscan.xyz/tx/0xdaf9090742817557eca35887c0d09e99f506ecffc2aac2e4d8de57714684df7e) |
 
-The attacker's exit pays **16x** the base fee, paid to the pool's LPs through the native
+The attacker's exit pays **16.7x** the base fee, paid to the pool's LPs through the native
 dynamic-fee override. The victim pays nothing extra.
 
 ### Negative results, kept on purpose
