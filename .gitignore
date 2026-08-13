@@ -1,0 +1,51 @@
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# Defense in depth: these patterns are unanchored so they match at ANY depth, not
+# just the repo root. contracts/.gitignore also covers .env; the redundancy is
+# deliberate — a secret committed once is public forever, even if later removed.
+.env
+.env.*
+*.env
+!.env.example
+!*.env.example
+
+# Wallets, keystores, mnemonics
+*.key
+*.pem
+*.p12
+keystore/
+.secret
+mnemonic.txt
+
+# Foundry writes "sensitive values" (including the signing key) under cache/.
+cache/
+**/cache/
+
+# ── Build output ─────────────────────────────────────────────────────────────
+out/
+**/out/
+artifacts/
+.forge-snapshots/
+
+# Deployment simulations. The real broadcast logs ARE committed — they are the
+# submission's on-chain evidence and contain only tx hashes and addresses, never
+# keys (verified). Dry runs are noise.
+**/broadcast/**/dry-run/
+**/broadcast/*/31337/
+
+# ── Frontend ─────────────────────────────────────────────────────────────────
+node_modules/
+dist/
+.vite/
+*.local
+
+# ── OS / editor ──────────────────────────────────────────────────────────────
+.DS_Store
+.idea/
+*.swp
+
+# ── Internal planning documents ──────────────────────────────────────────────
+# Deliberately NOT published. This repository is public; these are internal
+# strategy notes (prior-submission scores and judge feedback) and an unsent draft
+# to the organizers. Kept local on purpose — remove these lines to publish them.
+BRIEF.md
+CORRECTION-NOTICE.md

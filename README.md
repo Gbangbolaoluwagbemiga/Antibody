@@ -1,0 +1,133 @@
+# Antibody
+
+**A Uniswap v4 hook that makes MEV extraction unprofitable by pricing it — against a threshold the
+pool computes for itself.**
+
+UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
+Deployed on **Unichain Sepolia** · 43 passing tests
+
+---
+
+## The idea
+
+Most MEV defenses are a rule set someone configured: a threshold, a size limit, an allowlist. They
+work until the market moves, and they never get better on their own.
+
+Antibody has no configured threshold. Each pool builds its own statistical baseline from its own
+trading history — an exponentially-weighted mean of trade-size-to-liquidity plus a mean-absolute-
+deviation band — updated on **every swap**, in `afterSwap`, in storage. A trade is judged against
+what is normal *for that pool*, and "normal" is a number the pool learned rather than one a human
+picked.
+
+When a trade is flagged, it pays an elevated LP fee through Uniswap v4's native dynamic-fee
+override. That fee accrues to the pool's liquidity providers. **Attempted extraction becomes LP
+revenue.**
+
+## What it actually does — and doesn't
+
+A hook cannot see the mempool, and it cannot pause, queue, or reorder a swap. So:
+
+> **Antibody makes sandwich attacks unprofitable. It does not make them impossible.**
+
+Detection happens at the attacker's *exit* — the closing leg, which is the moment the pattern
+becomes visible on-chain. The victim's fill has already happened. What gets destroyed is the
+attacker's profit, which is what makes the strategy stop being worth running.
+
+Everything below is measured, not asserted. See [DEPLOYMENT.md](DEPLOYMENT.md) for transaction
+hashes and [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
+
+## Caught in the wild
+
+A real sandwich, all three legs in **block 59765166** on Unichain Sepolia:
+
+| leg | signal | penalty |
+|---|---|---|
+| front-run (attacker) | `SizeAnomaly` | +1.02% |
+| **victim** | **not flagged** | **0** |
+| **exit (attacker)** | **`SandwichExit`** | **+4.70% — 16x the base fee** |
+
+The victim pays nothing extra. The mechanism prices the attacker, not the person being attacked.
+
+## The baseline teaches itself
+
+| after | swaps seen | mean | deviation | threshold |
+|---|---|---|---|---|
+| 19 swaps | 19 | 8.945e14 | 2.799e14 | *none — uncalibrated* |
+| 26 swaps | 26 | 8.945e14 | **1.781e14** | **1.429e15** |
+
+Below `minSamples` the hook publishes **no threshold at all** — a baseline with insufficient data
+reports no opinion rather than a misleading one. Then it appears, and the band *tightens* as
+consistent flow arrives.
+
+## Detection
+
+| signal | condition | confidence | penalty |
+|---|---|---|---|
+| `SandwichExit` | same trader, same block, opposite direction to its own prior swap | structural, near-zero false positives | maximum |
+| `BlockReversal` | pool reversed direction in-block under a *different* address | catches multi-EOA attackers; honest arbitrage looks the same | half |
+| `SizeAnomaly` | size-to-liquidity outside the pool's own `μ + kδ` band | graduated by distance past the band | proportional + recency surcharge |
+
+Structural signals need no history and work from a pool's first block. The statistical signal is
+suppressed until the pool has earned an opinion.
+
+**Time-weighted execution** is the recency surcharge: trading the same pool again within a few
+blocks costs more, halving each block, zero after eight. A hook cannot delay a swap — but it can
+make the temporal clustering that sandwiching requires progressively expensive.
+
+## Design decisions worth stating
+
+- **The hook never holds funds.** No `BeforeSwapDelta`, no delta flags, no withdrawal path. The
+  penalty rides Uniswap's native LP fee, so an entire class of custody bug is designed out rather
+  than guarded against.
+- **The fee ceiling is a constant, not a setting.** 5%, unreachable by any owner configuration,
+  fuzzed across the whole parameter space. A hook that *can* charge 100% is a honeypot.
+- **Failure is benign.** A false positive costs one swap an elevated fee. It never reverts a
+  transaction, so the hook cannot be griefed into denial of service.
+- **The state write cannot be skipped.** Transient storage is scoped to a single transaction, but a
+  sandwich spans three — so cross-transaction detection needs real storage. The SSTORE that enables
+  detection *is* the one that updates the baseline. They cannot come apart.
+
+## Cost
+
+| | gas |
+|---|---|
+| hookless swap | 44,061 |
+| Antibody swap | 78,729 |
+| **overhead** | **34,668** |
+
+Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
+
+## Routing signal
+
+Flagged trades emit `ToxicFlowDetected`, and every swap emits `BaselineUpdated`. External routers
+(CoW, Flashbots Protect) can consume these via [`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol)
+to route similar flow privately. Antibody publishes the signal and stops there — no router
+integration is attempted.
+
+## Layout
+
+```
+contracts/
+  src/AntibodyHook.sol              the hook
+  src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
+  src/interfaces/IAntibodySignal.sol
+  test/                             43 tests
+  script/                           deploy, calibrate, attack, inspect
+```
+
+```bash
+cd contracts && forge test
+```
+
+## Known limitations
+
+- The statistical detector can be **desensitised** by an attacker who repeatedly trades large sizes,
+  dragging the band wider. It does not defeat sandwich detection — the structural signals consult no
+  baseline.
+- Identity is `tx.origin`, a heuristic grouping key and never an authorization check. Account-
+  abstraction bundles don't resolve to a stable identity; `BlockReversal` covers that gap at the
+  pool level.
+
+## License
+
+MIT
