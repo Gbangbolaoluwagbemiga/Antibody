@@ -54,11 +54,18 @@ contract CalibrateScript is BaseScript {
         IERC20(address(token0)).approve(address(swapRouter), type(uint256).max);
         IERC20(address(token1)).approve(address(swapRouter), type(uint256).max);
 
-        // Alternating direction, constant size: a calm regime. The baseline should settle on a
-        // tight band, which is what makes the later attack stand out against it.
+        // Constant size, CONSTANT DIRECTION. An earlier version alternated direction to keep the
+        // price from drifting, which was a mistake with real consequences: forge broadcasts these
+        // without advancing blocks, so consecutive opposite-direction swaps from one address
+        // landed in a single block and tripped the structural detector. All 23 "calm" calibration
+        // swaps were classified as sandwich exits at the maximum penalty.
+        //
+        // The detector has since been corrected to require an intervening third party, so this
+        // would no longer misfire — but calibration should still feed the baseline flow that is
+        // unambiguously ordinary, rather than relying on a detector subtlety to stay clean.
         for (uint32 i = observed; i < target; i++) {
             swapRouter.swapExactTokensForTokens(
-                TYPICAL_SWAP, 0, i % 2 == 0, poolKey, "", deployerAddress, block.timestamp + 3600
+                TYPICAL_SWAP, 0, true, poolKey, "", deployerAddress, block.timestamp + 3600
             );
         }
 

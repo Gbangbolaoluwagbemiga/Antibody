@@ -1,0 +1,344 @@
+{
+ "baseline": [
+  {
+   "block": 59767120,
+   "tx": "0x31ef5e15c549bcef4eb6caa72078da176f277b537d7f454519a17c81124bf463",
+   "mean": "894588918148891",
+   "dev": "894588918148891",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 1
+  },
+  {
+   "block": 59767120,
+   "tx": "0x15fe11489b71732cca47c0ed6ca8dd82ce7aef63f7c7afae9011e0f43c9fcaaf",
+   "mean": "894588918148891",
+   "dev": "838677110764586",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 2
+  },
+  {
+   "block": 59767120,
+   "tx": "0xc7fe15a6caca1971936efb6aa74808c295c0aaf8652d4dad2278da4d2c17b54f",
+   "mean": "894588918148891",
+   "dev": "786259791341800",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 3
+  },
+  {
+   "block": 59767120,
+   "tx": "0xf89e40c59525eda8a1bf38cd12b6cfea5aa684e7c822ab8f1989fb38bde800c9",
+   "mean": "894588918148891",
+   "dev": "737118554382938",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 4
+  },
+  {
+   "block": 59767121,
+   "tx": "0x44eaf38f6ff203bcd9509e5be9ddf4314baa77ea62bc781d3f52050a422d75b8",
+   "mean": "894588918148891",
+   "dev": "691048644734005",
+   "impact": "17",
+   "threshold": "0",
+   "samples": 5
+  },
+  {
+   "block": 59767121,
+   "tx": "0x9089e79cc86599d40549a98c3eae624e14effae2d1b57401c7fd41eab2d0a463",
+   "mean": "894588918148891",
+   "dev": "647858104438130",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 6
+  },
+  {
+   "block": 59767121,
+   "tx": "0xbf41572057cdb20896308c7b84d813d7dd7bccfbd55eaaa1baa3c75c204ae449",
+   "mean": "894588918148891",
+   "dev": "607366972910747",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 7
+  },
+  {
+   "block": 59767121,
+   "tx": "0x2956b32b941719f85c4dc19f86c606be51af383dd6b7166e8e588c6374817369",
+   "mean": "894588918148891",
+   "dev": "569406537103826",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 8
+  },
+  {
+   "block": 59767121,
+   "tx": "0x307bf2ec40d5dc179536b72d31b03a2e4760afe6f788b2ca7878fb8848e85b79",
+   "mean": "894588918148891",
+   "dev": "533818628534837",
+   "impact": "17",
+   "threshold": "0",
+   "samples": 9
+  },
+  {
+   "block": 59767121,
+   "tx": "0x83ed2fe11698385e49092e0ed223aa75a105b9de849b7cc1be0484443df4eee6",
+   "mean": "894588918148891",
+   "dev": "500454964251410",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 10
+  },
+  {
+   "block": 59767121,
+   "tx": "0x645594d8c33cb1c793e2e7d8cac04a9540374c8a35c374ac6f6fbf764d6bbcad",
+   "mean": "894588918148891",
+   "dev": "469176528985697",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 11
+  },
+  {
+   "block": 59767121,
+   "tx": "0x15fe9dbf479bdbd19ada73e6378e00b82d1a11aae7451e8c2a7228d223bb5aed",
+   "mean": "894588918148891",
+   "dev": "439852995924091",
+   "impact": "17",
+   "threshold": "0",
+   "samples": 12
+  },
+  {
+   "block": 59767121,
+   "tx": "0x8caa1679c091a0d5736bf7686c1e7b5496278bbd93452c3baf27fc86693aac78",
+   "mean": "894588918148891",
+   "dev": "412362183678836",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 13
+  },
+  {
+   "block": 59767121,
+   "tx": "0x7b8a06f6b3fe865e4907d5c72ca770d7bed4eca530fdd27fb602a7b515ecaf9b",
+   "mean": "894588918148891",
+   "dev": "386589547198909",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 14
+  },
+  {
+   "block": 59767121,
+   "tx": "0x5251a22c6883e407f7ff9b517cc4de39a0f0ccd85ed98b290f9f969947e5ea78",
+   "mean": "894588918148891",
+   "dev": "362427700498978",
+   "impact": "17",
+   "threshold": "0",
+   "samples": 15
+  },
+  {
+   "block": 59767121,
+   "tx": "0xaee78508feac25faf6b87813c741a83a2fb24486d680ac11afcd899c22e0c61c",
+   "mean": "894588918148891",
+   "dev": "339775969217792",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 16
+  },
+  {
+   "block": 59767121,
+   "tx": "0x6fb16e4828e9401f52a1833c634b0e3dc2299ae7e6551add934db6cfe3f07880",
+   "mean": "894588918148891",
+   "dev": "318539971141680",
+   "impact": "17",
+   "threshold": "0",
+   "samples": 17
+  },
+  {
+   "block": 59767121,
+   "tx": "0x75e234bc170aa8eeeb08f8f7a634b4eedf2bebb3601d171fc879a38ee1835e29",
+   "mean": "894588918148891",
+   "dev": "298631222945325",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 18
+  },
+  {
+   "block": 59767121,
+   "tx": "0xbeb032061a9206635d471acb864dccf1f99e4ea63ed3dd8e808623f5b032e1e1",
+   "mean": "894588918148891",
+   "dev": "279966771511243",
+   "impact": "18",
+   "threshold": "0",
+   "samples": 19
+  },
+  {
+   "block": 59767321,
+   "tx": "0x83ddf8f932d07e7e89b8dd8727e156fd3c1f287af535a0286c1f50160e4d1993",
+   "mean": "894588918148891",
+   "dev": "262468848291791",
+   "impact": "17",
+   "threshold": "1681995463024264",
+   "samples": 20
+  },
+  {
+   "block": 59767321,
+   "tx": "0x2e08e771640f2605a12b7c5a6ed14fad5088e908ba9be70e3cfac584cbdb02c2",
+   "mean": "894588918148891",
+   "dev": "246064545273555",
+   "impact": "18",
+   "threshold": "1632782553969556",
+   "samples": 21
+  },
+  {
+   "block": 59767321,
+   "tx": "0xb69a8472e4647e64fb12641bd902a8bca3b42e1cfd13d24af65c3a217db845b7",
+   "mean": "894588918148891",
+   "dev": "230685511193958",
+   "impact": "17",
+   "threshold": "1586645451730765",
+   "samples": 22
+  },
+  {
+   "block": 59767321,
+   "tx": "0x0b95af6d6a10dc85ce314c30b8b2b899beb967999b496e2eef430b3b3f707a9c",
+   "mean": "894588918148891",
+   "dev": "216267666744336",
+   "impact": "18",
+   "threshold": "1543391918381899",
+   "samples": 23
+  },
+  {
+   "block": 59767321,
+   "tx": "0xfb9ae32fd6f9bd0d842e0a5fda94bec34157829a93a5e0a515ef813742a67141",
+   "mean": "894588918148891",
+   "dev": "202750937572815",
+   "impact": "17",
+   "threshold": "1502841730867336",
+   "samples": 24
+  },
+  {
+   "block": 59767321,
+   "tx": "0x26f88f4128d7097a01347c3d42c42f39f592898b4239adfd5b8378161da2205b",
+   "mean": "894588918148891",
+   "dev": "190079003974515",
+   "impact": "18",
+   "threshold": "1464825930072436",
+   "samples": 25
+  },
+  {
+   "block": 59767321,
+   "tx": "0x5e7c0531f82864d34b183a1729f0c6e0b71362b0ae6a0c23119b5b877f99dcef",
+   "mean": "894588918148891",
+   "dev": "178199066226108",
+   "impact": "17",
+   "threshold": "1429186116827215",
+   "samples": 26
+  },
+  {
+   "block": 59767354,
+   "tx": "0xedfd9a853a31a7a8c69a6773a6b4e42eedc6c7a72bf6b93e9fcc1a0045874923",
+   "mean": "950500725533196",
+   "dev": "222973431971282",
+   "impact": "18",
+   "threshold": "1619421021447042",
+   "samples": 27
+  },
+  {
+   "block": 59767354,
+   "tx": "0xd1815046c2f4b687ef0a595f2a29a7e3bce0b94a55c8eba6083e4a0a6fb4c18e",
+   "mean": "2009330577873486",
+   "dev": "1267867444813366",
+   "impact": "37",
+   "threshold": "5812932912313584",
+   "samples": 28
+  },
+  {
+   "block": 59767355,
+   "tx": "0x66618abfb2b16d05b2589dadb67d95fdace17d29834bfcc3a0f6744569737dc9",
+   "mean": "3001983564442507",
+   "dev": "2181278716081552",
+   "impact": "56",
+   "threshold": "9545819712687163",
+   "samples": 29
+  },
+  {
+   "block": 59767385,
+   "tx": "0x6024ee3d7037f7d140f06da5e681bc0e6bf0805fb63de4879273fb9c40cc4269",
+   "mean": "3932595739350965",
+   "dev": "2975560971234913",
+   "impact": "73",
+   "threshold": "12859278653055704",
+   "samples": 30
+  },
+  {
+   "block": 59767385,
+   "tx": "0x6add1d94591594a04c2c37211ae75d63a979d03c1eec3442bf1fe3deb76113f3",
+   "mean": "3742720313025836",
+   "dev": "2979463836857860",
+   "impact": "70",
+   "threshold": "12681111823599416",
+   "samples": 31
+  },
+  {
+   "block": 59767385,
+   "tx": "0xdaf9090742817557eca35887c0d09e99f506ecffc2aac2e4d8de57714684df7e",
+   "mean": "4627036441147836",
+   "dev": "3677563475176243",
+   "impact": "87",
+   "threshold": "15659726866676565",
+   "samples": 32
+  }
+ ],
+ "detections": [
+  {
+   "block": 59767354,
+   "tx": "0xedfd9a853a31a7a8c69a6773a6b4e42eedc6c7a72bf6b93e9fcc1a0045874923",
+   "trader": "0x8b2da9a6bf65c7ac6074e22aca3d7b83094894d2",
+   "signal": 3,
+   "signalName": "SizeAnomaly",
+   "observed": "1789177836297783",
+   "threshold": "1429186116827215",
+   "penalty": 11838
+  },
+  {
+   "block": 59767354,
+   "tx": "0xd1815046c2f4b687ef0a595f2a29a7e3bce0b94a55c8eba6083e4a0a6fb4c18e",
+   "trader": "0xc2faf6528d2277e6ac670a2d078f067601815b35",
+   "signal": 3,
+   "signalName": "SizeAnomaly",
+   "observed": "17891778362977836",
+   "threshold": "1619421021447042",
+   "penalty": 47000
+  },
+  {
+   "block": 59767355,
+   "tx": "0x66618abfb2b16d05b2589dadb67d95fdace17d29834bfcc3a0f6744569737dc9",
+   "trader": "0xc2faf6528d2277e6ac670a2d078f067601815b35",
+   "signal": 3,
+   "signalName": "SizeAnomaly",
+   "observed": "17891778362977836",
+   "threshold": "5812932912313584",
+   "penalty": 47000
+  },
+  {
+   "block": 59767385,
+   "tx": "0x6024ee3d7037f7d140f06da5e681bc0e6bf0805fb63de4879273fb9c40cc4269",
+   "trader": "0xc2faf6528d2277e6ac670a2d078f067601815b35",
+   "signal": 3,
+   "signalName": "SizeAnomaly",
+   "observed": "17891778362977836",
+   "threshold": "9545819712687163",
+   "penalty": 41092
+  },
+  {
+   "block": 59767385,
+   "tx": "0xdaf9090742817557eca35887c0d09e99f506ecffc2aac2e4d8de57714684df7e",
+   "trader": "0xc2faf6528d2277e6ac670a2d078f067601815b35",
+   "signal": 1,
+   "signalName": "SandwichExit",
+   "observed": "17891778362977836",
+   "threshold": "12681111823599416",
+   "penalty": 47000
+  }
+ ]
+}

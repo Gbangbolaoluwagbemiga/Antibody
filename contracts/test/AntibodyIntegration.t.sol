@@ -187,6 +187,58 @@ contract AntibodyIntegrationTest is BaseTest {
         assertEq(penalty, hook.MAX_TOTAL_FEE() - hook.baseFee(), "a confirmed exit draws the maximum penalty");
     }
 
+    /// @dev REGRESSION. A sandwich requires a victim: attacker buys, *somebody else* trades at the
+    ///      worsened price, attacker sells. A same-block round trip with nobody in between is not a
+    ///      sandwich — it is a round trip, and it is ordinary behaviour for a rebalancing market
+    ///      maker or a multi-hop route that revisits the same pool.
+    ///
+    ///      This was found on-chain, not here: the live calibration script alternated direction
+    ///      from one address without advancing blocks, and all 23 of its "ordinary" swaps were
+    ///      classified `SandwichExit` at the maximum penalty. The original test suite missed it
+    ///      because every calibration helper rolled a block between swaps, so the same-block case
+    ///      never arose. The tests proved something narrower than they appeared to.
+    function test_sameAddressRoundTrip_withoutVictim_isNotASandwich() public {
+        _calibrate();
+
+        // One address, one block, both directions — and no third party involved.
+        _swap(honest, true, TYPICAL_SWAP);
+
+        vm.recordLogs();
+        _swap(honest, false, TYPICAL_SWAP);
+
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        for (uint256 i = 0; i < logs.length; i++) {
+            if (logs[i].topics.length > 0 && logs[i].topics[0] == IAntibodySignal.ToxicFlowDetected.selector) {
+                (uint8 raw,,,) = abi.decode(logs[i].data, (uint8, uint256, uint256, uint24));
+                assertTrue(
+                    raw != uint8(IAntibodySignal.Signal.SandwichExit),
+                    "a round trip with no victim must never be classified as a sandwich"
+                );
+            }
+        }
+    }
+
+    /// @dev The on-chain failure reproduced exactly: many swaps, one address, alternating
+    ///      direction, all inside a single block. Every one of these is ordinary flow.
+    function test_alternatingSwapsInOneBlock_areNotFlaggedAsSandwiches() public {
+        _calibrate();
+
+        uint256 flagged = 0;
+        for (uint256 i = 0; i < 8; i++) {
+            vm.recordLogs();
+            _swap(honest, i % 2 == 0, TYPICAL_SWAP); // no vm.roll — deliberately same block
+            Vm.Log[] memory logs = vm.getRecordedLogs();
+            for (uint256 j = 0; j < logs.length; j++) {
+                if (logs[j].topics.length > 0 && logs[j].topics[0] == IAntibodySignal.ToxicFlowDetected.selector) {
+                    (uint8 raw,,,) = abi.decode(logs[j].data, (uint8, uint256, uint256, uint24));
+                    if (raw == uint8(IAntibodySignal.Signal.SandwichExit)) flagged++;
+                }
+            }
+        }
+
+        assertEq(flagged, 0, "self-directed alternating flow must not read as a sandwich");
+    }
+
     /// @dev An attacker splitting the legs across two addresses defeats identity-based detection.
     ///      The pool-level detector has no identity to defeat — it sees the reversal regardless.
     function test_sandwich_acrossTwoAddressesStillDetected() public {
@@ -355,10 +407,13 @@ contract AntibodyIntegrationTest is BaseTest {
     }
 
     /// @dev Structural detection needs no history and must work from the pool's first block.
+    ///      The victim leg is not decoration: without a third party between the attacker's two
+    ///      swaps there is no sandwich to detect, only a round trip.
     function test_coldPool_structuralDetectorStillFires() public {
         assertFalse(hook.isCalibrated(poolId));
 
         _swap(attacker, true, TYPICAL_SWAP);
+        _swap(victim, true, TYPICAL_SWAP);
 
         vm.recordLogs();
         _swap(attacker, false, TYPICAL_SWAP);
@@ -368,6 +423,43 @@ contract AntibodyIntegrationTest is BaseTest {
             uint8(signal),
             uint8(IAntibodySignal.Signal.SandwichExit),
             "a structural signature needs no statistical history"
+        );
+    }
+
+    /// @dev REGRESSION. The reported penalty must equal the penalty actually chargeable — the
+    ///      emitted event is the public signal routers consume, so a number the chain never
+    ///      charged is a lie told to every downstream reader. Found on-chain: an exit reported
+    ///      70500 against a 47000 ceiling, because the recency surcharge was added after the
+    ///      anomaly component had already been capped.
+    function testFuzz_reportedPenaltyNeverExceedsCeiling(uint256 amount, uint8 blocksElapsed) public {
+        _calibrate();
+
+        amount = bound(amount, 0.001 ether, 5_000 ether);
+        blocksElapsed = uint8(bound(blocksElapsed, 0, 20));
+
+        _swap(attacker, true, TYPICAL_SWAP);
+        vm.roll(block.number + blocksElapsed);
+
+        (, uint24 totalFee,,) = hook.quote(poolId, attacker, true, amount);
+
+        assertLe(totalFee, hook.MAX_TOTAL_FEE(), "quoted fee must never exceed the ceiling");
+        assertGe(totalFee, hook.baseFee(), "quoted fee must never fall below the base fee");
+    }
+
+    /// @dev The same invariant on the live swap path, asserted from the emitted event rather than
+    ///      the view — the event is what the outside world reads.
+    function test_emittedPenaltyMatchesChargeableFee() public {
+        _calibrate();
+
+        _swap(attacker, true, TYPICAL_SWAP);
+        vm.recordLogs();
+        _swap(attacker, true, TYPICAL_SWAP * 500); // deep into anomaly territory, recency active
+
+        (, uint24 penalty) = _lastToxicFlow();
+        assertLe(
+            uint256(hook.baseFee()) + penalty,
+            hook.MAX_TOTAL_FEE(),
+            "emitted penalty plus base fee must be a fee the pool could actually charge"
         );
     }
 
