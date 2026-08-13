@@ -19,4 +19,25 @@ export type History = {
   baseFee: number;
   maxTotalFee: number;
   points: Point[];
+  sandwich: Sandwich;
+};
+
+export type Leg = {
+  role: "front-run" | "victim" | "exit";
+  actor: "attacker" | "victim";
+  amountIn: number;
+  amountOut: number;
+  tokenIn: string;
+  tokenOut: string;
+  fee: number;
+  tx: string;
+};
+
+export type Sandwich = {
+  block: number;
+  baseFee: number;
+  legs: Leg[];
+  attackerNet: { t0: number; t1: number };
+  feesWithAntibody: number;
+  feesAtBaseOnly: number;
 };

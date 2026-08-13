@@ -44,9 +44,26 @@ A real sandwich, all three legs in **block 59767385** on Unichain Sepolia:
 |---|---|---|
 | front-run (attacker) | `SizeAnomaly` | +4.11% |
 | **victim** | **not flagged** | **0** |
-| **exit (attacker)** | **`SandwichExit`** | **+4.70% — 16x the base fee** |
+| **exit (attacker)** | **`SandwichExit`** | **+4.70% — 16.7x the base fee** |
 
 The victim pays nothing extra. The mechanism prices the attacker, not the person being attacked.
+
+### What it cost
+
+Decoded from the PoolManager's own `Swap` events, holding every variable fixed except the fee:
+
+| | without Antibody | with Antibody |
+|---|---|---|
+| fees on the attacker's two legs | 0.012 | **0.188** |
+| attacker net | −0.004 | **−0.180** |
+| to liquidity providers | 0.012 | **+0.188** |
+
+**15.7× the fee**, and 0.176 that went to LPs instead of staying with the attacker. Without the
+penalty this sandwich was roughly break-even; with it, it loses money — which is the entire point.
+
+The victim's trade here was sized inside the calibrated band on purpose, so the raw extraction
+available was small. The deterrent is that the cost scales with the *attacker's own leg size*, not
+with how much they manage to extract.
 
 ## The baseline teaches itself
 
