@@ -4,6 +4,8 @@ import type { History, Point } from "./lib/types";
 import { fetchHistory, unichainSepolia } from "./lib/chain";
 import { BaselineChart } from "./components/BaselineChart";
 import { BeforeAfter } from "./components/BeforeAfter";
+import { QuoteProbe } from "./components/QuoteProbe";
+import { Ticker, Reveal } from "./components/motion";
 
 const H = seed as History;
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
@@ -77,12 +79,12 @@ export default function App() {
       <div className="tiles">
         <div className="tile">
           <div className="label">Threshold now</div>
-          <div className="value">{stats.last.threshold.toFixed(3)}%</div>
+          <div className="value"><Ticker value={stats.last.threshold} decimals={3} suffix="%" /></div>
           <div className="note">of pool liquidity · learned, not configured</div>
         </div>
         <div className="tile">
           <div className="label">Swaps observed</div>
-          <div className="value">{stats.last.n}</div>
+          <div className="value"><Ticker value={stats.last.n} decimals={0} /></div>
           <div className="note">
             silent until {H.minSamples} · first opinion at swap {stats.calibratedAt?.n ?? "—"}
           </div>
@@ -90,7 +92,9 @@ export default function App() {
         <div className="tile is-flagged">
           <div className="label">Attacker's exit paid</div>
           <div className="value">
-            {stats.sandwich ? `${((H.baseFee + stats.sandwich.penalty) / 10000).toFixed(2)}%` : "—"}
+            {stats.sandwich
+              ? <Ticker value={(H.baseFee + stats.sandwich.penalty) / 10000} decimals={2} suffix="%" />
+              : "—"}
           </div>
           <div className="note">
             vs {(H.baseFee / 10000).toFixed(2)}% base — {stats.sandwich ? ((H.baseFee + stats.sandwich.penalty) / H.baseFee).toFixed(1) : 0}× · paid to LPs
@@ -103,7 +107,19 @@ export default function App() {
         </div>
       </div>
 
-      <section className="panel">
+      <Reveal><section className="panel is-hero">
+        <h2>Price a swap against the live pool</h2>
+        <p className="sub">
+          Drag the size. The fee comes straight from the deployed hook's <code>quote()</code> view —
+          the same assessment the swap path runs, read live from Unichain Sepolia. It stays ordinary
+          right up to the boundary this pool computed for itself, and then it doesn't. No wallet, no
+          gas: it's a view function.
+        </p>
+        <QuoteProbe hook={H.hook as `0x${string}`} poolId={H.poolId as `0x${string}`}
+                    baseFee={H.baseFee} maxTotalFee={H.maxTotalFee} />
+      </section></Reveal>
+
+      <Reveal><section className="panel">
         <div className="panel-head">
           <div>
             <h2>The threshold is learned, not configured</h2>
@@ -164,18 +180,18 @@ export default function App() {
           Every value is decoded from <code>BaselineUpdated</code> and <code>ToxicFlowDetected</code>{" "}
           logs emitted by the deployed hook. Sizes are expressed as a fraction of pool liquidity.
         </p>
-      </section>
+      </section></Reveal>
 
-      <section className="panel">
+      <Reveal><section className="panel">
         <h2>What the attack cost, with and without</h2>
         <p className="sub">
           The same three swaps, the same sizes, one variable changed: the fee. Everything here is
           decoded from the pool's own <code>Swap</code> events.
         </p>
         <BeforeAfter data={H.sandwich} />
-      </section>
+      </section></Reveal>
 
-      <section className="panel">
+      <Reveal><section className="panel">
         <h2>Every detection in this pool</h2>
         <p className="sub">
           The complete log, across every attack run — not just the successful one. Note that only
@@ -227,7 +243,7 @@ export default function App() {
           <em>exit</em>. The victim's fill has already occurred — what Antibody destroys is the
           profit, which is what makes the strategy stop being worth running.
         </p>
-      </section>
+      </section></Reveal>
     </div>
   );
 }
