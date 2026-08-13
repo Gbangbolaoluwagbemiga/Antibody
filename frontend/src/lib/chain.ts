@@ -197,3 +197,34 @@ export async function fetchRecentActivity(
 
   return perPool.flat().sort((a, b) => b.block - a.block || b.n - a.n);
 }
+
+const TOXIC_TOPIC = "0xef397c2c30f9f52aa55ab4cb080258bbf338e2909642e6a08e119f3e038be13c";
+
+export type LegResult = {
+  role: string;
+  tx: `0x${string}`;
+  block: number;
+  signal: string | null;
+  penalty: number;
+};
+
+/**
+ * Watch one attack leg land and read the hook's verdict out of its receipt.
+ *
+ * Confirmation is the browser's job, not the server's — see the note in api/attack.ts. Doing it
+ * here also means each leg can be revealed the moment it confirms.
+ */
+export async function watchLeg(role: string, tx: `0x${string}`): Promise<LegResult> {
+  const receipt = await client.waitForTransactionReceipt({ hash: tx, timeout: 90_000 });
+  const log = receipt.logs.find((l) => l.topics[0]?.toLowerCase() === TOXIC_TOPIC);
+
+  let signal: string | null = null;
+  let penalty = 0;
+  if (log) {
+    const d = log.data.slice(2);
+    signal = SIGNALS[parseInt(d.slice(0, 64), 16)] ?? null;
+    penalty = parseInt(d.slice(192, 256), 16);
+  }
+
+  return { role, tx, block: Number(receipt.blockNumber), signal, penalty };
+}

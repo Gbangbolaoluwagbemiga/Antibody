@@ -13,10 +13,17 @@ import { privateKeyToAccount } from "viem/accounts";
  * send time costs a network round trip apiece and spreads them across blocks, so all three are
  * signed up front and published together with a short stagger to fix arrival order.
  *
- * Co-location is probable, not guaranteed: a public testnet offers no bundle endpoint. The response
+ * Co-location is probable, not guaranteed: a public testnet offers no bundle endpoint. The client
  * reports the block each leg actually landed in and says plainly which detector fired. A demo that
  * claimed the strong result regardless of what the chain did would be the exact dishonesty this
  * project was built to correct.
+ *
+ * ── Why it does not wait for receipts ─────────────────────────────────────────────────────────
+ * Publishing takes ~2s; confirmation takes 15-30s. Waiting for all three inside the request would
+ * push the function against its execution ceiling for no benefit, and a demo that times out under
+ * load is worse than no demo. So this returns the hashes as soon as they are accepted and the
+ * browser watches them land — which also lets the UI reveal each leg as it confirms rather than
+ * dumping the whole result at once.
  */
 
 export const config = { maxDuration: 60 };
@@ -31,7 +38,6 @@ const unichainSepolia = defineChain({
 
 const ROUTER = "0x9cD2b0a732dd5e023a5539921e0FD1c30E198Dba" as const;
 const DYNAMIC_FEE_FLAG = 8388608;
-const SIGNALS = ["None", "SandwichExit", "BlockReversal", "SizeAnomaly"] as const;
 
 const ROUTER_ABI = [
   {
@@ -60,8 +66,6 @@ const ROUTER_ABI = [
     outputs: [{ type: "int256" }],
   },
 ] as const;
-
-const TOXIC_TOPIC = "0xef397c2c30f9f52aa55ab4cb080258bbf338e2909642e6a08e119f3e038be13c";
 
 /** Best-effort throttle. Serverless instances are not shared, so this is a speed bump, not a lock —
  *  the real protection is that these are testnet funds and each run costs a fraction of a cent. */
@@ -151,36 +155,13 @@ export default async function handler(req: Request): Promise<Response> {
     const p3 = publicClient.sendRawTransaction({ serializedTransaction: raw3 });
 
     const [h1, h2, h3] = await Promise.all([p1, p2, p3]);
-    const receipts = await Promise.all(
-      [h1, h2, h3].map((hash) => publicClient.waitForTransactionReceipt({ hash, timeout: 45_000 }))
-    );
 
-    const legs = receipts.map((r, i) => {
-      const log = r.logs.find((l) => l.topics[0] === TOXIC_TOPIC);
-      let signal: string | null = null;
-      let penalty = 0;
-      if (log) {
-        const d = log.data.slice(2);
-        signal = SIGNALS[parseInt(d.slice(0, 64), 16)] ?? null;
-        penalty = parseInt(d.slice(192, 256), 16);
-      }
-      return {
-        role: ["front-run", "victim", "exit"][i],
-        tx: r.transactionHash,
-        block: Number(r.blockNumber),
-        signal,
-        penalty,
-      };
-    });
-
-    const sameBlock = legs[0].block === legs[2].block;
     return Response.json({
-      legs,
-      sameBlock,
-      caught: legs[2].signal === "SandwichExit",
-      note: sameBlock
-        ? "The attacker's legs shared a block, so the strong detector was reachable."
-        : "The legs split across blocks, so this was not a sandwich and the hook correctly declined to call it one. Run it again.",
+      legs: [
+        { role: "front-run", tx: h1 },
+        { role: "victim", tx: h2 },
+        { role: "exit", tx: h3 },
+      ],
     });
   } catch (e) {
     lastRun = 0; // a failed run should not lock the button
