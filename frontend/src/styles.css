@@ -14,15 +14,17 @@
 :root {
   color-scheme: light;
 
-  --surface-0: #f4f4f2;
-  --surface-1: #fbfbfa;
-  --surface-2: #eeeeec;
-  --border: #dedddb;
-  --border-strong: #c6c5c2;
+  /* Light surfaces need a real value gap or elevation reads as nothing. The page
+     sits back, panels come forward to pure white, insets recede again. */
+  --surface-0: #f1f1f4;
+  --surface-1: #ffffff;
+  --surface-2: #f6f6f8;
+  --border: #e2e2e7;
+  --border-strong: #c8c8d0;
 
-  --text-primary: #16161a;
-  --text-secondary: #55555f;
-  --text-muted: #85858f;
+  --text-primary: #141418;
+  --text-secondary: #4e4e59;
+  --text-muted: #7d7d8a;
 
   /* data series — validated */
   --series-threshold: #4a3aa7; /* violet  */
@@ -34,6 +36,12 @@
   --grid: rgba(22, 22, 26, 0.08);
 
   --radius: 10px;
+  --radius-sm: 7px;
+  --radius-lg: 14px;
+  --shadow-xs: 0 1px 2px rgba(16,16,20,.05);
+  --shadow-sm: 0 1px 3px rgba(16,16,20,.07), 0 1px 2px rgba(16,16,20,.04);
+  --shadow-md: 0 4px 14px rgba(16,16,20,.08), 0 1px 3px rgba(16,16,20,.05);
+  --ring: 0 0 0 3px color-mix(in srgb, var(--accent) 26%, transparent);
   --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, sans-serif;
 }
@@ -41,6 +49,10 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
+
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.5);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.4);
+    --shadow-md: 0 8px 26px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4);
 
     --surface-0: #0c0d12;
     --surface-1: #131520;
@@ -64,6 +76,10 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 8px 26px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.4);
 
   --surface-0: #0c0d12;
   --surface-1: #131520;
@@ -362,7 +378,7 @@ a { color: var(--accent); }
 
 .sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
 
-.content { padding: 34px 30px 90px; max-width: 1000px; }
+.content { padding: 34px clamp(20px, 3.2vw, 48px) 96px; width: 100%; max-width: 1320px; margin-inline: auto; }
 .content .tagline { color: var(--text-secondary); font-size: 14.5px; margin: 0 0 24px; max-width: 66ch; }
 
 /* ── theme toggle ───────────────────────────────────────────────────────── */
@@ -392,4 +408,57 @@ a { color: var(--accent); }
   .sidebar.is-open { transform: none; }
   .scrim { display: block; position: fixed; inset: 0; z-index: 45; background: rgba(0,0,0,.5); }
   .content { padding: 66px 18px 80px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Surface refinement.
+   Borrowed from shadcn's design language rather than the library: tighter
+   radii, real elevation, a visible focus ring on every interactive element,
+   and hover states that move. The token system was already here — this gives
+   it depth so cards read as surfaces instead of outlined rectangles.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.panel { box-shadow: var(--shadow-sm); border-radius: var(--radius-lg); }
+.panel.is-hero { box-shadow: var(--shadow-md); }
+
+.tile, .pool-card, .ba-col, .probe-verdict, .feed li, .attack-verdict, .ws-result {
+  box-shadow: var(--shadow-xs);
+}
+
+.tile { transition: transform .18s cubic-bezier(.22,1,.36,1), box-shadow .18s, border-color .18s; }
+.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+
+.pool-card { transition: transform .2s cubic-bezier(.22,1,.36,1), box-shadow .2s; }
+.pool-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.feed li { transition: border-color .15s, transform .15s; }
+.feed li:hover { transform: translateX(2px); border-color: var(--border-strong); }
+
+/* Focus visible everywhere, one consistent ring. Keyboard users get the same
+   affordance mouse users get from hover. */
+a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--radius-sm);
+}
+
+.btn { box-shadow: var(--shadow-xs); border-radius: var(--radius-sm); }
+.btn-primary { box-shadow: var(--shadow-sm); }
+.btn:hover:not(:disabled) { box-shadow: var(--shadow-sm); }
+.btn-primary:hover:not(:disabled) { box-shadow: var(--shadow-md); filter: brightness(1.06); }
+
+.sidebar { box-shadow: var(--shadow-xs); }
+.sidebar-nav a.active { box-shadow: var(--shadow-xs); }
+
+/* Type scale — tighter tracking on the big numerals, which is most of what
+   makes monospace figures look designed rather than defaulted. */
+.tile .value, .pool-threshold, .probe-fee-value, .ba-figure { font-feature-settings: "tnum" 1, "zero" 1; }
+.panel h2 { font-size: 17.5px; letter-spacing: -0.015em; }
+.content .tagline { font-size: 15px; }
+
+/* Wide screens: let the evidence breathe across the extra width instead of
+   stacking it in a narrow column with dead space beside it. */
+@media (min-width: 1180px) {
+  .tiles { grid-template-columns: repeat(4, 1fr); }
+  .pools { grid-template-columns: repeat(2, 1fr); }
 }
