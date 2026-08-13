@@ -32,11 +32,44 @@ const pct = (v: bigint) => Number(v) / 1e16;
  * rate-limiting — but this is the real source, and a refresh here is what makes the demo live
  * rather than a screenshot of a past run.
  */
+/** Unichain Sepolia's RPC rejects any `eth_getLogs` window wider than this. */
+const MAX_LOG_RANGE = 9_000n;
+
+/**
+ * Page through `eth_getLogs` in bounded windows.
+ *
+ * A single fromBlock→latest query is the obvious implementation and it is a time bomb: the pool's
+ * history sits at a fixed height, the chain advances ~1 block/second, so the span crosses the
+ * 10,000-block cap a few hours after deployment and every later call fails. The page then falls
+ * back to its bundled snapshot and quietly claims to be live. This demo has to still work weeks
+ * from now, unattended, in front of someone who will not refresh twice.
+ */
+/** Inclusive block windows of at most MAX_LOG_RANGE, covering [from, to]. */
+function windows(from: bigint, to: bigint): Array<{ fromBlock: bigint; toBlock: bigint }> {
+  const out: Array<{ fromBlock: bigint; toBlock: bigint }> = [];
+  for (let start = from; start <= to; start += MAX_LOG_RANGE) {
+    const end = start + MAX_LOG_RANGE - 1n;
+    out.push({ fromBlock: start, toBlock: end > to ? to : end });
+  }
+  return out;
+}
+
 export async function fetchHistory(hook: `0x${string}`, poolId: `0x${string}`, fromBlock: bigint): Promise<Point[]> {
-  const [baseline, toxic] = await Promise.all([
-    client.getLogs({ address: hook, event: BASELINE_UPDATED, args: { poolId }, fromBlock, toBlock: "latest" }),
-    client.getLogs({ address: hook, event: TOXIC_FLOW, args: { poolId }, fromBlock, toBlock: "latest" }),
-  ]);
+  const head = await client.getBlockNumber();
+  const pages = windows(fromBlock, head);
+
+  // Paged inline rather than through a generic helper: viem derives `args` from the event literal,
+  // and routing both events through one generic collapses that back to `unknown`.
+  const baseline = (
+    await Promise.all(
+      pages.map((w) => client.getLogs({ address: hook, event: BASELINE_UPDATED, args: { poolId }, ...w }))
+    )
+  ).flat();
+  const toxic = (
+    await Promise.all(
+      pages.map((w) => client.getLogs({ address: hook, event: TOXIC_FLOW, args: { poolId }, ...w }))
+    )
+  ).flat();
 
   const detections = new Map(toxic.map((l) => [l.transactionHash, l.args]));
 
