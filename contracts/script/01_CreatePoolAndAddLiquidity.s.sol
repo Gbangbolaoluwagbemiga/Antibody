@@ -22,7 +22,7 @@ contract CreatePoolAndAddLiquidityScript is BaseScript, LiquidityHelpers {
     // static fee here would silently discard every penalty the hook computes. The hook's
     // _beforeInitialize rejects this case outright rather than letting it deploy looking healthy.
     uint24 lpFee = LPFeeLibrary.DYNAMIC_FEE_FLAG;
-    int24 tickSpacing = 60;
+    int24 tickSpacing = int24(int256(vm.envOr("POOL_TICK_SPACING", uint256(60))));
     uint160 startingPrice = 2 ** 96; // Starting price, sqrtPriceX96; floor(sqrt(1) * 2^96)
 
     // --- liquidity position configuration --- //
