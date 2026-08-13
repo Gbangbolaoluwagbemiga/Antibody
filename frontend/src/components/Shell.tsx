@@ -59,9 +59,6 @@ export function Shell() {
           <a className="chip" href={`${EXPLORER}/address/${H.hook}`} target="_blank" rel="noreferrer">
             {short(H.hook)} ↗
           </a>
-          <a className="chip" href="https://github.com/Gbangbolaoluwagbemiga/Antibody" target="_blank" rel="noreferrer">
-            source ↗
-          </a>
           <ThemeToggle />
         </div>
       </aside>
