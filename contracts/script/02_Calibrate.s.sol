@@ -22,7 +22,7 @@ import {AntibodyHook} from "../src/AntibodyHook.sol";
 ///
 ///      Every swap here also emits `BaselineUpdated`, which is the event series the demo UI charts.
 contract CalibrateScript is BaseScript {
-    uint256 internal constant TYPICAL_SWAP = 0.1 ether;
+    uint256 internal immutable TYPICAL_SWAP = vm.envOr("CALIBRATE_SIZE", uint256(0.1 ether));
 
     function run() external {
         requireTokens();
@@ -31,7 +31,7 @@ contract CalibrateScript is BaseScript {
             currency0: currency0,
             currency1: currency1,
             fee: LPFeeLibrary.DYNAMIC_FEE_FLAG,
-            tickSpacing: 60,
+            tickSpacing: int24(int256(vm.envOr("POOL_TICK_SPACING", uint256(60)))),
             hooks: hookContract
         });
         PoolId poolId = poolKey.toId();

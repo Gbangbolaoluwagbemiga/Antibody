@@ -20,6 +20,8 @@ export type History = {
   maxTotalFee: number;
   points: Point[];
   sandwich: Sandwich;
+  poolA: PoolMeta;
+  poolB: PoolMeta;
 };
 
 export type Leg = {
@@ -40,4 +42,11 @@ export type Sandwich = {
   attackerNet: { t0: number; t1: number };
   feesWithAntibody: number;
   feesAtBaseOnly: number;
+};
+
+export type PoolMeta = {
+  poolId: string;
+  tickSpacing: number;
+  regime: string;
+  points?: Point[];
 };
