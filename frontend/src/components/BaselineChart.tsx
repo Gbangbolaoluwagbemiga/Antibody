@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import type { Point } from "../lib/types";
 
 /**
@@ -24,6 +25,7 @@ const PH = H - M.top - M.bottom;
 type Props = { points: Point[]; minSamples: number };
 
 export function BaselineChart({ points, minSamples }: Props) {
+  const reduce = useReducedMotion();
   const svgRef = useRef<SVGSVGElement>(null);
   const [hover, setHover] = useState<Point | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
@@ -111,10 +113,24 @@ export function BaselineChart({ points, minSamples }: Props) {
 
         <path d={bandPath} fill="var(--series-threshold)" opacity={0.1} />
 
-        <path d={linePath(points, "mean")} fill="none" stroke="var(--series-mean)" strokeWidth={2}
-              strokeLinejoin="round" strokeLinecap="round" />
-        <path d={linePath(calibrated, "threshold")} fill="none" stroke="var(--series-threshold)" strokeWidth={2}
-              strokeLinejoin="round" strokeLinecap="round" />
+        {/* The lines draw themselves in, left to right — the same direction the pool accumulated
+            the history. Skipped entirely under prefers-reduced-motion. */}
+        <motion.path
+          d={linePath(points, "mean")} fill="none" stroke="var(--series-mean)" strokeWidth={2}
+          strokeLinejoin="round" strokeLinecap="round"
+          initial={reduce ? false : { pathLength: 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.1, ease: "easeOut" }}
+        />
+        <motion.path
+          d={linePath(calibrated, "threshold")} fill="none" stroke="var(--series-threshold)" strokeWidth={2}
+          strokeLinejoin="round" strokeLinecap="round"
+          initial={reduce ? false : { pathLength: 0 }}
+          whileInView={{ pathLength: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.1, delay: 0.25, ease: "easeOut" }}
+        />
 
         {/* Flagged swaps: the observed size, plotted where it actually sat relative to the band.
             Ringed and larger — a distinct mark, so identity never rests on colour alone.
@@ -127,8 +143,13 @@ export function BaselineChart({ points, minSamples }: Props) {
               y1={ys(p.threshold > 0 ? p.threshold : p.mean)} y2={ys(p.observed ?? p.mean)}
               stroke="var(--status-flagged)" strokeWidth={1.5} opacity={0.45}
             />
-            <circle cx={xs(p.n)} cy={ys(p.observed ?? p.mean)} r={6.5}
-                    fill="var(--status-flagged)" stroke="var(--surface-1)" strokeWidth={2} />
+            <motion.circle cx={xs(p.n)} cy={ys(p.observed ?? p.mean)} r={6.5}
+                    fill="var(--status-flagged)" stroke="var(--surface-1)" strokeWidth={2}
+                    initial={reduce ? false : { scale: 0, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    style={{ transformBox: "fill-box", transformOrigin: "center" }}
+                    transition={{ delay: 1.15, type: "spring", stiffness: 400, damping: 18 }} />
           </g>
         ))}
 
