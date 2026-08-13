@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 import seed from "../data/history.json";
 import type { History } from "../lib/types";
 import { unichainSepolia } from "../lib/chain";
@@ -21,6 +22,7 @@ const PAGES = [
 export function Shell() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const reduce = useReducedMotion();
 
   return (
     <div className="layout">
@@ -66,13 +68,21 @@ export function Shell() {
 
       {open && <div className="scrim" onClick={() => setOpen(false)} aria-hidden="true" />}
 
-      <main className="content" key={pathname}>
+      {/* Keyed on the route so each page animates in on navigation. Short and small on purpose:
+          a page that slides a long way on every click stops feeling responsive. */}
+      <motion.main
+        className="content"
+        key={pathname}
+        initial={reduce ? false : { opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
+      >
         <p className="tagline">
           A Uniswap v4 hook that makes MEV extraction unprofitable by pricing it — against a
           threshold each pool computes for itself, from its own trading history.
         </p>
         <Outlet />
-      </main>
+      </motion.main>
     </div>
   );
 }
