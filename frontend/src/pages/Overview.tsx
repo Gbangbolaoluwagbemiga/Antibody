@@ -1,6 +1,7 @@
 import seed from "../data/history.json";
 import type { History, Point } from "../lib/types";
 import { TwoPools } from "../components/TwoPools";
+import { Immunity } from "../components/Immunity";
 import { Ticker, Reveal } from "../components/motion";
 import { Link } from "react-router-dom";
 
@@ -73,6 +74,26 @@ export function Overview() {
             Both pools are served by the same deployed contract at the same address. Read live from
             Unichain Sepolia. <Link to="/try">Price your own swap against them →</Link>
           </p>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel is-hero">
+          <h2>Attack one pool, every pool remembers</h2>
+          <p className="sub">
+            A per-pool baseline has an obvious hole: attack pool A, get priced, move to pool B. So a
+            confirmed sandwich exit is recorded against the <em>trader</em>, held by the hook rather
+            than by any pool. Below are two addresses quoted against pool B — which has never seen
+            either of them — for the same swap, right now.
+          </p>
+          <Immunity
+            hook={H.hook as `0x${string}`}
+            poolB={H.poolB.poolId as `0x${string}`}
+            attacker={H.immunity.attacker as `0x${string}`}
+            attackBlock={H.immunity.attackBlock}
+            window={H.immunity.window}
+            baseFee={H.baseFee}
+          />
         </section>
       </Reveal>
 

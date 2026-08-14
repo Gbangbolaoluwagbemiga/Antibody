@@ -20,7 +20,7 @@ const TOXIC_FLOW = parseAbiItem(
   "event ToxicFlowDetected(bytes32 indexed poolId, address indexed trader, uint8 signal, uint256 observedScore, uint256 thresholdScore, uint24 penaltyPips)"
 );
 
-const SIGNALS = ["None", "SandwichExit", "BlockReversal", "SizeAnomaly"] as const;
+const SIGNALS = ["None", "SandwichExit", "BlockReversal", "SizeAnomaly", "CrossPoolMemory"] as const;
 
 /** Ratios are 1e18-scaled fractions of pool liquidity; the chart plots percent. */
 const pct = (v: bigint) => Number(v) / 1e16;

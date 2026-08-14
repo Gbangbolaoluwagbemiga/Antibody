@@ -21,6 +21,7 @@ const SIGNAL_COPY: Record<number, { name: string; note: string }> = {
   1: { name: "SandwichExit", note: "same block, reversed direction, with a third party in between" },
   2: { name: "BlockReversal", note: "the pool reversed direction in-block under another address" },
   3: { name: "SizeAnomaly", note: "outside the band this pool computed from its own history" },
+  4: { name: "CrossPoolMemory", note: "carries a confirmed sandwich exit from another pool — fades with time" },
 };
 
 /** A number that animates to its target instead of snapping. */

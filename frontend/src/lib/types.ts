@@ -22,6 +22,17 @@ export type History = {
   sandwich: Sandwich;
   poolA: PoolMeta;
   poolB: PoolMeta;
+  immunity: {
+    window: number;
+    step: number;
+    maxRemembered: number;
+    attacker: string;
+    attackBlock: number;
+    beforeFee: number;
+    afterFee: number;
+    strangerFee: number;
+    confirmedExits: number;
+  };
 };
 
 export type Leg = {

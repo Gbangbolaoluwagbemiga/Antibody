@@ -58,17 +58,26 @@ RAW1=$(mk "$DEMO_ATTACKER_KEY" "$AN"       "$ATTACK_SIZE" true  "$DEMO_ATTACKER"
 RAW3=$(mk "$DEMO_ATTACKER_KEY" "$((AN+1))" "$ATTACK_SIZE" false "$DEMO_ATTACKER")  # exit
 RAW2=$(mk "$DEMO_VICTIM_KEY"   "$VN"       "$VICTIM_SIZE" true  "$DEMO_VICTIM")    # victim
 
-# Published in narrative order with a short stagger, NOT all at once. Fully concurrent
-# publishing leaves arrival order to the race, and the sequencer put the victim *after* the
-# attacker's exit — which correctly reads as a round trip rather than a sandwich, because the
-# corrected detector requires a third party BETWEEN the two legs. 50ms is long enough to fix
-# arrival order and far short of a ~1s block, so the three still land together.
-echo "Publishing in order (front-run -> victim -> exit), 50ms apart..."
+# Asymmetric stagger, and the asymmetry is the whole trick.
+#
+# The attacker's two legs use consecutive nonces from one account, which sequencers tend to pack
+# adjacently — so an evenly spaced publish reliably produces front-run, exit, victim, with nobody
+# in between. That is a round trip, not a sandwich, and the detector correctly refuses to call it
+# one. Observed repeatedly before this was tuned.
+#
+# So the victim goes out almost immediately after the front-run, and the exit is held back long
+# enough for the victim to be ordered ahead of it — while still landing inside the same ~1s block.
+# Too short and the exit jumps the victim; too long and the exit slips into the next block and
+# there is no sandwich either. Both failure modes are reported rather than retried silently.
+VICTIM_DELAY=${VICTIM_DELAY:-0.05}
+EXIT_DELAY=${EXIT_DELAY:-0.45}
+
+echo "Publishing: front-run, +${VICTIM_DELAY}s victim, +${EXIT_DELAY}s exit..."
 TMP=$(mktemp -d)
 cast publish "$RAW1" --rpc-url "$RPC" --async > "$TMP/1" 2>&1 &
-sleep 0.05
+sleep "$VICTIM_DELAY"
 cast publish "$RAW2" --rpc-url "$RPC" --async > "$TMP/2" 2>&1 &
-sleep 0.05
+sleep "$EXIT_DELAY"
 cast publish "$RAW3" --rpc-url "$RPC" --async > "$TMP/3" 2>&1 &
 wait
 

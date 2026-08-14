@@ -462,3 +462,24 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
   .tiles { grid-template-columns: repeat(4, 1fr); }
   .pools { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ── cross-pool immunity ────────────────────────────────────────────────── */
+
+.imm { display: grid; gap: 14px; }
+.imm-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.imm-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 18px 20px; box-shadow: var(--shadow-xs); }
+.imm-card.is-marked { border-color: var(--status-flagged);
+                      background: color-mix(in srgb, var(--status-flagged) 7%, var(--surface-2)); }
+.imm-head { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.imm-fee { font-family: var(--mono); font-size: 34px; font-weight: 650; letter-spacing: -0.03em;
+           line-height: 1.1; margin-top: 8px; font-feature-settings: "tnum" 1; }
+.imm-card.is-marked .imm-fee { color: var(--status-flagged); }
+.imm-addr { display: block; font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.imm-card p { font-size: 12.5px; color: var(--text-secondary); margin: 12px 0 0; padding-top: 11px;
+              border-top: 1px solid var(--border); }
+.imm-verdict { background: color-mix(in srgb, var(--status-flagged) 9%, var(--surface-2));
+               border: 1px solid var(--status-flagged); border-radius: var(--radius);
+               padding: 13px 16px; font-size: 13.5px; color: var(--text-secondary); }
+.imm-verdict.is-faded { background: var(--surface-2); border-color: var(--border); }
+.imm-verdict strong { color: var(--text-primary); }

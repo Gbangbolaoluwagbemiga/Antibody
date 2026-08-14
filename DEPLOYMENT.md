@@ -10,8 +10,8 @@ Every address and transaction below is real and verifiable. Explorer: https://se
 
 | | |
 |---|---|
-| **AntibodyHook** | [`0x1A73Df4cB64A09262845eE7cC0Bc68512bCdA0c0`](https://sepolia.uniscan.xyz/address/0x1A73Df4cB64A09262845eE7cC0Bc68512bCdA0c0) |
-| Pool ID | `0x5e10d00c9a2b84ff3e78186bd976d00133445ee479d7489abf65398a12ded0a9` |
+| **AntibodyHook** | [`0xd460D0E03F4A136961468c57b8fE7e4E796060C0`](https://sepolia.uniscan.xyz/address/0xd460D0E03F4A136961468c57b8fE7e4E796060C0) |
+| Pool ID | `0xa0f0b04f36314bae0c8faab0614b735cb86101f38542b6d10d5978ec30fb1fab` |
 | Demo token 0 (ABDA) | `0x2975200DA18f21bF8ecE746Bed6281e4B373D548` |
 | Demo token 1 (ABDB) | `0x5906F35B86A6AC0281A5655933eE37253aA42ef4` |
 | Owner / deployer | `0x3Be7fbBDbC73Fc4731D60EF09c4BA1A94DC58E41` |
@@ -24,8 +24,10 @@ The hook address encodes its permissions in its low bits: `0x…a0c0 & 0x3FFF = 
 without it the PoolManager would silently discard every fee the hook computes, so
 `_beforeInitialize` rejects any other configuration outright.
 
-> Two earlier hooks (`0xFd99…a0c0`, `0xea0e…a0c0`) are still on chain and should be ignored. They
-> carry the defects described under [What the live deployment caught](#what-the-live-deployment-caught).
+> Earlier hooks (`0xFd99…a0c0`, `0xea0e…a0c0`, `0x1A73…A0c0`) are still on chain and should be
+> ignored. The first two carry the defects described under
+> [What the live deployment caught](#what-the-live-deployment-caught); the third predates cross-pool
+> immunity.
 
 ---
 
@@ -46,7 +48,7 @@ a calm regime. **Zero of those 26 swaps were flagged.**
 
 ## A real sandwich, caught
 
-All three legs in **block 59767385**.
+All three legs in **block 59892284**.
 
 | leg | signal | penalty | tx |
 |---|---|---|---|
@@ -56,6 +58,24 @@ All three legs in **block 59767385**.
 
 The attacker's exit pays **16.7x** the base fee, paid to the pool's LPs through the native
 dynamic-fee override. The victim pays nothing extra.
+
+## Cross-pool immunity, proven live
+
+Two addresses quoted against **pool B**, which has never seen either of them, for an identical
+0.1 token0 swap:
+
+| | signal | fee |
+|---|---|---|
+| `0x00000000…dEaD` — never attacked | `None` | **0.30%** |
+| `0xc2Faf652…5b35` — sandwiched pool A | `CrossPoolMemory` | **0.80%** |
+
+The only difference is one confirmed `SandwichExit` in
+[block 59892284](https://sepolia.uniscan.xyz/block/59892284), **in pool A**. Before that attack both
+addresses quoted identically at 0.30% with an empty record — captured on chain before the sandwich
+ran, precisely so the comparison is a measurement rather than an assertion.
+
+The surcharge observed was `4994` against a `5000` step: one confirmed exit, decayed by the six
+blocks elapsed between the attack and the quote. It reaches exactly zero at 50,000 blocks.
 
 ### Negative results, kept on purpose
 
@@ -67,6 +87,12 @@ A detector that only ever gets shown its hits proves nothing.
   transaction.
 - **Legs in one block but the victim ordered last** (block 59766707): also `SizeAnomaly`. Also
   correct — with no third party *between* the two legs it is a round trip, not a sandwich.
+- **Sequencers pack consecutive nonces adjacently.** The attacker's two legs use consecutive nonces
+  from one account, so an evenly spaced publish reliably produced front-run → exit → victim, with
+  nobody in between — a round trip the detector correctly refused to call a sandwich. It took an
+  asymmetric stagger (victim at +50ms, exit held to +450ms) to get a third party ordered between the
+  legs while all three still landed in one block. Three attempts were needed for the run that
+  counted, and the two that missed are as much a part of the record as the one that hit.
 
 ---
 
@@ -146,6 +172,8 @@ reports the actual blocks and states plainly whether the strong detector fired.
 
 ## Known limitations
 
+- **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
+  the record. This raises the cost of sandwiching across pools; it does not eliminate it.
 - **The statistical detector can be desensitised.** An attacker who repeatedly trades large sizes
   drags the mean and deviation upward, widening "normal" — visible above, where the threshold rose
   from 0.14% to 1.57% across the demo runs. At `alpha = 1/16` this costs on the order of 16 swaps
