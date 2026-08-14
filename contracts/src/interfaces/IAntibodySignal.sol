@@ -26,7 +26,12 @@ interface IAntibodySignal {
         ///      also catching legitimate same-block arbitrage.
         BlockReversal,
         /// @dev Statistical: size relative to liquidity fell outside this pool's own trailing band.
-        SizeAnomaly
+        SizeAnomaly,
+        /// @dev Carried: this address has a confirmed sandwich exit against it in some pool this
+        ///      hook serves, recent enough to still be priced here. The memory is held against the
+        ///      trader rather than the pool, so it follows them across pools — and it decays, so it
+        ///      is a fading surcharge rather than a blacklist.
+        CrossPoolMemory
     }
 
     /// @notice Emitted when a swap is assessed as toxic and a penalty is applied.
@@ -66,4 +71,10 @@ interface IAntibodySignal {
 
     /// @notice Whether this pool has observed enough flow for the statistical detector to be live.
     function isCalibrated(PoolId poolId) external view returns (bool);
+
+    /// @notice Emitted when a trader's cross-pool record changes.
+    /// @param trader The transaction submitter a confirmed sandwich exit was attributed to.
+    /// @param confirmedExits Running count, held against the trader rather than any single pool.
+    /// @param poolId The pool the exit happened in — every other pool now prices it too.
+    event ImmunityRecorded(address indexed trader, uint32 confirmedExits, PoolId indexed poolId);
 }

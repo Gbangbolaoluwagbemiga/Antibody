@@ -50,16 +50,26 @@ contract InspectScript is BaseScript {
 
         console.log("=== what a trade would pay right now ===");
 
-        (IAntibodySignal.Signal s1, uint24 f1,,) = hook.quote(poolId, bystander, true, 0.1 ether);
-        console.log("  ordinary 0.1 swap, fresh address -> signal/fee:", uint8(s1), f1);
+        // Each quote is scoped so its temporaries are released; without this the function's
+        // locals exceed the EVM stack.
+        {
+            (IAntibodySignal.Signal s, uint24 f,,) = hook.quote(poolId, bystander, true, 0.1 ether);
+            console.log("  ordinary 0.1 swap, fresh address -> signal/fee:", uint8(s), f);
+        }
+        {
+            (IAntibodySignal.Signal s, uint24 f,,) = hook.quote(poolId, bystander, true, 2 ether);
+            console.log("  oversized 2.0 swap, fresh address -> signal/fee:", uint8(s), f);
+        }
+        {
+            (IAntibodySignal.Signal s, uint24 f,,) = hook.quote(poolId, attacker, false, 2 ether);
+            console.log("  attacker reversing position     -> signal/fee:", uint8(s), f);
+        }
+        {
+            (uint32 exits, uint32 lastBlock) = hook.immunity(attacker);
+            console.log("  attacker cross-pool record: exits / lastBlock:", exits, lastBlock);
+        }
 
-        (IAntibodySignal.Signal s2, uint24 f2,,) = hook.quote(poolId, bystander, true, 2 ether);
-        console.log("  oversized 2.0 swap, fresh address -> signal/fee:", uint8(s2), f2);
-
-        (IAntibodySignal.Signal s3, uint24 f3,,) = hook.quote(poolId, attacker, false, 2 ether);
-        console.log("  attacker reversing position     -> signal/fee:", uint8(s3), f3);
-
-        console.log("  (signal: 0=None 1=SandwichExit 2=BlockReversal 3=SizeAnomaly)");
+        console.log("  (signal: 0=None 1=SandwichExit 2=BlockReversal 3=SizeAnomaly 4=CrossPoolMemory)");
         console.log("  (fee is hundredths of a bip: 3000 = 0.30%, 50000 = 5.00%)");
     }
 }
