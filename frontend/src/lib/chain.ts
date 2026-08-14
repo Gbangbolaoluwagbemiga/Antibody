@@ -228,3 +228,60 @@ export async function watchLeg(role: string, tx: `0x${string}`): Promise<LegResu
 
   return { role, tx, block: Number(receipt.blockNumber), signal, penalty };
 }
+
+const CONSTANTS_ABI = [
+  { type: "function", name: "DECAY_WINDOW", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
+  { type: "function", name: "MAX_TOTAL_FEE", stateMutability: "view", inputs: [], outputs: [{ type: "uint24" }] },
+  { type: "function", name: "IMMUNITY_WINDOW", stateMutability: "view", inputs: [], outputs: [{ type: "uint32" }] },
+  { type: "function", name: "IMMUNITY_STEP", stateMutability: "view", inputs: [], outputs: [{ type: "uint24" }] },
+  { type: "function", name: "MAX_REMEMBERED_EXITS", stateMutability: "view", inputs: [], outputs: [{ type: "uint32" }] },
+  { type: "function", name: "baseFee", stateMutability: "view", inputs: [], outputs: [{ type: "uint24" }] },
+  { type: "function", name: "k", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
+  { type: "function", name: "minSamples", stateMutability: "view", inputs: [], outputs: [{ type: "uint32" }] },
+] as const;
+
+export type HookConstants = {
+  decayWindow: number;
+  maxTotalFee: number;
+  immunityWindow: number;
+  immunityStep: number;
+  maxRememberedExits: number;
+  baseFee: number;
+  k: number;
+  minSamples: number;
+};
+
+/**
+ * Read the hook's own parameters rather than hardcoding them in the page.
+ *
+ * If a number is displayed as a property of the contract, it should come from the contract. Copies
+ * drift, and a demo that quietly disagrees with the chain it claims to describe is worse than one
+ * that shows nothing.
+ */
+export async function fetchConstants(hook: `0x${string}`): Promise<HookConstants> {
+  const call = <T>(functionName: string) =>
+    client.readContract({ address: hook, abi: CONSTANTS_ABI, functionName: functionName as never }) as Promise<T>;
+
+  const [decayWindow, maxTotalFee, immunityWindow, immunityStep, maxRememberedExits, baseFee, k, minSamples] =
+    await Promise.all([
+      call<number>("DECAY_WINDOW"),
+      call<number>("MAX_TOTAL_FEE"),
+      call<number>("IMMUNITY_WINDOW"),
+      call<number>("IMMUNITY_STEP"),
+      call<number>("MAX_REMEMBERED_EXITS"),
+      call<number>("baseFee"),
+      call<number>("k"),
+      call<number>("minSamples"),
+    ]);
+
+  return {
+    decayWindow: Number(decayWindow),
+    maxTotalFee: Number(maxTotalFee),
+    immunityWindow: Number(immunityWindow),
+    immunityStep: Number(immunityStep),
+    maxRememberedExits: Number(maxRememberedExits),
+    baseFee: Number(baseFee),
+    k: Number(k),
+    minSamples: Number(minSamples),
+  };
+}

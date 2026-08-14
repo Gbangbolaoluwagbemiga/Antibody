@@ -2,6 +2,8 @@ import seed from "../data/history.json";
 import type { History } from "../lib/types";
 import { BaselineChart } from "../components/BaselineChart";
 import { Reveal } from "../components/motion";
+import { TimeWeighted } from "../components/TimeWeighted";
+import { RoutingSignal } from "../components/RoutingSignal";
 
 const H = seed as unknown as History;
 
@@ -47,6 +49,29 @@ export function How() {
             α = 1/16 as a bit-shift, so there is no division. The whole learning system is two
             packed storage slots per pool.
           </p>
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel">
+          <h2>Time-weighted, without pretending to delay anything</h2>
+          <p className="sub">
+            A hook cannot pause, queue or reorder a swap — so "time-weighted execution" cannot mean a
+            delay, and claiming otherwise would ship a callback that doesn't do what it says. What it
+            can mean is that temporal clustering costs money. Hover a bar.
+          </p>
+          <TimeWeighted hook={H.hook as `0x${string}`} />
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel">
+          <h2>The signal, for whoever wants it</h2>
+          <p className="sub">
+            Flagged flow is published as a typed signal any router can consume — advisory, never
+            blocking. Antibody emits it and stops there.
+          </p>
+          <RoutingSignal />
         </section>
       </Reveal>
 

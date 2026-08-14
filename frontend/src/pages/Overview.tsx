@@ -2,6 +2,7 @@ import seed from "../data/history.json";
 import type { History, Point } from "../lib/types";
 import { TwoPools } from "../components/TwoPools";
 import { Immunity } from "../components/Immunity";
+import { Categories } from "../components/Categories";
 import { Ticker, Reveal } from "../components/motion";
 import { Link } from "react-router-dom";
 
@@ -115,6 +116,18 @@ export function Overview() {
           </p>
         </section>
       </Reveal>
+      <Reveal>
+        <section className="panel">
+          <h2>What this claims, and where to check it</h2>
+          <p className="sub">
+            Four of the five UHI10 theme categories, each pointing at the thing that backs it. The
+            fifth is listed as deliberately skipped rather than quietly omitted — a claimed category
+            with nothing behind it is worse than not claiming it.
+          </p>
+          <Categories />
+        </section>
+      </Reveal>
+
     </>
   );
 }
