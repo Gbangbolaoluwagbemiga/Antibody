@@ -70,6 +70,20 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     uint32 public constant MIN_SAMPLE_FLOOR = 8;
     uint32 public constant MAX_SAMPLE_FLOOR = 1_000;
 
+    /// @notice How long a confirmed sandwich exit keeps costing its author, across every pool.
+    /// @dev ~14 hours at Unichain's ~1s blocks. Long enough that moving to a fresh pool inside one
+    ///      trading session does not shake it off; short enough that it is unmistakably memory
+    ///      rather than a ban. Nothing here is owner-settable.
+    uint32 public constant IMMUNITY_WINDOW = 50_000;
+
+    /// @notice Surcharge per confirmed exit, before decay.
+    uint24 public constant IMMUNITY_STEP = 5_000; // 0.50%
+
+    /// @notice Confirmed exits beyond this stop compounding.
+    /// @dev A bound is not politeness. Without it the surcharge grows without limit and the design
+    ///      becomes an unbounded punishment, which is exactly what the fee ceiling exists to stop.
+    uint32 public constant MAX_REMEMBERED_EXITS = 4;
+
     /// @notice Blocks over which the recency surcharge decays to nothing.
     /// @dev The surcharge halves each block, so it is already negligible well before this bound;
     ///      the explicit window makes "zero after 8 blocks" a testable statement rather than an
@@ -104,6 +118,16 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         bool lastZeroForOne;
         address lastTrader;
     }
+
+    /// @notice What a trader carries with them, independent of any pool.
+    /// @dev Held against the address rather than the pool, which is the entire point: a per-pool
+    ///      baseline can be escaped by moving to a pool that has never seen you.
+    struct Immunity {
+        uint32 confirmedExits;
+        uint32 lastFlaggedBlock;
+    }
+
+    mapping(address => Immunity) public immunity;
 
     mapping(PoolId => Baseline) public baselines;
     mapping(PoolId => PoolLastSwap) public poolLastSwap;
@@ -187,6 +211,11 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
             emit ToxicFlowDetected(poolId, _trader(), signal, ratio, thresholdScore, penalty);
         }
 
+        // `afterSwap` needs to know what was concluded here in order to record a confirmed exit.
+        // Same transaction, so transient storage is the right tool — unlike the cross-transaction
+        // detection above, which cannot use it.
+        _setTransientSignal(poolId, uint8(signal));
+
         return (BaseHook.beforeSwap.selector, BeforeSwapDeltaLibrary.ZERO_DELTA, fee | LPFeeLibrary.OVERRIDE_FEE_FLAG);
     }
 
@@ -226,6 +255,8 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
 
         poolLastSwap[poolId] =
             PoolLastSwap({lastBlock: uint32(block.number), lastZeroForOne: params.zeroForOne, lastTrader: trader});
+
+        _recordConfirmedExit(poolId, trader);
 
         emit BaselineUpdated(
             poolId,
@@ -280,8 +311,19 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         // Catches an attacker who splits the legs across two EOAs. Weaker, because honest
         // same-block arbitrage looks identical — so it draws half the penalty, never the maximum.
         if (pl.lastBlock == uint32(block.number) && pl.lastZeroForOne != zeroForOne && pl.lastTrader != trader) {
-            return (IAntibodySignal.Signal.BlockReversal, (MAX_TOTAL_FEE - baseFee) / 2, thresholdScore);
+            uint24 half = (MAX_TOTAL_FEE - baseFee) / 2;
+            uint24 withCarry = half + _immunitySurcharge(trader);
+            return (
+                IAntibodySignal.Signal.BlockReversal,
+                withCarry > MAX_TOTAL_FEE - baseFee ? MAX_TOTAL_FEE - baseFee : withCarry,
+                thresholdScore
+            );
         }
+
+        // Carried across pools. Added to whatever this pool concluded locally, because a known
+        // sandwicher making an otherwise unremarkable trade is precisely the case a per-pool
+        // baseline cannot see.
+        uint24 carried = _immunitySurcharge(trader);
 
         // ── Signal 3: statistical. Suppressed entirely until the pool has enough history.
         // A baseline with no data has no opinion; asserting one anyway is exactly the
@@ -300,11 +342,17 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
             // was never applied (observed on-chain at 70500 against a 47000 ceiling). That event
             // is the public signal this hook exists to publish, and a router or a dashboard
             // consuming it would have been reading a number the chain never charged.
+            total += carried;
             return (
                 IAntibodySignal.Signal.SizeAnomaly,
                 total > ceiling ? ceiling : uint24(total),
                 thresholdScore
             );
+        }
+
+        // Nothing local fired, but the trader arrived with history.
+        if (carried > 0) {
+            return (IAntibodySignal.Signal.CrossPoolMemory, carried, thresholdScore);
         }
 
         return (IAntibodySignal.Signal.None, 0, thresholdScore);
@@ -321,6 +369,44 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         uint256 elapsed = block.number - uint256(tr.lastBlock);
         if (elapsed >= DECAY_WINDOW) return 0;
         return uint24(((MAX_TOTAL_FEE - baseFee) / 2) >> elapsed);
+    }
+
+    /// @notice Write the cross-pool record, if this swap was a confirmed sandwich exit.
+    /// @dev Extracted from `_afterSwap` because inlining it pushed that function past the EVM's
+    ///      stack limit. A confirmed exit is the only thing that earns a record: a size anomaly is
+    ///      not evidence of sandwiching, and treating it as such would let ordinary large traders
+    ///      accumulate a surcharge for doing nothing wrong.
+    function _recordConfirmedExit(PoolId poolId, address trader) private {
+        if (_getTransientSignal(poolId) != uint8(IAntibodySignal.Signal.SandwichExit)) return;
+
+        Immunity memory im = immunity[trader];
+        unchecked {
+            if (im.confirmedExits < type(uint32).max) im.confirmedExits += 1;
+        }
+        im.lastFlaggedBlock = uint32(block.number);
+        immunity[trader] = im;
+
+        emit ImmunityRecorded(trader, im.confirmedExits, poolId);
+    }
+
+    /// @notice What this trader's confirmed sandwich history costs them here, right now.
+    /// @dev Linear decay to exactly zero at `IMMUNITY_WINDOW`. Decay is the property that keeps
+    ///      this a fading surcharge rather than a blacklist — a permanent mark would be a
+    ///      censorship surface and a thing worth capturing. Anyone can age out of it by not
+    ///      sandwiching for a while, and no owner can extend, clear, or target it.
+    function _immunitySurcharge(address trader) private view returns (uint24) {
+        Immunity memory im = immunity[trader];
+        if (im.confirmedExits == 0) return 0;
+
+        uint256 elapsed = block.number - uint256(im.lastFlaggedBlock);
+        if (elapsed >= IMMUNITY_WINDOW) return 0;
+
+        uint256 remembered = im.confirmedExits > MAX_REMEMBERED_EXITS ? MAX_REMEMBERED_EXITS : im.confirmedExits;
+        uint256 full = remembered * IMMUNITY_STEP;
+        uint256 decayed = (full * (IMMUNITY_WINDOW - elapsed)) / IMMUNITY_WINDOW;
+
+        uint24 ceiling = MAX_TOTAL_FEE - baseFee;
+        return decayed > ceiling ? ceiling : uint24(decayed);
     }
 
     function _thresholdOf(Baseline memory b) private view returns (uint256) {
@@ -405,6 +491,24 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
 
     function _transientSlot(PoolId poolId) private pure returns (bytes32) {
         return keccak256(abi.encode("antibody.tickBefore", poolId));
+    }
+
+    function _signalSlot(PoolId poolId) private pure returns (bytes32) {
+        return keccak256(abi.encode("antibody.signal", poolId));
+    }
+
+    function _setTransientSignal(PoolId poolId, uint8 signal) private {
+        bytes32 slot = _signalSlot(poolId);
+        assembly ("memory-safe") {
+            tstore(slot, signal)
+        }
+    }
+
+    function _getTransientSignal(PoolId poolId) private view returns (uint8 signal) {
+        bytes32 slot = _signalSlot(poolId);
+        assembly ("memory-safe") {
+            signal := tload(slot)
+        }
     }
 
     function _setTransientTick(PoolId poolId, int24 tick) private {
