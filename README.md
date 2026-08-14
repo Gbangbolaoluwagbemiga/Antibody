@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 47 passing tests
+Deployed on **Unichain Sepolia** · 55 passing tests
 
 ---
 
@@ -38,7 +38,7 @@ hashes and [ARCHITECTURE.md](ARCHITECTURE.md) for the full design.
 
 ## Caught in the wild
 
-A real sandwich, all three legs in **block 59767385** on Unichain Sepolia:
+A real sandwich, all three legs in **block 59892284** on Unichain Sepolia:
 
 | leg | signal | penalty |
 |---|---|---|
@@ -65,6 +65,28 @@ The victim's trade here was sized inside the calibrated band on purpose, so the 
 available was small. The deterrent is that the cost scales with the *attacker's own leg size*, not
 with how much they manage to extract.
 
+## Attack one pool, every pool remembers
+
+A per-pool baseline has an obvious hole: attack pool A, get priced, move to pool B. So a confirmed
+`SandwichExit` writes a record against the **trader**, held by the hook rather than by any pool.
+
+Two addresses quoted against **pool B — which has never seen either of them** — for the same swap:
+
+| | signal | fee |
+|---|---|---|
+| never attacked anything | `None` | **0.30%** |
+| sandwiched pool A | `CrossPoolMemory` | **0.80%** |
+
+2.7× the fee, in a pool where neither address has ever traded. The difference is one confirmed
+sandwich exit in [block 59892284](https://sepolia.uniscan.xyz/block/59892284) — in a *different pool*.
+
+The surcharge is 0.50% per confirmed exit, compounds to a bound of four, and **decays linearly to
+exactly zero over 50,000 blocks** (~14 hours). Decay is not a softening — it is what keeps this
+memory rather than a ban. A permanent mark is a blacklist, which is a censorship surface and a
+governance target. Fading means the worst case is a temporary surcharge anyone can age out of by not
+sandwiching, the swap always executes, the 5% ceiling always binds, and no owner can extend, clear,
+or target any of it.
+
 ## The baseline teaches itself
 
 | after | swaps seen | mean | deviation | threshold |
@@ -85,6 +107,7 @@ consistent flow arrives.
 | `SandwichExit` | same trader, same block, opposite direction — **and a third party traded in between** | structural | maximum |
 | `BlockReversal` | pool reversed direction in-block under a *different* address | catches multi-EOA attackers; honest arbitrage looks the same | half |
 | `SizeAnomaly` | size-to-liquidity outside the pool's own `μ + kδ` band | graduated by distance past the band | proportional + recency surcharge |
+| `CrossPoolMemory` | a confirmed sandwich exit in *any* pool this hook serves, still within the decay window | carried, not local | 0.50% per exit, decaying to zero |
 
 Structural signals need no history and work from a pool's first block. The statistical signal is
 suppressed until the pool has earned an opinion.
@@ -130,7 +153,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             47 tests
+  test/                             55 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
@@ -177,6 +200,8 @@ Full account, including the two negative results kept deliberately, in [DEPLOYME
   baseline.
 - **`SizeAnomaly` does not distinguish attacker from victim.** A sandwich victim making an unusually
   large trade pays the anomaly fee too. Only the structural detectors tell the two apart.
+- **Cross-pool memory is keyed on `tx.origin`**, so a determined attacker rotates addresses. It
+  raises the cost of sandwiching across pools; it does not eliminate it.
 - Identity is `tx.origin`, a heuristic grouping key and never an authorization check. Account-
   abstraction bundles don't resolve to a stable identity; `BlockReversal` covers that gap at the
   pool level.
