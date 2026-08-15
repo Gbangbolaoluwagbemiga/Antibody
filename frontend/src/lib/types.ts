@@ -22,17 +22,8 @@ export type History = {
   sandwich: Sandwich;
   poolA: PoolMeta;
   poolB: PoolMeta;
-  immunity: {
-    window: number;
-    step: number;
-    maxRemembered: number;
-    attacker: string;
-    attackBlock: number;
-    beforeFee: number;
-    afterFee: number;
-    strangerFee: number;
-    confirmedExits: number;
-  };
+  vaccination: VaccinationMeta;
+  immunity: ImmunityMeta;
 };
 
 export type Leg = {
@@ -60,4 +51,34 @@ export type PoolMeta = {
   tickSpacing: number;
   regime: string;
   points?: Point[];
+};
+
+export type VaccinationMeta = {
+  donor: string;
+  recipient: string;
+  block: number;
+  tx: string;
+  threshold: number;
+  swapsObservedAtBirth: number;
+};
+
+/**
+ * Cross-pool memory, as recorded at the time of the attack.
+ *
+ * The fee figures here are the values observed when the evidence was captured. The Immunity panel
+ * re-reads both live rather than displaying these, so a viewer sees the memory as it stands now —
+ * including after it has decayed, which is the honest thing for it to do.
+ */
+export type ImmunityMeta = {
+  attacker: string;
+  attackBlock: number;
+  confirmedExits: number;
+  /** Blocks over which the memory fades to nothing. Read from the contract. */
+  window: number;
+  step: number;
+  maxRemembered: number;
+  /** Captured at attack time, for the record. The panel prefers live reads. */
+  strangerFee: number;
+  attackerFee: number;
+  poolNeverSaw: string;
 };

@@ -3,6 +3,7 @@ import type { History, Point } from "../lib/types";
 import { TwoPools } from "../components/TwoPools";
 import { Immunity } from "../components/Immunity";
 import { Categories } from "../components/Categories";
+import { Vaccination } from "../components/Vaccination";
 import { Ticker, Reveal } from "../components/motion";
 import { Link } from "react-router-dom";
 
@@ -58,7 +59,7 @@ export function Overview() {
                 accent: "var(--series-threshold)",
                 points: H.points as Point[],
                 story:
-                  "Saw steady flow, then absorbed a sandwich attack. Its band widened to account for what it had just experienced.",
+                  "Earned its baseline from scratch over 26 swaps, then absorbed a sandwich attack. Its band widened to account for what it had just experienced.",
               },
               {
                 label: "Pool B",
@@ -67,7 +68,7 @@ export function Overview() {
                 accent: "var(--series-mean)",
                 points: (H.poolB.points ?? []) as Point[],
                 story:
-                  "Saw only consistent flow, ten times larger per swap. Its band stayed tight because nothing surprised it.",
+                  "Opened with pool A's baseline inherited — protected before it had traded once. Its own flow, ten times larger per swap, then moved the band to where it actually belongs.",
               },
             ]}
           />
@@ -116,6 +117,28 @@ export function Overview() {
           </p>
         </section>
       </Reveal>
+      <Reveal>
+        <section className="panel">
+          <h2>A new pool is not defenceless</h2>
+          <p className="sub">
+            A learned threshold has an obvious hole, and publishing the design is what makes it
+            targetable: the detector stays silent until a pool has history, so an attacker waits for
+            a fresh pool. A pool trading a pair an established sibling already characterised does
+            not have to wait — it opens with that sibling's baseline.
+          </p>
+          <Vaccination
+            donor={H.vaccination.donor}
+            recipient={H.vaccination.recipient}
+            block={H.vaccination.block}
+            tx={H.vaccination.tx}
+            threshold={H.vaccination.threshold}
+            baseFee={H.baseFee}
+            unprotectedFee={H.baseFee}
+            protectedFee={H.maxTotalFee}
+          />
+        </section>
+      </Reveal>
+
       <Reveal>
         <section className="panel">
           <h2>What this claims, and where to check it</h2>
