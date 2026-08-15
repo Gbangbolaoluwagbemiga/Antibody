@@ -199,10 +199,33 @@ contract AntibodyVaccinationTest is BaseTest {
         swapRouter.swapExactTokensForTokens(amountIn, 0, zeroForOne, key, "", who, block.timestamp + 1);
     }
 
+    /// @dev Builds a donor that genuinely qualifies: enough observed swaps, enough *distinct*
+    ///      addresses, and enough age. Calibrating with one address no longer confers anything —
+    ///      that was the Sybil hole, and this helper models the honest case rather than routing
+    ///      around the gate.
     function _calibrate(PoolKey memory key) internal {
-        for (uint256 i = 0; i < hook.minSamples() + 3; i++) {
-            vm.roll(block.number + 1);
-            _swap(key, honest, true, TYPICAL);
+        uint256 traders = hook.MIN_DONOR_TRADERS() + 1;
+        uint256 perTrader = (hook.minSamples() + 3) / traders + 1;
+
+        for (uint256 t = 0; t < traders; t++) {
+            address trader = address(uint160(uint256(keccak256(abi.encode("calibrator", t)))));
+            _fundOne(trader);
+            for (uint256 i = 0; i < perTrader; i++) {
+                vm.roll(block.number + 1);
+                _swap(key, trader, true, TYPICAL);
+            }
+        }
+
+        // Age is the qualification an attacker cannot manufacture, so the honest path waits too.
+        vm.roll(block.number + hook.MIN_DONOR_AGE());
+    }
+
+    function _fundOne(address who) internal {
+        for (uint256 i = 0; i < 4; i++) {
+            Currency c = [c0, c1, other0, other1][i];
+            MockERC20(Currency.unwrap(c)).mint(who, 5_000_000e18);
+            vm.prank(who);
+            MockERC20(Currency.unwrap(c)).approve(address(swapRouter), type(uint256).max);
         }
     }
 }
