@@ -228,6 +228,39 @@ the trader intended, the middle trade pushed price the way their entry already h
 against it — that is extraction by its economics, and intent is not observable on chain. An
 arbitrageur who closes a loop through one pool across intervening same-direction flow will pay.
 
+## What happens to an honest arbitrageur
+
+Every attack demonstration here uses a deliberate attacker, which proves the mechanism works on the
+case it was built for and says nothing about the case it wasn't. So this was run against the live
+deployment with a funded address behaving like a legitimate multi-pool arbitrageur, and the verdict
+read off the hook rather than argued from tests.
+
+`script/demo/honest-arbitrageur.sh` reproduces it.
+
+**Cross-pool arbitrage is not flagged.** Three rounds — buy A / sell B, then the reverse, then an
+immediate repeat — all with both legs landing in the *same block*, published in parallel
+specifically so the easy split-block case could not be mistaken for the answer. Result: zero
+confirmed exits recorded, and the arbitrageur pays the 0.30% base fee in both pools afterwards.
+Each pool sees one leg in one direction, so no same-trader reversal exists for the structural
+detector to find.
+
+**A same-pool round trip is flagged, and that is deliberate.** When the same address opened and
+closed a position in one pool with a third party's same-direction trade in between, it was recorded
+as a confirmed exit. Whatever was intended, the middle trade pushed price the way the entry already
+had and the position closed against it — that is the sandwich payoff by its economics, and intent
+is not observable on chain. A trade running the *other* way does not trigger it, because there the
+trader lost to the middle trade rather than extracted from it.
+
+**The cost of being caught, measured.** After one such round trip the address paid **0.80% in a pool
+it had never traded**, against 0.30% for a clean address making the identical swap — 2.66x — and
+the same in the pool where it happened. That surcharge decays to nothing over the immunity window
+(~14 hours at these block times).
+
+So the honest statement is narrow: an arbitrageur working across pools is unaffected. An
+arbitrageur who closes a loop through a single pool across intervening same-direction flow is
+priced as an extractor, in every pool, until the memory decays. That is a real cost imposed on a
+possibly-legitimate actor, and it is the sharpest edge in the design.
+
 ## Known limitations
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
