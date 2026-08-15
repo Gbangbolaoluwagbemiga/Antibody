@@ -261,6 +261,70 @@ arbitrageur who closes a loop through a single pool across intervening same-dire
 priced as an extractor, in every pool, until the memory decays. That is a real cost imposed on a
 possibly-legitimate actor, and it is the sharpest edge in the design.
 
+## Questions a judge will ask
+
+### Why not just use a private RPC?
+
+Flashbots Protect and MEV-Blocker let a trader skip the public mempool and never be sandwiched at
+all, client-side, with no hook involved. For a trader who uses one, that is strictly better
+protection than Antibody offers, and pretending otherwise would be silly.
+
+Three things it does not do.
+
+It does not protect anyone who did not opt in. Private RPCs are per-trader and adoption is
+partial — the flow that arrives at a pool through a public route is exactly the flow that gets
+sandwiched, and that flow is not going away.
+
+It does not recover anything for liquidity providers. A private RPC prevents extraction from the
+trader; it does not turn attempted extraction into LP revenue. Antibody's penalty accrues through
+the pool's own fee growth, so a sandwich attempt against a protected pool pays the LPs. That is a
+different beneficiary, and it is the one that decides whether a pool is worth providing liquidity
+to.
+
+And it does not travel. Protection ends where the trader's RPC choice ends. Antibody's memory is
+held against the attacker at the pool level, so it applies to every trade that reaches the pool
+regardless of how it got there.
+
+The honest framing: these are complements, not substitutes. A trader on a private RPC plus a pool
+running Antibody is better off than either alone.
+
+### What happens when a genuinely new pair has no donor?
+
+It gets the full cold-start window with no mitigation. Inherited protection only helps a pool whose
+pair an established pool has already characterised — the first pool on a brand-new pair earns its
+baseline the hard way, exactly as before, and the statistical detector is silent for those first
+swaps.
+
+The structural detectors are live from swap one, so a sandwich is still caught during that window.
+What is missing is the size-anomaly layer. This is a real boundary of the mechanism rather than
+something waiting to be fixed, and no amount of inheritance closes it: the first pool on a pair has
+nothing to inherit from by definition.
+
+### If you can't upgrade, how do you fix a bug without resetting everything?
+
+This is the sharpest cost of the design and it deserves a straight answer rather than a dodge.
+
+The hook is immutable on purpose — no owner override, no proxy, no admin key that can change what a
+pool has learned. That is what makes "nobody configured these numbers" true rather than a claim
+about current intentions.
+
+The price is that a fix means a fresh deployment, and a fresh deployment starts every pool at zero.
+Baselines, shared memory, donor eligibility — all of it resets. The network effect that the whole
+pitch rests on is precisely the thing that does not survive an upgrade. During this build the
+contract was redeployed four times and each one discarded every pool's accumulated history, so this
+is not hypothetical.
+
+What makes it survivable rather than fatal: the state is derived, not owned. Nothing is lost that
+cannot be re-earned — a pool rebuilds its baseline in tens of swaps, and shared memory rebuilds as
+attacks recur. There are no user balances to migrate and no funds stranded, because the hook never
+holds any. A migration is slow and embarrassing, not destructive.
+
+What would make it genuinely better is a way for a new deployment to read the previous one's
+accumulated state — the same inheritance mechanism that already exists between pools, pointed at a
+prior contract instead of a sibling pool. That is a design I would want to build and have not, and
+claiming otherwise would be exactly the kind of unearned checkbox this project has already had to
+correct twice.
+
 ## Known limitations
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
