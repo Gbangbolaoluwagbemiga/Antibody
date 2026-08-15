@@ -10,8 +10,8 @@ Every address and transaction below is real and verifiable. Explorer: https://se
 
 | | |
 |---|---|
-| **AntibodyHook** | [`0xd460D0E03F4A136961468c57b8fE7e4E796060C0`](https://sepolia.uniscan.xyz/address/0xd460D0E03F4A136961468c57b8fE7e4E796060C0) |
-| Pool ID | `0xa0f0b04f36314bae0c8faab0614b735cb86101f38542b6d10d5978ec30fb1fab` |
+| **AntibodyHook** | [`0xc4Ea2A8690ff9b661CE6F7977968c544c00560c0`](https://sepolia.uniscan.xyz/address/0xc4Ea2A8690ff9b661CE6F7977968c544c00560c0) |
+| Pool ID | `0x567e46f26b3ffecb4a78bee5354c7a9794f65c70ddc9e25aa07538d68fa0f85e` |
 | Demo token 0 (ABDA) | `0x2975200DA18f21bF8ecE746Bed6281e4B373D548` |
 | Demo token 1 (ABDB) | `0x5906F35B86A6AC0281A5655933eE37253aA42ef4` |
 | Owner / deployer | `0x3Be7fbBDbC73Fc4731D60EF09c4BA1A94DC58E41` |
@@ -73,9 +73,9 @@ All three legs in **block 59892284**.
 
 | leg | signal | penalty | tx |
 |---|---|---|---|
-| front-run (attacker) | `SizeAnomaly` | +4.11% | [`0x6024ee3d…`](https://sepolia.uniscan.xyz/tx/0x6024ee3d7037f7d140f06da5e681bc0e6bf0805fb63de4879273fb9c40cc4269) |
-| **victim** | **none — not flagged** | **0** | [`0x6add1d94…`](https://sepolia.uniscan.xyz/tx/0x6add1d94591594a04c2c37211ae75d63a979d03c1eec3442bf1fe3deb76113f3) |
-| **exit (attacker)** | **`SandwichExit`** | **+4.70% (ceiling)** | [`0xdaf90907…`](https://sepolia.uniscan.xyz/tx/0xdaf9090742817557eca35887c0d09e99f506ecffc2aac2e4d8de57714684df7e) |
+| front-run (attacker) | `SizeAnomaly` | +4.11% | [`0x127c4c31…`](https://sepolia.uniscan.xyz/tx/0x127c4c31a83f633280f385b773c68d1b80925546db54023127d7814dc67c59c6) |
+| **victim** | **none — not flagged** | **0** | [`0x9864f5c9…`](https://sepolia.uniscan.xyz/tx/0x9864f5c9d6b4979047fbb01bd2f3b74a522bab6ca8872762a68004fdda0d7ce4) |
+| **exit (attacker)** | **`SandwichExit`** | **+4.70% (ceiling)** | [`0xc6de9989…`](https://sepolia.uniscan.xyz/tx/0xc6de9989c80a66f88bf980a4473d5ded1de70ba704ffee12b94378cdcfd24286) |
 
 The attacker's exit pays **16.7x** the base fee, paid to the pool's LPs through the native
 dynamic-fee override. The victim pays nothing extra.

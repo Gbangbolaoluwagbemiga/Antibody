@@ -613,5 +613,47 @@
   "strangerFee": 3000,
   "attackerFee": 7994,
   "poolNeverSaw": "0x29f798733ef907006884bf18b8bc631e2cb4a1a603455b97e1c15ca3d40f0f99"
+ },
+ "sandwich": {
+  "block": 59901084,
+  "baseFee": 3000,
+  "legs": [
+   {
+    "role": "front-run",
+    "actor": "attacker",
+    "amountIn": 2.0,
+    "amountOut": 1.7973012389869691,
+    "tokenIn": "t0",
+    "tokenOut": "t1",
+    "fee": 45475,
+    "tx": "0x127c4c31a83f633280f385b773c68d1b80925546db54023127d7814dc67c59c6"
+   },
+   {
+    "role": "victim",
+    "actor": "victim",
+    "amountIn": 0.1,
+    "amountOut": 0.0922421969469824,
+    "tokenIn": "t0",
+    "tokenOut": "t1",
+    "fee": 3000,
+    "tx": "0x9864f5c9d6b4979047fbb01bd2f3b74a522bab6ca8872762a68004fdda0d7ce4"
+   },
+   {
+    "role": "exit",
+    "actor": "attacker",
+    "amountIn": 2.0,
+    "amountOut": 2.0196731374896513,
+    "tokenIn": "t1",
+    "tokenOut": "t0",
+    "fee": 50000,
+    "tx": "0xc6de9989c80a66f88bf980a4473d5ded1de70ba704ffee12b94378cdcfd24286"
+   }
+  ],
+  "attackerNet": {
+   "t0": 0.019673,
+   "t1": -0.202699
+  },
+  "feesWithAntibody": 0.19095,
+  "feesAtBaseOnly": 0.012
  }
 }
