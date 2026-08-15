@@ -46,6 +46,27 @@ a calm regime. **Zero of those 26 swaps were flagged.**
 
 ---
 
+## Vaccination, proven on chain
+
+Pool B was created after pool A had characterised the pair. At the moment of creation, with **zero
+swaps ever observed**:
+
+| | |
+|---|---|
+| `vaccinated(poolB)` | **true** |
+| `isCalibrated(poolB)` | **true** |
+| threshold | **0.1429%** |
+| donor's threshold | **0.1429%** — identical |
+| `sampleCount` | 20 (`minSamples`, not the donor's 26) |
+
+A 2.0 swap quoted against it on its first block returns `SizeAnomaly` at the **5.00% ceiling**. The
+same swap against an unvaccinated fresh pool pays **0.30%**, because nothing is watching yet —
+a 16.7x difference on swap one.
+
+The sample count is deliberately the minimum rather than the donor's. Claiming the donor's count
+would assert swaps this pool never saw. `vaccinated` stays true permanently, so an integrator can
+always tell an inherited opinion from an earned one.
+
 ## A real sandwich, caught
 
 All three legs in **block 59892284**.

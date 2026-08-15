@@ -202,7 +202,7 @@ mapping(PoolId => mapping(address => TraderRecord)) traders;
 Every row is written **before** the code it covers. Every row maps to a specific claim in the pitch
 or a specific Orbitwork mistake.
 
-**Status: 55 passing, 0 failing.** Written before the code they cover, per the discipline section.
+**Status: 61 passing, 0 failing.** Written before the code they cover, per the discipline section.
 
 | # | Test | Proves | Orbitwork mistake | ✔ |
 |---|---|---|---|---|

@@ -4,9 +4,21 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 55 passing tests
+Deployed on **Unichain Sepolia** · 61 passing tests
 
 ---
+
+## Three layers
+
+| | closes the objection |
+|---|---|
+| **Earned immunity** — each pool computes its own threshold from its own flow | "your threshold is arbitrary" |
+| **Shared memory** — a confirmed sandwich follows the trader across every pool, and decays | "I'll just move to another pool" |
+| **Inherited protection** — a new pool opens with an established sibling's baseline | "new pools are defenceless" |
+
+The consequence, and the claim worth testing: **Antibody is the first MEV defence that gets stronger
+as more pools adopt it.** Every pool that runs it feeds the shared memory; every new pool inherits
+from the ones before it.
 
 ## The idea
 
@@ -153,7 +165,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             55 tests
+  test/                             61 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
