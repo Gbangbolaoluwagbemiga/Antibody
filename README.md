@@ -151,9 +151,13 @@ make the temporal clustering that sandwiching requires progressively expensive.
 
 Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
 
-## Routing signal
+## Routing signal (Hybrid Routing category)
 
-Flagged trades emit `ToxicFlowDetected`, and every swap emits `BaselineUpdated`. External routers
+Live on chain — `ToxicFlowDetected` fires on every flagged swap and `BaselineUpdated` on every
+swap, both consumable today at the deployed address. The interface is
+[`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol): two events plus
+`currentThreshold(poolId)`, `isCalibrated(poolId)` and `quote(...)`, which lets a router price a
+swap before sending it. External routers
 (CoW, Flashbots Protect) can consume these via [`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol)
 to route similar flow privately. Antibody publishes the signal and stops there — no router
 integration is attempted.
