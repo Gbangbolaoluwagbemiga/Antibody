@@ -191,6 +191,43 @@ reports the actual blocks and states plainly whether the strong detector fired.
 
 ---
 
+## Adversarial findings, and what changed
+
+Two holes found by tests written to attack the design rather than confirm it. Both were real, both
+are fixed, and the tests that proved them are now regression tests.
+
+### Donor eligibility was Sybil-able, and the slot was permanent
+
+`pairDonor` was written once, when the first pool on a pair was created, and never revisited. Pool
+creation is permissionless, and "earned" meant nothing more than twenty swaps having happened. So
+an attacker could create the first pool on a pair, trade against themselves twenty times at a size
+of their choosing, and every honest pool created afterwards would inherit a band wide enough that
+the anomaly detector never fired. **A test confirmed a 50x-typical trade paying base fee in the
+victim pool** — not a degraded defence, a disabled one.
+
+Qualification now costs breadth, time and history: a donor must have served `MIN_DONOR_TRADERS`
+distinct addresses, be at least `MIN_DONOR_AGE` blocks old, and hold an earned baseline. More
+importantly the slot is no longer permanent — a pool serving more distinct traders displaces the
+incumbent, so squatting is defeated by ordinary usage rather than by anything the hook must detect.
+
+**Residual risk, stated plainly:** an attacker willing to fund five addresses and wait ~90 minutes
+still qualifies. What they cannot do is *hold* the slot once a real pool exists. There is a test
+that asserts exactly this rather than claiming the attack is impossible.
+
+### A bystander was being convicted as a victim
+
+`SandwichExit` required a third party between the attacker's two legs, but did not care which way
+that third trade ran. A round trip closed across an *opposite*-direction trade was therefore
+recorded as a sandwich, when in fact the trader lost to that trade rather than extracted from it.
+
+The intervening trade must now run the same direction as the entry, which is the configuration
+where the sandwich payoff actually exists.
+
+**What deliberately still fires:** a round trip closed across a *same*-direction trade. Whatever
+the trader intended, the middle trade pushed price the way their entry already had and they closed
+against it — that is extraction by its economics, and intent is not observable on chain. An
+arbitrageur who closes a loop through one pool across intervening same-direction flow will pay.
+
 ## Known limitations
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
@@ -205,4 +242,4 @@ reports the actual blocks and states plainly whether the strong detector fired.
   makes sandwiching unprofitable, not impossible.
 - **Multi-EOA attackers** are caught by the weaker pool-level detector at half penalty, because
   same-block reversal under two addresses is indistinguishable from honest arbitrage.
-- **~34.7k gas** added to every swap, honest flow included.
+- **~37.3k gas** added to every swap, honest flow included.

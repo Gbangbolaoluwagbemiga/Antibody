@@ -90,6 +90,17 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     ///      artifact of integer shifting.
     uint8 public constant DECAY_WINDOW = 8;
 
+    /// @notice Distinct addresses a pool must have served before it can vaccinate another.
+    /// @dev Swap count alone is worthless as a qualification: one address trading against itself
+    ///      twenty times satisfies it for the price of gas. Distinct traders cost an attacker one
+    ///      funded address each, which is not expensive but is no longer free.
+    uint32 public constant MIN_DONOR_TRADERS = 5;
+
+    /// @notice Blocks a pool must exist before it can vaccinate another.
+    /// @dev Roughly 90 minutes at Unichain's ~1s blocks. Time is the one input an attacker cannot
+    ///      manufacture, and it prevents claiming a pair's donor slot in a single transaction.
+    uint32 public constant MIN_DONOR_AGE = 5_000;
+
     // ─────────────────────────────────────────────────────────────────────────────
     // Storage
     // ─────────────────────────────────────────────────────────────────────────────
@@ -139,6 +150,14 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     /// @dev Marked, and stays marked. A pool holding an opinion it did not earn is a different
     ///      thing from one that did, and an integrator who cannot tell them apart is being misled.
     mapping(PoolId => bool) public vaccinated;
+
+    /// @notice What a pool has actually earned, as opposed to how many swaps happened in it.
+    struct PoolQuality {
+        uint32 distinctTraders;
+        uint32 createdBlock;
+    }
+
+    mapping(PoolId => PoolQuality) public poolQuality;
 
     mapping(PoolId => Baseline) public baselines;
     mapping(PoolId => PoolLastSwap) public poolLastSwap;
@@ -210,8 +229,12 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         PoolId newPool = key.toId();
         PoolId donor = pairDonor[pair];
 
+        // Age is measured from here, and it is the one qualification an attacker cannot fabricate.
+        poolQuality[newPool].createdBlock = uint32(block.number);
+
         if (PoolId.unwrap(donor) == bytes32(0)) {
-            // First pool on this pair: nothing to inherit, and it becomes the future donor.
+            // First pool on this pair. It is the provisional donor, but that claim confers nothing
+            // until it qualifies, and it can be displaced by any pool that qualifies better.
             pairDonor[pair] = newPool;
             return BaseHook.beforeInitialize.selector;
         }
@@ -221,7 +244,7 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         // Only a pool that earned its baseline can confer one. Passing along an unearned opinion
         // would launder a guess into something that looks like evidence, which is precisely the
         // failure this project exists to remove.
-        if (d.sampleCount >= minSamples) {
+        if (_isEligibleDonor(donor)) {
             baselines[newPool] = Baseline({
                 ewmaSizeRatio: d.ewmaSizeRatio,
                 ewmaDeviation: d.ewmaDeviation,
@@ -299,6 +322,8 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
 
         baselines[poolId] = b;
 
+        _recordBreadth(key, poolId, trader);
+
         traderRecords[poolId][trader] = TraderRecord({
             lastBlock: uint32(block.number),
             lastZeroForOne: params.zeroForOne,
@@ -352,9 +377,18 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         // Unichain Sepolia before it was caught. `poolLastSwap` records the most recent swap in
         // this pool from any address, so "someone else went between my two legs" is exactly
         // `pl.lastTrader != trader` within the current block.
+        //
+        // The intervening trade must also run in the *same* direction as this trader's entry.
+        // That is what separates a victim from a bystander, and it is an economic distinction
+        // rather than a cosmetic one: a sandwich pays only when the trade in the middle pushes
+        // price the way the entry already pushed it. If the middle trade ran the other way, this
+        // trader lost to it rather than extracted from it, and calling that a sandwich is simply
+        // wrong. Found by an adversarial test for round-trip arbitrage, which the earlier rule
+        // convicted regardless of which way the trade between the legs went.
         if (
             tr.lastBlock == uint32(block.number) && tr.lastZeroForOne != zeroForOne
                 && pl.lastBlock == uint32(block.number) && pl.lastTrader != trader
+                && pl.lastZeroForOne == tr.lastZeroForOne
         ) {
             return (IAntibodySignal.Signal.SandwichExit, MAX_TOTAL_FEE - baseFee, thresholdScore);
         }
@@ -459,6 +493,60 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
 
         uint24 ceiling = MAX_TOTAL_FEE - baseFee;
         return decayed > ceiling ? ceiling : uint24(decayed);
+    }
+
+    /// @notice Whether a pool has earned the right to confer its baseline on a new one.
+    /// @dev The original gate was `sampleCount >= minSamples`, which an attacker satisfies by
+    ///      trading against themselves twenty times in a pool they seeded with dust. Because the
+    ///      donor slot was also permanent, whoever created the first pool on a pair owned it
+    ///      forever and could author the baseline every later pool would inherit — wide enough
+    ///      that the anomaly detector never fires. That is not a degraded defence, it is a
+    ///      disabled one, and it was found by an adversarial test rather than by reading the code.
+    ///
+    ///      Qualification now costs something in all three dimensions an attacker would have to
+    ///      fake: breadth (distinct addresses), time (pool age), and observed history.
+    /// @notice Count a pool's distinct traders, and hand the pair's donor slot to whichever pool
+    ///         serves the most of them.
+    /// @dev Extracted from `_afterSwap` because it pushed that function past the stack limit —
+    ///      worth noting rather than hiding, since the fix is structural and not cosmetic.
+    ///
+    ///      Both the count and the displacement check only run when an address appears in this
+    ///      pool for the first time, which is rare once a pool has warmed up. Reconsidering the
+    ///      donor on every swap would put extra reads in the hot path to answer a question whose
+    ///      input had not changed.
+    function _recordBreadth(PoolKey calldata key, PoolId poolId, address trader) private {
+        if (traderRecords[poolId][trader].lastBlock != 0) return;
+
+        uint32 breadth;
+        unchecked {
+            breadth = poolQuality[poolId].distinctTraders + 1;
+        }
+        poolQuality[poolId].distinctTraders = breadth;
+
+        bytes32 pair = keccak256(abi.encode(key.currency0, key.currency1));
+        PoolId incumbent = pairDonor[pair];
+
+        // The slot is no longer permanent. A pool serving more of the market than the incumbent
+        // takes over as the reference, so squatting the first pool on a pair buys nothing once
+        // real usage shows up.
+        if (
+            PoolId.unwrap(incumbent) != PoolId.unwrap(poolId)
+                && breadth > poolQuality[incumbent].distinctTraders
+        ) {
+            pairDonor[pair] = poolId;
+        }
+    }
+
+    function _isEligibleDonor(PoolId poolId) private view returns (bool) {
+        Baseline memory b = baselines[poolId];
+        PoolQuality memory q = poolQuality[poolId];
+
+        if (b.sampleCount < minSamples) return false;
+        if (q.distinctTraders < MIN_DONOR_TRADERS) return false;
+        if (q.createdBlock == 0) return false;
+        if (block.number - uint256(q.createdBlock) < MIN_DONOR_AGE) return false;
+
+        return true;
     }
 
     function _thresholdOf(Baseline memory b) private view returns (uint256) {

@@ -202,7 +202,7 @@ mapping(PoolId => mapping(address => TraderRecord)) traders;
 Every row is written **before** the code it covers. Every row maps to a specific claim in the pitch
 or a specific Orbitwork mistake.
 
-**Status: 61 passing, 0 failing.** Written before the code they cover, per the discipline section.
+**Status: 69 passing, 0 failing.** Written before the code they cover, per the discipline section.
 
 | # | Test | Proves | Orbitwork mistake | ✔ |
 |---|---|---|---|---|
@@ -226,8 +226,8 @@ or a specific Orbitwork mistake.
 | | Gas |
 |---|---|
 | Hookless swap, same pool shape | 44,061 |
-| Antibody swap | 78,729 |
-| **Overhead** | **34,668** |
+| Antibody swap | 81,339 |
+| **Overhead** | **37,278** |
 
 Three SSTOREs per swap — baseline, trader record, pool record — is the floor for cross-transaction
 detection, since transient storage cannot span a sandwich's three transactions. This is a real,

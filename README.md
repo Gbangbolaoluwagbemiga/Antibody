@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 61 passing tests
+Deployed on **Unichain Sepolia** · 69 passing tests
 
 ---
 
@@ -146,8 +146,8 @@ make the temporal clustering that sandwiching requires progressively expensive.
 | | gas |
 |---|---|
 | hookless swap | 44,061 |
-| Antibody swap | 78,729 |
-| **overhead** | **34,668** |
+| Antibody swap | 81,339 |
+| **overhead** | **37,278** |
 
 Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
 
@@ -165,7 +165,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             61 tests
+  test/                             69 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
