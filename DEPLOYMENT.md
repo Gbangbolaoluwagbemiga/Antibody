@@ -10,7 +10,7 @@ Every address and transaction below is real and verifiable. Explorer: https://se
 
 | | |
 |---|---|
-| **AntibodyHook** | [`0xc4Ea2A8690ff9b661CE6F7977968c544c00560c0`](https://sepolia.uniscan.xyz/address/0xc4Ea2A8690ff9b661CE6F7977968c544c00560c0) |
+| **AntibodyHook** | [`0x7BDeB74cDdf22d0FAfA5e323426fbD3bdCd8A0c0`](https://sepolia.uniscan.xyz/address/0x7BDeB74cDdf22d0FAfA5e323426fbD3bdCd8A0c0) |
 | Pool ID | `0x567e46f26b3ffecb4a78bee5354c7a9794f65c70ddc9e25aa07538d68fa0f85e` |
 | Demo token 0 (ABDA) | `0x2975200DA18f21bF8ecE746Bed6281e4B373D548` |
 | Demo token 1 (ABDB) | `0x5906F35B86A6AC0281A5655933eE37253aA42ef4` |
@@ -73,9 +73,9 @@ All three legs in **block 59892284**.
 
 | leg | signal | penalty | tx |
 |---|---|---|---|
-| front-run (attacker) | `SizeAnomaly` | +4.11% | [`0x127c4c31…`](https://sepolia.uniscan.xyz/tx/0x127c4c31a83f633280f385b773c68d1b80925546db54023127d7814dc67c59c6) |
-| **victim** | **none — not flagged** | **0** | [`0x9864f5c9…`](https://sepolia.uniscan.xyz/tx/0x9864f5c9d6b4979047fbb01bd2f3b74a522bab6ca8872762a68004fdda0d7ce4) |
-| **exit (attacker)** | **`SandwichExit`** | **+4.70% (ceiling)** | [`0xc6de9989…`](https://sepolia.uniscan.xyz/tx/0xc6de9989c80a66f88bf980a4473d5ded1de70ba704ffee12b94378cdcfd24286) |
+| front-run (attacker) | `SizeAnomaly` | +4.11% | [`0xdd453893…`](https://sepolia.uniscan.xyz/tx/0xdd453893a80f05cb5ea2e53ff64d410e2347f5e09e83d2f36d060385345ea50b) |
+| **victim** | **none — not flagged** | **0** | [`0x81ec9ac8…`](https://sepolia.uniscan.xyz/tx/0x81ec9ac8f90d3f6c8abb2dbb32835778cc76f78a06c183a8182a880d7c71ee47) |
+| **exit (attacker)** | **`SandwichExit`** | **+4.70% (ceiling)** | [`0xd01772e4…`](https://sepolia.uniscan.xyz/tx/0xd01772e430377bf51c9832f686b2e5e49fdf34e85f72c3efb9641424f41ecb16) |
 
 The attacker's exit pays **16.7x** the base fee, paid to the pool's LPs through the native
 dynamic-fee override. The victim pays nothing extra.
@@ -232,7 +232,14 @@ arbitrageur who closes a loop through one pool across intervening same-direction
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
   the record. This raises the cost of sandwiching across pools; it does not eliminate it.
-- **The statistical detector can be desensitised.** An attacker who repeatedly trades large sizes
+- **The statistical detector can be desensitised — and here is what that costs, measured.**
+  Across three consecutive attack runs on the live pool the learned threshold moved from
+  **0.1465% to 2.0357%**, a 14x widening, because the baseline absorbed the attacker's own
+  oversized trades as evidence about what this pool considers normal. The third run's front-run
+  drew a penalty of only 7,024 pips where the first drew 47,000 — the detector had partly adapted
+  to the attacker. This is the limitation working exactly as described rather than a surprise, and
+  it is the strongest argument for the structural detectors: `SandwichExit` still fired at the
+  ceiling on every run, because it consults no baseline at all. An attacker who repeatedly trades large sizes
   drags the mean and deviation upward, widening "normal" — visible above, where the threshold rose
   from 0.14% to 1.57% across the demo runs. At `alpha = 1/16` this costs on the order of 16 swaps
   of sustained penalty. It does **not** defeat sandwich detection: `SandwichExit` and
