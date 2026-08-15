@@ -3,7 +3,7 @@ import type { Sandwich } from "../lib/types";
 /**
  * What the sandwich actually cost, with Antibody and without it.
  *
- * Every figure is decoded from the PoolManager's own `Swap` events for block 59767385 — the
+ * Every figure is decoded from the PoolManager's own `Swap` events for the block in question — the
  * amounts and the fee the pool applied to each leg. Nothing is modelled. The counterfactual is the
  * one thing not measured, and it is deliberately the *narrowest* possible one: the same three
  * swaps, at the same sizes, paying the pool's 0.30% base fee instead of the fee Antibody set.
@@ -125,6 +125,14 @@ export function BeforeAfter({ data }: { data: Sandwich }) {
         </table>
       </div>
 
+      <p className="footnote">
+        Note the front-run paid the base fee. That is not a miss — it is this pool's statistical
+        detector having been desensitised by repeated attacks during testing, until its learned band
+        sat above the attack size. The entire difference above comes from the structural detector,
+        which consults no baseline and caught the exit at the ceiling regardless. It is the clearest
+        argument for having both layers, and it is why the limitation is documented rather than
+        hidden.
+      </p>
       <p className="footnote">
         Amounts and applied fees are decoded from the PoolManager's <code>Swap</code> events in block{" "}
         {data.block}. The counterfactual holds every variable fixed except the fee. Note the victim's
