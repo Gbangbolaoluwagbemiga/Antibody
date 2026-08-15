@@ -129,6 +129,17 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
 
     mapping(address => Immunity) public immunity;
 
+    /// @notice Best-characterised pool per token pair — the donor a new pool inherits from.
+    /// @dev Keyed on the currency pair rather than the full PoolKey: fee tier and tick spacing
+    ///      change the pool, not the asset's behaviour, and size-relative-to-liquidity is already
+    ///      normalised against each pool's own depth.
+    mapping(bytes32 => PoolId) public pairDonor;
+
+    /// @notice Pools whose opening baseline was inherited rather than observed.
+    /// @dev Marked, and stays marked. A pool holding an opinion it did not earn is a different
+    ///      thing from one that did, and an integrator who cannot tell them apart is being misled.
+    mapping(PoolId => bool) public vaccinated;
+
     mapping(PoolId => Baseline) public baselines;
     mapping(PoolId => PoolLastSwap) public poolLastSwap;
     mapping(PoolId => mapping(address => TraderRecord)) public traderRecords;
@@ -147,6 +158,9 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     // ─────────────────────────────────────────────────────────────────────────────
 
     event ParametersUpdated(uint8 k, uint32 minSamples, uint24 baseFee);
+
+    /// @notice A new pool opened with a baseline inherited from an established sibling.
+    event BaselineInherited(PoolId indexed poolId, PoolId indexed donor, uint256 thresholdScore);
 
     // ─────────────────────────────────────────────────────────────────────────────
 
@@ -181,8 +195,46 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     ///      PoolManager silently ignores the fee override and every penalty this hook computes
     ///      would be discarded — the hook would appear to work while doing nothing at all.
     ///      Failing at initialization is the only place this can be caught loudly.
-    function _beforeInitialize(address, PoolKey calldata key, uint160) internal view override returns (bytes4) {
+    function _beforeInitialize(address, PoolKey calldata key, uint160) internal override returns (bytes4) {
         if (!key.fee.isDynamicFee()) revert NotDynamicFeePool();
+
+        // ── Vaccination ──────────────────────────────────────────────────────────────────────
+        // Cold start is the most targetable hole in any learned-threshold design, and it is
+        // targetable *because* the design is documented: an attacker reads that the statistical
+        // detector stays silent until `minSamples`, then waits for a fresh pool.
+        //
+        // Refusing to have an opinion is right when there is nothing to base one on. A pool
+        // trading a pair an established sibling has already characterised is not in that
+        // position — so it opens with that sibling's baseline and is defended from swap one.
+        bytes32 pair = keccak256(abi.encode(key.currency0, key.currency1));
+        PoolId newPool = key.toId();
+        PoolId donor = pairDonor[pair];
+
+        if (PoolId.unwrap(donor) == bytes32(0)) {
+            // First pool on this pair: nothing to inherit, and it becomes the future donor.
+            pairDonor[pair] = newPool;
+            return BaseHook.beforeInitialize.selector;
+        }
+
+        Baseline memory d = baselines[donor];
+
+        // Only a pool that earned its baseline can confer one. Passing along an unearned opinion
+        // would launder a guess into something that looks like evidence, which is precisely the
+        // failure this project exists to remove.
+        if (d.sampleCount >= minSamples) {
+            baselines[newPool] = Baseline({
+                ewmaSizeRatio: d.ewmaSizeRatio,
+                ewmaDeviation: d.ewmaDeviation,
+                ewmaImpact: d.ewmaImpact,
+                // Enough to make the detector live, and no more. Claiming the donor's full sample
+                // count would assert experience this pool has not had.
+                sampleCount: minSamples,
+                lastBlock: uint32(block.number)
+            });
+            vaccinated[newPool] = true;
+            emit BaselineInherited(newPool, donor, _thresholdOf(baselines[newPool]));
+        }
+
         return BaseHook.beforeInitialize.selector;
     }
 
