@@ -200,14 +200,37 @@ picked by eye; every series carries a direct label and the same data is availabl
 
 ## What running it on a real chain caught
 
-Three defects the test suite had not, all now fixed and regression-tested. The most important:
+Five defects the original test suite had not, all fixed and regression-tested. Three came from
+running on a real chain; two came from tests written afterwards to attack the design rather than
+confirm it.
+
+### From the chain
+
+The most important:
 **an earlier build flagged 23 of 23 ordinary calibration swaps as sandwiches.** `SandwichExit` was
 defined as *same trader, same block, opposite direction* — which is also what a rebalancing market
 maker or a multi-hop route looks like. A sandwich is defined by its victim, so the rule now requires
 that a *different* address traded in between. The tests missed it because every helper advanced a
 block between swaps, so the same-block case never arose.
 
-Full account, including the two negative results kept deliberately, in [DEPLOYMENT.md](DEPLOYMENT.md).
+### From attacking it deliberately
+
+Once the design was working, a round of adversarial tests found two more.
+
+**Donor eligibility was Sybil-able, and the donor slot was permanent.** Pool creation is
+permissionless and "earned a baseline" meant nothing more than twenty swaps having happened — so
+one address could trade against itself, claim a pair's donor slot forever, and author a band wide
+enough that the detector never fired in any pool that inherited it. A test confirmed a 50x-typical
+trade paying base fee in the victim pool: not a degraded defence, a disabled one. Qualifying now
+costs breadth, time and history, and the slot is displaceable by a pool serving more of the market.
+
+**A bystander was being convicted as a victim.** `SandwichExit` required a third party between the
+two legs but ignored which way that trade ran, so a round trip closed across an *opposite*-direction
+trade was recorded as a sandwich — when the trader had lost to that trade rather than extracted from
+it. The intervening trade must now run the same direction as the entry.
+
+Full account, including the two negative results kept deliberately and the residual risk that
+remains after the Sybil fix, in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Known limitations
 
@@ -221,6 +244,16 @@ Full account, including the two negative results kept deliberately, in [DEPLOYME
 - Identity is `tx.origin`, a heuristic grouping key and never an authorization check. Account-
   abstraction bundles don't resolve to a stable identity; `BlockReversal` covers that gap at the
   pool level.
+- **Donor eligibility raises the cost of Sybil, it does not remove it.** An attacker willing to fund
+  `MIN_DONOR_TRADERS` addresses and wait `MIN_DONOR_AGE` blocks still qualifies. What they cannot do
+  is hold the slot — a pool serving more distinct traders displaces them. There is a test asserting
+  exactly this rather than claiming the attack is impossible.
+- **A round trip through one pool across same-direction flow is priced as extraction**, whatever the
+  trader intended. The middle trade pushed price the way their entry did and they closed against it;
+  intent is not observable on chain. Cross-pool arbitrage is unaffected — each pool sees one leg in
+  one direction, so nothing fires.
+- **A genuinely new token pair has no donor**, so its first pool serves the full cold-start window
+  undefended. Inheritance only helps pairs an established pool has already characterised.
 
 ## License
 
