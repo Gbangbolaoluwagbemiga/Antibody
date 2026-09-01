@@ -26,6 +26,7 @@ export type History = {
   immunity: ImmunityMeta;
   mainnetReplay: MainnetReplayMeta;
   liquidityCase: LiquidityCaseMeta;
+  falsePositives: FalsePositiveMeta;
 };
 
 export type Leg = {
@@ -106,4 +107,16 @@ export type LiquidityCaseMeta = {
   lpAtBaseFee: number;
   upliftMultiple: number;
   gasOverhead: number;
+};
+
+/**
+ * Measured on the deployed pools, not asserted. Blocks that produced a SandwichExit are staged
+ * attacks and excluded — every swap in one is an attack leg. `sizeFlagged` is reported separately
+ * because SizeAnomaly prices a large swap without alleging an attack.
+ */
+export type FalsePositiveMeta = {
+  ordinarySwaps: number;
+  flaggedAsSandwich: number;
+  sizeFlagged: number;
+  attackLegs: number;
 };

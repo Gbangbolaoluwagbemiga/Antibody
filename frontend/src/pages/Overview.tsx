@@ -38,8 +38,12 @@ export function Overview() {
         </div>
         <div className="tile">
           <div className="label">False positives</div>
-          <div className="value"><Ticker value={0} decimals={0} /></div>
-          <div className="note">across 26 ordinary calibration swaps</div>
+          <div className="value">
+            <Ticker value={H.falsePositives.flaggedAsSandwich} decimals={0} />
+          </div>
+          <div className="note">
+            across {H.falsePositives.ordinarySwaps} ordinary swaps on both pools
+          </div>
         </div>
       </div>
 
@@ -61,7 +65,7 @@ export function Overview() {
                 accent: "var(--series-threshold)",
                 points: H.points as Point[],
                 story:
-                  "Earned its baseline from scratch over 26 swaps, then absorbed a sandwich attack. Its band widened to account for what it had just experienced.",
+                  `Earned its baseline from scratch over ${H.points.length} swaps, then absorbed two sandwich attacks. Its band widened to account for what it had just experienced.`,
               },
               {
                 label: "Pool B",
@@ -70,7 +74,7 @@ export function Overview() {
                 accent: "var(--series-mean)",
                 points: (H.poolB.points ?? []) as Point[],
                 story:
-                  "Opened with pool A's baseline inherited — protected before it had traded once. Its own flow, ten times larger per swap, then moved the band to where it actually belongs.",
+                  "Opened with pool A's baseline inherited — protected before it had traded once. Its own flow runs small against deeper liquidity, so it pulled the band back down below the pool it inherited from.",
               },
             ]}
           />

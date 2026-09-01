@@ -2,7 +2,8 @@
 
 **Project ID: `HK-UHI10-1010`** · Unichain Sepolia (chain 1301) · Aug 13, 2026
 
-Every address and transaction below is real and verifiable. Explorer: https://sepolia.uniscan.xyz
+Every address and transaction below is real and verifiable, and the hook's **source is published**
+— the explorer shows Solidity, not bytecode, so nothing here has to be taken on trust. Explorer: https://sepolia.uniscan.xyz
 
 ---
 

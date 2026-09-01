@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 80 passing tests
+Deployed and **source-verified** on **Unichain Sepolia** · 80 passing tests
 
 ---
 
@@ -101,12 +101,17 @@ or target any of it.
 
 ## The baseline teaches itself
 
-| after | swaps seen | mean | deviation | threshold |
-|---|---|---|---|---|
-| 19 swaps | 19 | 0.0895% | 0.0280% | *none — uncalibrated* |
-| 26 swaps | 26 | 0.0895% | **0.0178%** | **0.1429%** |
+Read from pool A on the deployed hook:
 
-Sizes are expressed as a fraction of pool liquidity. **Zero of those 26 swaps were flagged.**
+| after | mean | deviation | threshold |
+|---|---|---|---|
+| 19 swaps | 0.0895% | 0.0280% | *none — uncalibrated* |
+| 20 swaps | 0.0895% | **0.0262%** | **0.1682%** — first opinion |
+| 26 swaps | 0.1957% | 0.1241% | 0.5678% — after absorbing an attack |
+| 31 swaps | 0.4535% | 0.3660% | **1.5515%** — current |
+
+Sizes are a fraction of pool liquidity. Across **73 ordinary swaps** on both live pools, the hook
+has returned **zero** sandwich verdicts; the six attack legs it did flag are the staged attacks.
 
 Below `minSamples` the hook publishes **no threshold at all** — a baseline with insufficient data
 reports no opinion rather than a misleading one. Then it appears, and the band *tightens* as
@@ -187,7 +192,7 @@ The page plots the deployed pool's own history, decoded from `BaselineUpdated` a
 `ToxicFlowDetected` logs — a bundled snapshot paints instantly, then it refreshes live from
 Unichain Sepolia. Three things it shows that copy alone cannot:
 
-- The threshold is **absent** for the first 19 swaps, not flat at zero. The hook has no opinion and
+- The threshold is **absent** until the 20th swap, not flat at zero. The hook has no opinion and
   the chart does not invent one.
 - A magnified inset on the calibration window, because on the main axis the attack pushes the
   ceiling to ~1.6% and flattens the `0.168% → 0.143%` narrowing into a straight line. That narrowing
