@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 69 passing tests
+Deployed on **Unichain Sepolia** · 75 passing tests
 
 ---
 
@@ -169,7 +169,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             69 tests
+  test/                             75 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
@@ -231,6 +231,29 @@ it. The intervening trade must now run the same direction as the entry.
 
 Full account, including the two negative results kept deliberately and the residual risk that
 remains after the Sybil fix, in [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## Properties, not just examples
+
+The unit suite proves the hook behaves correctly in situations I constructed. That is exactly the
+assurance that failed twice here — the calibration-contamination bug and the Sybil donor hole both
+survived a passing suite, because no test I wrote happened to build the shape that exposed them.
+
+So six properties are asserted under stateful fuzzing instead: **128 runs, 8,192 random calls each**,
+across four pools and six actors performing swaps, sandwiches, round trips and elapsed time in
+orderings nobody designed.
+
+| property | why it matters |
+|---|---|
+| the fee never exceeds the ceiling | otherwise "this cannot become a confiscation device" is false |
+| a quote never falls below base | otherwise the hook can be used to obtain a discount |
+| **a swap never reverts** | the benign-failure guarantee — a false positive costs a fee, not access |
+| an uncalibrated pool publishes nothing | no opinion it hasn't earned, in any reachable state |
+| a vaccinated pool always has a usable baseline | inheritance never produces a half-initialised pool |
+| an expired record costs nothing | memory stays memory; the mark can never become permanent |
+
+**Zero reverts across every run.** A campaign that never reaches the interesting branches would pass
+all six vacuously, so the suite also asserts afterwards that each run actually completed sandwiches
+and round trips.
 
 ## Known limitations
 
