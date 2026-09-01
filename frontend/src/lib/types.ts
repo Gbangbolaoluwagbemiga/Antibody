@@ -24,6 +24,7 @@ export type History = {
   poolB: PoolMeta;
   vaccination: VaccinationMeta;
   immunity: ImmunityMeta;
+  mainnetReplay: MainnetReplayMeta;
 };
 
 export type Leg = {
@@ -81,4 +82,18 @@ export type ImmunityMeta = {
   strangerFee: number;
   attackerFee: number;
   poolNeverSaw: string;
+};
+
+/**
+ * The one measurement on this site taken from data nobody here authored: real mainnet blocks,
+ * scanned for the mechanical signature of a sandwich, replayed against the hook.
+ */
+export type MainnetReplayMeta = {
+  source: string;
+  blocksWithSwaps: number;
+  blocksWithoutSandwich: number;
+  sandwiches: number;
+  caughtBySandwichExit: number;
+  caughtByBlockReversal: number;
+  missed: number;
 };

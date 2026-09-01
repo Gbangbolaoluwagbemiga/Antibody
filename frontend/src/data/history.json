@@ -859,5 +859,14 @@
   },
   "feesWithAntibody": 0.106,
   "feesAtBaseOnly": 0.012
+ },
+ "mainnetReplay": {
+  "source": "Ethereum mainnet, Uniswap v3 USDC/WETH 0.05% and 0.30%",
+  "blocksWithSwaps": 610,
+  "blocksWithoutSandwich": 585,
+  "sandwiches": 25,
+  "caughtBySandwichExit": 0,
+  "caughtByBlockReversal": 25,
+  "missed": 0
  }
 }

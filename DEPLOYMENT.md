@@ -325,6 +325,38 @@ prior contract instead of a sibling pool. That is a design I would want to build
 claiming otherwise would be exactly the kind of unearned checkbox this project has already had to
 correct twice.
 
+## Measured against real mainnet attacks
+
+Every other attack in this repo was staged by me, against a detector I designed. The obvious
+objection is that of course it catches those. So `research/scan_sandwiches.py` walks live Uniswap v3
+blocks on Ethereum mainnet, identifies sandwiches by their mechanical signature, and
+[the replay test](contracts/test/AntibodyMainnetReplay.t.sol) runs those sequences against the hook.
+
+**610 blocks containing swaps. 25 sandwich-shaped events.**
+
+| detector | real-world hits |
+|---|---|
+| `SandwichExit` — maximum penalty | **0 of 25** |
+| `BlockReversal` — was half penalty | **25 of 25** |
+| missed entirely | **0** |
+
+Not one real sandwich was same-origin. Production searchers split entry and exit across separate
+addresses precisely to defeat same-origin detection — so the signal carrying the maximum penalty,
+and the one every demo here is built on, would not have fired on a single live attack.
+
+`BlockReversal`, the layer built for multi-EOA attackers, caught all of them. The architecture was
+right; the pricing was not, so **`BlockReversal` was repriced from half the span to three quarters**.
+Not to the maximum: same-origin is *proof* of common control while a pool-level reversal is
+*inference*, and charging identically for proof and inference would be sloppy.
+
+**585 of the 610 blocks had swap activity and no sandwich shape at all**, which is the evidence that
+the pattern is specific rather than constant — a false-positive measurement taken from data I did
+not author.
+
+Profit is deliberately not modelled. Those pools are v2/v3 with static fees and different liquidity
+mechanics, so any "Antibody would have taken $X from these attackers" figure would be a guess dressed
+as evidence. Detection is a classification question, and that is the only question answered.
+
 ## Known limitations
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds

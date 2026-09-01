@@ -1,0 +1,235 @@
+{
+ "source": "Ethereum mainnet, Uniswap v3 USDC/WETH 0.05% and 0.30%",
+ "blocksWithSwaps": 610,
+ "blocksWithoutSandwich": 585,
+ "sandwichCount": 25,
+ "sameOrigin": 0,
+ "multiOrigin": 25,
+ "sequences": [
+  {
+   "block": 25881905,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x33c1bb9768a5e3cead1007b0c6e2559ec639591a6d6687881bc79b2be5a954bb",
+   "exitTx": "0xb152e1133288b971efbb3361a4d83828606c04504e45c4f2240f2c82a37ded08"
+  },
+  {
+   "block": 25881909,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x21d0caa6ffee0b6f50c6ca11e3040dda24fe8b21c3d353a1aaf9e3cecc11f857",
+   "exitTx": "0x689993877eb42f1c814c80e3972d78b391a516166304c59f6d856adcc81ee7d2"
+  },
+  {
+   "block": 25881919,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0xb5f77ce5250f962204bcd725567e3ccc422c7e5b29b82c34eb945cf590c5fb9e",
+   "exitTx": "0xcb24e7ad8d4ac495c853051cb34465d08c8695a0194038a8340cd37abe4ff985"
+  },
+  {
+   "block": 25881924,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x6f49b012cbc050730a3f88b0127dacc585155cc402c39e64672a8bc447f5369e",
+   "exitTx": "0xd43d788affa5914b2bf5aa90c5e4427ddb7dfa94a4fab61b0190122ba89791d6"
+  },
+  {
+   "block": 25881949,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0xbc7be9f18d8ca01f8ee5662e61454568db7665101d3dac611ca89340e1783981",
+   "exitTx": "0x27b8cc4349fec45d05e3c9f36576dfc348662e02040b9759d8aa324c9722f389"
+  },
+  {
+   "block": 25881963,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0xf6f86b24e339803757cb7f9a1d26011c36476ba1912af828f2a74999f2819475",
+   "exitTx": "0x322b18f1e541a75bd90990f2673d6da478923631997df95995e5180177dd138e"
+  },
+  {
+   "block": 25882244,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0xdfc4f88950109520ff51b655aec48cdfcb1a634738a18f1f7c6b2a49a941f7d4",
+   "exitTx": "0xdb70a3fe6dad9adc90b1c2ae2d6223e8acac994077820d9520190892d1270cbf"
+  },
+  {
+   "block": 25882247,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x9bdcfe68e741d0d5cba9007e31be2ca8d40378c6c2fbda108a396c35277158a3",
+   "exitTx": "0x77030896e9c06b05af5b8e2344ac7e03dcf29af69002e4e829d9f92f7326370c"
+  },
+  {
+   "block": 25882287,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0xa3d1d5ea5fb451b6ec6931b3800875fdc30cddc93522567e6d93a4d373f03026",
+   "exitTx": "0xf4b8d46f6695f507c6833cb4bb66d360a0fa750c8b24102b0e75a8d501df429c"
+  },
+  {
+   "block": 25882291,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x47a73c8ce3a0d8789dcbc04f44d1131797c9f1b9dd1445513e439d0bd52b7ee7",
+   "exitTx": "0xb73a22be27ed962be0714e1c90ae579bb6e7a4c32bcbeb0948e95604fc26804e"
+  },
+  {
+   "block": 25882417,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x3f6864767685ef7325658609a37f09d7547faf6ed590f8fd83f7c5ff6bb7dc6f",
+   "exitTx": "0x4198a7c5154047f33d24bfe0018e080c47c5d8c0d9fd6c922370174b5cbf60ba"
+  },
+  {
+   "block": 25882429,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0xc4a1c020361484d42410a03de3594a8277a270dd51e17b443eb92bc3480349b6",
+   "exitTx": "0x2e42297ded1709c639d8a5129c4ee311c3a3b5835c856020207d75749a9be042"
+  },
+  {
+   "block": 25882439,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x9721d49705553c247061d4dedd05f6fea56fba8746dc77b107d7b5825099e977",
+   "exitTx": "0xa6d1674349e6f16aa09c4689ed02da407cb1ac3f441574a13deb58ed775c0685"
+  },
+  {
+   "block": 25882541,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x6452ee6dcd1dc9fc26a9795af6dd07f867f824bc299bdefcf6633cf1cc462719",
+   "exitTx": "0xa7a44aaa113dd796155eef5c435acd9307a54704234f628435d7587ad40cb0bf"
+  },
+  {
+   "block": 25882666,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x5d3d2abc860f359e5eb341b78967429b43a6718185c8416cb80fc62c05e9cd05",
+   "exitTx": "0xa559316fdbd3dadb30980b9d3fad3d90b3b9c461e9648c30bd9d7d0102848e73"
+  },
+  {
+   "block": 25882709,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x688bd594a3d32c2a06ceb3f2c6b2abdf714a75efa79980ad4df2eff4a15d0f5c",
+   "exitTx": "0x57ff755a5e0e90df85a744ea72d167bc9821e1a1fe34bb93196ca43e20a506b9"
+  },
+  {
+   "block": 25882735,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0xb821ace42eae149d2c7736756b2788c3286c66d8e945dfbe3c37dbfc014063ee",
+   "exitTx": "0xb28215e878cb08eb01ff7f72454d7642c7048efd54a5ef560a9837603e97533d"
+  },
+  {
+   "block": 25882772,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0xdf436b8921660e99a6831f6da7b8cd3456482849388d650e0e4b2bcfeaf383e1",
+   "exitTx": "0x074a66ba5d7f0362b95a6e8c84dda10efa3352b3a8319e2c5c68f493197419aa"
+  },
+  {
+   "block": 25882781,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x683838048c0df325696ca0e3a3007724589c3cf63e1f7250aa90c7b323ea66dd",
+   "exitTx": "0x2af2565cacfef49aca2861a37f6a76f584fb99935538b6de3bbe3f1b003a3168"
+  },
+  {
+   "block": 25882851,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x5e068dff26493ca7973e7e14176f6ce8df646e194eb59f1708279325671ad46c",
+   "exitTx": "0xe8eea05abfdff83437ac58b064fe67c6763d5c0fb467c1ed808dbf45d9ea76c6"
+  },
+  {
+   "block": 25882863,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": false,
+   "sameOrigin": false,
+   "entryTx": "0x70018e760aea935a77723bba53ef3f582f500016e16cee4bc1680e97516ab565",
+   "exitTx": "0xc67fbfee838fb0d63fbeea2c74b85c58cbe5a7ce46c6a8892a82282e72f18c43"
+  },
+  {
+   "block": 25882869,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x2094f1bae67d076124071a8b7dc75f2d6002e8bbee9ce1b40c44050d43857db4",
+   "exitTx": "0x3a5c85b60a99e27ff77b44d9fb8f62694c132bc04fe3bce62edad8deb95087ae"
+  },
+  {
+   "block": 25882898,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x7ec8707ff2094c1e8d82086a99e63d51e1a939c4f92b2a91d7bf5e75b133c304",
+   "exitTx": "0xa7de165877fd7f62ce5e24c2d1a55091786d708a71a151065bf3f695a53a1cf7"
+  },
+  {
+   "block": 25882945,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x1a14fa17abf1b39487121678a79c5f82a4069666de9e4946ed932f31e5ed6c0f",
+   "exitTx": "0xe0d622b664e29829d2163cd05cd8c11b6b634c7b725dacd4eaf51cba6e968774"
+  },
+  {
+   "block": 25882966,
+   "shape": "MULTI_ORIGIN",
+   "expectedSignal": "BlockReversal",
+   "entryZeroForOne": true,
+   "sameOrigin": false,
+   "entryTx": "0x45c1e357dbf500567f5c09b4a6604e5e14fca0727d0771989838f448cec84cb4",
+   "exitTx": "0xd59d068b27e16f4d1f7f6af3bd2586e183443928d7fe944d28b7a09d3a637e1c"
+  }
+ ]
+}

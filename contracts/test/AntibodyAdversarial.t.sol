@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
+import {Vm} from "forge-std/Vm.sol";
 import {MockERC20} from "solmate/src/test/utils/mocks/MockERC20.sol";
 
 import {Hooks} from "@uniswap/v4-core/src/libraries/Hooks.sol";
@@ -255,6 +256,72 @@ contract AntibodyAdversarialTest is BaseTest {
             PoolId.unwrap(real.toId()),
             "the pool serving more distinct traders becomes the reference"
         );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // Repricing, driven by mainnet measurement
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    /// @dev Scanning 610 live mainnet blocks containing Uniswap v3 swaps turned up 25
+    ///      sandwich-shaped events. Every single one split its entry and exit across *different*
+    ///      addresses. Zero were same-origin.
+    ///
+    ///      That inverts the original penalty ordering. `SandwichExit` carried the maximum on the
+    ///      reasoning that same-origin is the strongest evidence, and `BlockReversal` carried half
+    ///      because honest same-block arbitrage can look identical. Both halves of that reasoning
+    ///      still hold — but the shape drawing half the penalty is the one production attackers
+    ///      actually use, because splitting addresses is how they evade same-origin detection.
+    ///
+    ///      So BlockReversal is repriced to three quarters. Not the full maximum: same-origin is
+    ///      *proof* of common control while a pool-level reversal is *inference*, and charging
+    ///      identically for proof and inference would be sloppy. But half was under-pricing the
+    ///      only form the data actually shows.
+    function test_blockReversal_isPricedForTheThreatThatActuallyOccurs() public {
+        PoolKey memory pool = _pool(60);
+        _calibrate(pool);
+
+        uint24 span = hook.MAX_TOTAL_FEE() - hook.baseFee();
+
+        // Attacker enters, victim follows, a *different* address closes the position.
+        _swap(pool, attacker, true, TYPICAL * 2);
+        _swap(pool, other, true, TYPICAL);
+
+        vm.recordLogs();
+        _swap(pool, arb, false, TYPICAL * 2); // the accomplice
+
+        (IAntibodySignal.Signal signal, uint24 penalty) = _lastFlag();
+        assertEq(uint8(signal), uint8(IAntibodySignal.Signal.BlockReversal), "multi-address reversal must fire");
+        assertEq(penalty, (span * 3) / 4, "repriced to three quarters of the span");
+        assertGt(penalty, span / 2, "strictly more than the old half-penalty");
+        assertLt(penalty, span, "but still below a proven same-origin sandwich");
+    }
+
+    /// @dev The ordering that must survive the repricing: proof still costs more than inference.
+    function test_sameOriginStillCostsMoreThanInference() public {
+        PoolKey memory pool = _pool(60);
+        _calibrate(pool);
+
+        _swap(pool, attacker, true, TYPICAL * 2);
+        _swap(pool, other, true, TYPICAL);
+        vm.recordLogs();
+        _swap(pool, attacker, false, TYPICAL * 2);
+        (IAntibodySignal.Signal sameSignal, uint24 samePenalty) = _lastFlag();
+
+        assertEq(uint8(sameSignal), uint8(IAntibodySignal.Signal.SandwichExit));
+        assertEq(samePenalty, hook.MAX_TOTAL_FEE() - hook.baseFee(), "same-origin keeps the ceiling");
+        assertGt(samePenalty, ((hook.MAX_TOTAL_FEE() - hook.baseFee()) * 3) / 4, "proof outranks inference");
+    }
+
+    /// @dev Pull the most recent ToxicFlowDetected out of the recorded logs.
+    function _lastFlag() internal returns (IAntibodySignal.Signal signal, uint24 penalty) {
+        Vm.Log[] memory logs = vm.getRecordedLogs();
+        for (uint256 i = logs.length; i > 0; i--) {
+            if (logs[i - 1].topics.length > 0 && logs[i - 1].topics[0] == IAntibodySignal.ToxicFlowDetected.selector) {
+                (uint8 raw,,, uint24 p) = abi.decode(logs[i - 1].data, (uint8, uint256, uint256, uint24));
+                return (IAntibodySignal.Signal(raw), p);
+            }
+        }
+        revert("no ToxicFlowDetected emitted");
     }
 
     // ─────────────────────────────────────────────────────────────────────────────

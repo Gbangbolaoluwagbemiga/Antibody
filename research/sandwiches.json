@@ -1,0 +1,8 @@
+{
+ "pool": "0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8",
+ "blocksWithSwaps": 53,
+ "blocksWithoutSandwich": 53,
+ "sameOrigin": 0,
+ "multiOrigin": 0,
+ "sandwiches": []
+}

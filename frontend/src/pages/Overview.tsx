@@ -4,6 +4,7 @@ import { TwoPools } from "../components/TwoPools";
 import { Immunity } from "../components/Immunity";
 import { Categories } from "../components/Categories";
 import { Vaccination } from "../components/Vaccination";
+import { MainnetReplay } from "../components/MainnetReplay";
 import { Ticker, Reveal } from "../components/motion";
 import { Link } from "react-router-dom";
 
@@ -136,6 +137,19 @@ export function Overview() {
             unprotectedFee={H.baseFee}
             protectedFee={H.maxTotalFee}
           />
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel">
+          <h2>Measured against real attacks, not staged ones</h2>
+          <p className="sub">
+            Every other demonstration here is an attack I staged against a detector I designed, and
+            a sceptical reader is right to discount that. So this one uses data I did not author:
+            live Uniswap v3 blocks on Ethereum mainnet, scanned for the mechanical signature of a
+            sandwich, replayed against the hook. The result changed the design.
+          </p>
+          <MainnetReplay {...H.mainnetReplay} />
         </section>
       </Reveal>
 

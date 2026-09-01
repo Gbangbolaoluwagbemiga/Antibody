@@ -4,7 +4,7 @@
 pool computes for itself.**
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed on **Unichain Sepolia** · 75 passing tests
+Deployed on **Unichain Sepolia** · 80 passing tests
 
 ---
 
@@ -117,7 +117,7 @@ consistent flow arrives.
 | signal | condition | confidence | penalty |
 |---|---|---|---|
 | `SandwichExit` | same trader, same block, opposite direction — **and a third party traded in between** | structural | maximum |
-| `BlockReversal` | pool reversed direction in-block under a *different* address | catches multi-EOA attackers; honest arbitrage looks the same | half |
+| `BlockReversal` | pool reversed direction in-block under a *different* address | **the shape 25 of 25 real mainnet sandwiches actually used** | three quarters |
 | `SizeAnomaly` | size-to-liquidity outside the pool's own `μ + kδ` band | graduated by distance past the band | proportional + recency surcharge |
 | `CrossPoolMemory` | a confirmed sandwich exit in *any* pool this hook serves, still within the decay window | carried, not local | 0.50% per exit, decaying to zero |
 
@@ -169,7 +169,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             75 tests
+  test/                             80 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
@@ -231,6 +231,38 @@ it. The intervening trade must now run the same direction as the entry.
 
 Full account, including the two negative results kept deliberately and the residual risk that
 remains after the Sybil fix, in [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## Measured against real mainnet attacks
+
+Every other attack in this repo was staged by me, against a detector I designed. The obvious
+objection is that of course it catches those. So `research/scan_sandwiches.py` walks live Uniswap v3
+blocks on Ethereum mainnet, identifies sandwiches by their mechanical signature, and
+[the replay test](contracts/test/AntibodyMainnetReplay.t.sol) runs those sequences against the hook.
+
+**610 blocks containing swaps. 25 sandwich-shaped events.**
+
+| detector | real-world hits |
+|---|---|
+| `SandwichExit` — maximum penalty | **0 of 25** |
+| `BlockReversal` — was half penalty | **25 of 25** |
+| missed entirely | **0** |
+
+Not one real sandwich was same-origin. Production searchers split entry and exit across separate
+addresses precisely to defeat same-origin detection — so the signal carrying the maximum penalty,
+and the one every demo here is built on, would not have fired on a single live attack.
+
+`BlockReversal`, the layer built for multi-EOA attackers, caught all of them. The architecture was
+right; the pricing was not, so **`BlockReversal` was repriced from half the span to three quarters**.
+Not to the maximum: same-origin is *proof* of common control while a pool-level reversal is
+*inference*, and charging identically for proof and inference would be sloppy.
+
+**585 of the 610 blocks had swap activity and no sandwich shape at all**, which is the evidence that
+the pattern is specific rather than constant — a false-positive measurement taken from data I did
+not author.
+
+Profit is deliberately not modelled. Those pools are v2/v3 with static fees and different liquidity
+mechanics, so any "Antibody would have taken $X from these attackers" figure would be a guess dressed
+as evidence. Detection is a classification question, and that is the only question answered.
 
 ## Properties, not just examples
 

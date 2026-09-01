@@ -394,11 +394,27 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         }
 
         // ── Signal 2: the pool reversed direction within the block, under a different address.
-        // Catches an attacker who splits the legs across two EOAs. Weaker, because honest
-        // same-block arbitrage looks identical — so it draws half the penalty, never the maximum.
+        //
+        // This catches an attacker who splits entry and exit across two EOAs — and measurement
+        // says that is not the edge case it was originally treated as, it is the norm. Scanning
+        // 610 live mainnet blocks containing Uniswap v3 swaps produced 25 sandwich-shaped events,
+        // and *every one of them* was multi-address. Zero were same-origin. Splitting addresses is
+        // precisely how production searchers evade same-origin detection.
+        //
+        // So this was repriced from half the span to three quarters. Not to the full maximum:
+        // same-origin is *proof* of common control, while a pool-level reversal is *inference*,
+        // and charging identically for proof and inference would be sloppy. But half was
+        // under-pricing the only shape the data actually shows, which made the strongest penalty
+        // in the design apply to a threat model that has largely moved on.
+        //
+        // The false-positive surface is unchanged and still real: two unrelated traders crossing
+        // in one block look the same from here. What changed is the evidence about how often that
+        // costs an innocent party versus how often it catches an attacker — 585 of those 610
+        // blocks had swap activity and no sandwich shape at all, so the pattern is specific rather
+        // than constant.
         if (pl.lastBlock == uint32(block.number) && pl.lastZeroForOne != zeroForOne && pl.lastTrader != trader) {
-            uint24 half = (MAX_TOTAL_FEE - baseFee) / 2;
-            uint24 withCarry = half + _immunitySurcharge(trader);
+            uint24 inferred = ((MAX_TOTAL_FEE - baseFee) * 3) / 4;
+            uint24 withCarry = inferred + _immunitySurcharge(trader);
             return (
                 IAntibodySignal.Signal.BlockReversal,
                 withCarry > MAX_TOTAL_FEE - baseFee ? MAX_TOTAL_FEE - baseFee : withCarry,
