@@ -868,5 +868,12 @@
   "caughtBySandwichExit": 0,
   "caughtByBlockReversal": 25,
   "missed": 0
+ },
+ "liquidityCase": {
+  "block": 61422383,
+  "lpWithAntibody": 0.2003,
+  "lpAtBaseFee": 0.0123,
+  "upliftMultiple": 16.28,
+  "gasOverhead": 37278
  }
 }

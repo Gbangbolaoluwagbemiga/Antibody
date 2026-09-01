@@ -5,6 +5,7 @@ import { Immunity } from "../components/Immunity";
 import { Categories } from "../components/Categories";
 import { Vaccination } from "../components/Vaccination";
 import { MainnetReplay } from "../components/MainnetReplay";
+import { LiquidityCase } from "../components/LiquidityCase";
 import { Ticker, Reveal } from "../components/motion";
 import { Link } from "react-router-dom";
 
@@ -137,6 +138,18 @@ export function Overview() {
             unprotectedFee={H.baseFee}
             protectedFee={H.maxTotalFee}
           />
+        </section>
+      </Reveal>
+
+      <Reveal>
+        <section className="panel">
+          <h2>Why a pool would want this</h2>
+          <p className="sub">
+            Every other panel here explains what the hook does. This one answers the question a pool
+            creator asks first — what is in it for me — and states the trade rather than only the
+            upside.
+          </p>
+          <LiquidityCase {...H.liquidityCase} baseFee={H.baseFee} />
         </section>
       </Reveal>
 

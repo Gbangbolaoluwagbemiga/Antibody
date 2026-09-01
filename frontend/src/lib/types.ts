@@ -25,6 +25,7 @@ export type History = {
   vaccination: VaccinationMeta;
   immunity: ImmunityMeta;
   mainnetReplay: MainnetReplayMeta;
+  liquidityCase: LiquidityCaseMeta;
 };
 
 export type Leg = {
@@ -96,4 +97,13 @@ export type MainnetReplayMeta = {
   caughtBySandwichExit: number;
   caughtByBlockReversal: number;
   missed: number;
+};
+
+/** The adoption argument, measured: what LPs kept that an attacker would otherwise have taken. */
+export type LiquidityCaseMeta = {
+  block: number;
+  lpWithAntibody: number;
+  lpAtBaseFee: number;
+  upliftMultiple: number;
+  gasOverhead: number;
 };
