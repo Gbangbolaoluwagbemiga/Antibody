@@ -93,7 +93,11 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ error: "server not configured" }, { status: 500 });
   }
 
-  const transport = http(unichainSepolia.rpcUrls.default.http[0]);
+  // The public endpoint throttles datacenter IPs far harder than laptops, which is how this
+  // function came to time out on Vercel while running fine locally. RPC_URL lets a dedicated
+  // endpoint be swapped in from the dashboard without a redeploy of the code.
+  const rpcUrl = process.env.RPC_URL || unichainSepolia.rpcUrls.default.http[0];
+  const transport = http(rpcUrl, { timeout: 8_000, retryCount: 1 });
   const publicClient = createPublicClient({ chain: unichainSepolia, transport });
 
   const attacker = privateKeyToAccount(DEMO_ATTACKER_KEY as `0x${string}`);
@@ -107,6 +111,15 @@ export default async function handler(req: Request): Promise<Response> {
     hooks: HOOK_ADDRESS as `0x${string}`,
   };
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600);
+
+  // Every step is timed and returned. A 504 tells you nothing about which call hung; this does.
+  const t0 = Date.now();
+  const marks: Record<string, number> = {};
+  const mark = (k: string) => { marks[k] = Date.now() - t0; };
+
+  // ?dry=1 reads nonces and signs, but publishes nothing. Isolates "is the RPC reachable at all"
+  // from "did the sends fail", without spending anything.
+  const dry = new URL(req.url).searchParams.get("dry") === "1";
   const ATTACK = parseEther("2");
   const VICTIM = parseEther("0.1"); // inside the calibrated band, so the victim is not itself flagged
 
@@ -115,6 +128,7 @@ export default async function handler(req: Request): Promise<Response> {
       publicClient.getTransactionCount({ address: attacker.address }),
       publicClient.getTransactionCount({ address: victim.address }),
     ]);
+    mark("nonces");
 
     // Sign all three offline, on the ACCOUNT rather than the wallet client.
     //
@@ -162,6 +176,12 @@ export default async function handler(req: Request): Promise<Response> {
       }),
     ]);
 
+    mark("signed");
+
+    if (dry) {
+      return Response.json({ dry: true, rpc: rpcUrl, nonces: { attacker: an, victim: vn }, marks });
+    }
+
     // Narrative order with a short stagger: the victim must land *between* the attacker's legs, and
     // the attacker's consecutive nonces guarantee the exit cannot execute before the entry.
     const p1 = publicClient.sendRawTransaction({ serializedTransaction: raw1 });
@@ -171,8 +191,10 @@ export default async function handler(req: Request): Promise<Response> {
     const p3 = publicClient.sendRawTransaction({ serializedTransaction: raw3 });
 
     const [h1, h2, h3] = await Promise.all([p1, p2, p3]);
+    mark("published");
 
     return Response.json({
+      marks,
       legs: [
         { role: "front-run", tx: h1 },
         { role: "victim", tx: h2 },
@@ -181,7 +203,10 @@ export default async function handler(req: Request): Promise<Response> {
     });
   } catch (e) {
     lastRun = 0; // a failed run should not lock the button
-    return Response.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
+    return Response.json(
+      { error: e instanceof Error ? e.message : String(e), marks, rpc: rpcUrl },
+      { status: 500 }
+    );
   }
 }
 
