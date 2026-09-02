@@ -75,8 +75,9 @@ export function Shell() {
         transition={{ duration: 0.26, ease: [0.22, 1, 0.36, 1] }}
       >
         <p className="tagline">
-          A Uniswap v4 hook that makes MEV extraction unprofitable by pricing it — against a
-          threshold each pool computes for itself, from its own trading history.
+          A Uniswap v4 hook where pools work out their own MEV threshold — and pass it on to the
+          next pool. Nothing is configured. Measured against real mainnet attacks, for precision as
+          well as recall, which is how the detector below got fixed.
         </p>
         <Outlet />
       </motion.main>

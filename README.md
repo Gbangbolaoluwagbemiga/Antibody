@@ -1,10 +1,19 @@
 # Antibody
 
-**A Uniswap v4 hook that makes MEV extraction unprofitable by pricing it — against a threshold the
-pool computes for itself.**
+**Pools that work out their own MEV threshold — and pass it on to the next pool.**
+
+A Uniswap v4 hook. Nothing is configured: each pool derives its detection boundary from its own
+trading history, a new pool opens already protected by inheriting an established sibling's, and a
+confirmed sandwicher is priced in every pool the hook serves.
+
+It also ships **[MEVBench](contracts/test/bench/MEVBench.sol)** — a harness that measures *any* v4
+hook's precision and recall against real Ethereum blocks. MEV hooks report "it caught N attacks" and
+almost never report how often they fire on ordinary trading. Running Antibody through it found the
+detector I had shipped six times was wrong about three fifths of the time. That is on this page, with
+the fix.
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed and **source-verified** on **Unichain Sepolia** · 80 passing tests
+Deployed and **source-verified** on **Unichain Sepolia** · 82 passing tests
 
 ---
 
@@ -19,6 +28,31 @@ Deployed and **source-verified** on **Unichain Sepolia** · 80 passing tests
 The consequence, and the claim worth testing: **Antibody is the first MEV defence that gets stronger
 as more pools adopt it.** Every pool that runs it feeds the shared memory; every new pool inherits
 from the ones before it.
+
+## MEVBench — the number nobody publishes
+
+Every MEV hook I could find reports **recall**: "it caught N attacks." Recall alone is worth nothing,
+because a detector that fires on every swap also catches 100% of attacks. The number that decides
+whether a fee-based defence is usable is **precision**: how often does it fire on ordinary trading?
+
+Antibody's `BlockReversal` shipped across six deployments reporting 25-of-25 on real mainnet
+sandwiches. Measured against ordinary blocks for the first time, it fired on **35 of 117**. The
+recall number was true the whole time and hid a broken detector.
+
+So the harness is separated from the hook it was written for:
+
+```bash
+python3 research/build_fixture.py --span 600 --pool 0x88e6...5640   # real blocks, ground truth
+forge test --match-path test/AntibodyPrecision.t.sol -vv            # confusion matrix
+```
+
+`MEVBench` is hook-agnostic — inherit it, implement three functions (`_benchSwap`, `_benchFlagged`,
+`_benchActorCount`), and it replays real Ethereum blocks against your detector and reports recall,
+precision and false-positive rate. Antibody is simply its first caller; a benchmark only its author
+can run is not a benchmark.
+
+Ground truth is the mechanical shape of a sandwich, stated in the fixture so it can be argued with
+rather than trusted. Profit is deliberately not modelled — see [the limits](#known-limitations).
 
 ## The idea
 
@@ -155,16 +189,31 @@ make the temporal clustering that sandwiching requires progressively expensive.
 
 Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
 
-## Routing signal (Hybrid Routing category)
+## A public toxicity signal, not just a fee
 
-Live on chain — `ToxicFlowDetected` fires on every flagged swap and `BaselineUpdated` on every
-swap, both consumable today at the deployed address. The interface is
-[`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol): two events plus
-`currentThreshold(poolId)`, `isCalibrated(poolId)` and `quote(...)`, which lets a router price a
-swap before sending it. External routers
-(CoW, Flashbots Protect) can consume these via [`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol)
-to route similar flow privately. Antibody publishes the signal and stops there — no router
-integration is attempted.
+The baseline each pool learns is useful to more than the hook that computes it. Everything is
+readable by any contract, at the deployed address, today:
+
+| call | answers |
+|---|---|
+| `currentThreshold(poolId)` | "what counts as an unusual trade *in this pool*" — a live, per-pool number nobody configured |
+| `isCalibrated(poolId)` | "has this pool seen enough flow to have an opinion at all" |
+| `quote(poolId, trader, zeroForOne, size)` | "what would this exact swap, by this exact address, cost right now" — before sending it |
+| `immunity(address)` | "does this address have a confirmed sandwich exit still inside the decay window" |
+
+`quote` is the interesting one. A router can price a swap **before** committing to it, across every
+pool the hook serves, and route around the expensive one. A vault can size a rebalance to stay under
+a pool's own boundary. An LP can read whether the pool they are in is attracting toxic flow.
+
+That is a different shape of thing from a fee mechanism. The fee is what Antibody does with the
+signal; the signal itself is public infrastructure, and the pool-relative threshold is the part that
+cannot be obtained anywhere else — a global "large trade" constant is exactly the subjective input
+this project exists to remove.
+
+`ToxicFlowDetected` fires on every flagged swap and `BaselineUpdated` on every swap, both consumable
+now via [`IAntibodySignal`](contracts/src/interfaces/IAntibodySignal.sol). External routers (CoW,
+Flashbots Protect) could consume these to route similar flow privately. Antibody publishes the
+signal and stops there — no router integration is claimed, because none was built.
 
 ## Layout
 

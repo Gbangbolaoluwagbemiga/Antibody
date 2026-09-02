@@ -14,6 +14,7 @@ import {TickMath} from "@uniswap/v4-core/src/libraries/TickMath.sol";
 import {LPFeeLibrary} from "@uniswap/v4-core/src/libraries/LPFeeLibrary.sol";
 
 import {BaseTest} from "./utils/BaseTest.sol";
+import {MEVBench} from "./bench/MEVBench.sol";
 import {EasyPosm} from "./utils/libraries/EasyPosm.sol";
 import {AntibodyHook} from "../src/AntibodyHook.sol";
 import {IAntibodySignal} from "../src/interfaces/IAntibodySignal.sol";
@@ -45,7 +46,7 @@ import {IAntibodySignal} from "../src/interfaces/IAntibodySignal.sol";
 ///
 ///      Blocks replay against a real pool through the real hook, one fresh block number each, with
 ///      trader indices preserved from mainnet so that who-is-distinct-from-whom survives.
-contract AntibodyPrecisionTest is BaseTest {
+contract AntibodyPrecisionTest is BaseTest, MEVBench {
     using stdJson for string;
     using EasyPosm for IPositionManager;
 
@@ -81,49 +82,46 @@ contract AntibodyPrecisionTest is BaseTest {
     }
 
     /// The measurement this file exists for: the gated detector must not fire on ordinary blocks.
+    ///
+    /// The replay itself lives in MEVBench, which is hook-agnostic on purpose. Antibody is simply
+    /// its first caller — a benchmark that only its author's project can run is not a benchmark.
     function test_detectorDoesNotFireOnOrdinaryMainnetBlocks() public {
-        uint256 n = fixture.readUint(".blocksKept");
-        uint256 firedOnOrdinary;
-        uint256 caughtSandwich;
-        uint256 ordinary;
-        uint256 sandwich;
-
-        for (uint256 i = 0; i < n; i++) {
-            string memory base = string.concat(".blocks[", vm.toString(i), "]");
-            bool isSandwich = fixture.readBool(string.concat(base, ".sandwich"));
-            uint256[] memory t = fixture.readUintArray(string.concat(base, ".t"));
-            uint256[] memory d = fixture.readUintArray(string.concat(base, ".d"));
-
-            // A fresh block per replay, so in-block state from the previous one cannot leak in.
-            vm.roll(block.number + 10);
-
-            vm.recordLogs();
-            for (uint256 j = 0; j < t.length; j++) {
-                _swap(actors[t[j]], d[j] == 1, TYPICAL);
-            }
-            bool fired = _sawStructuralSignal();
-
-            if (isSandwich) {
-                sandwich++;
-                if (fired) caughtSandwich++;
-            } else {
-                ordinary++;
-                if (fired) firedOnOrdinary++;
-            }
-        }
-
-        emit log_named_uint("ordinary blocks replayed", ordinary);
-        emit log_named_uint("  ...the detector fired on", firedOnOrdinary);
-        emit log_named_uint("sandwich blocks replayed", sandwich);
-        emit log_named_uint("  ...the detector caught", caughtSandwich);
+        Result memory r = runBench("test/fixtures/mainnet_precision.json");
+        logBench(r);
 
         // The property. Zero false positives across every ordinary mainnet block in the sample.
-        assertEq(firedOnOrdinary, 0, "the detector fired on a block with no sandwich in it");
+        assertEq(r.firedOnOrdinary, 0, "the detector fired on a block with no sandwich in it");
+        assertEq(r.precisionBps, 10_000, "precision is no longer 100%");
 
-        // Recall is asserted as a floor rather than a fixed number: the gate is known to cost some
-        // detections to O(1) state, and pinning the exact figure would turn an honest limitation
-        // into a brittle test. Dropping below three quarters means something regressed.
-        assertGe(caughtSandwich * 4, sandwich * 3, "recall fell below 75% of sandwich blocks");
+        // Recall is asserted as a floor rather than a fixed number: the victim gate is known to
+        // cost some detections to O(1) state, and pinning the exact figure would turn an honest
+        // limitation into a brittle test. Below three quarters means something regressed.
+        assertGe(r.recallBps, 7_500, "recall fell below 75%");
+    }
+
+    // ── MEVBench wiring ──────────────────────────────────────────────────────────────────────
+    bool internal sawStructural;
+
+    function _benchSwap(address who, bool zeroForOne) internal override {
+        _swap(who, zeroForOne, TYPICAL);
+        if (_sawStructuralSignal()) sawStructural = true;
+    }
+
+    function _benchFlagged() internal view override returns (bool) {
+        return sawStructural;
+    }
+
+    function _benchResetFlag() internal override {
+        sawStructural = false;
+        vm.recordLogs();
+    }
+
+    function _benchActorCount() internal pure override returns (uint256) {
+        return ACTORS;
+    }
+
+    function _benchActor(uint256 i) internal view override returns (address) {
+        return actors[i];
     }
 
     function _sawStructuralSignal() internal returns (bool) {

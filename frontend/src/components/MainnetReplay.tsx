@@ -153,6 +153,14 @@ export function MainnetReplay({
       </div>
 
       <p className="footnote">
+        The harness is <code>MEVBench</code>, and it is deliberately hook-agnostic: inherit it,
+        implement three functions, and it replays real Ethereum blocks against any v4 hook and
+        reports recall, precision and false-positive rate. Antibody is simply its first caller — a
+        benchmark only its author can run is not a benchmark. Every MEV hook reports "it caught N
+        attacks"; almost none report how often they fire on nothing.
+      </p>
+
+      <p className="footnote">
         Profit is deliberately not modelled. Those are v2/v3 pools with static fees and different
         liquidity mechanics, so a "would have taken $X" figure would be a guess dressed as evidence.
         Detection is a classification question, and that is the only question answered here.
