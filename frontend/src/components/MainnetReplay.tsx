@@ -160,8 +160,10 @@ export function MainnetReplay({
         <p className="replay-verdict">
           <strong>More than three quarters of what it flagged was innocent.</strong> "The pool reversed direction
           under a different address" is also a plain description of two arbitrageurs crossing in a
-          busy block — the same defect as the 23-of-23 false positives this project already found
-          once, wearing a different variable name. Requiring a victim in between removed all{" "}
+          busy block, which is why it fired on{" "}
+          {Math.round((precision.beforeGateFiredOnOrdinary / precision.ordinaryBlocks) * 100)}% of
+          them — the same defect as the 23-of-23 false positives this project already found once,
+          wearing a different variable name. Requiring a victim in between removed all{" "}
           {precision.beforeGateFiredOnOrdinary} false positives and cost{" "}
           {precision.beforeGateCaughtSandwich - precision.caughtSandwich} of{" "}
           {precision.sandwichBlocks} detections, which a hook cannot recover:{" "}
