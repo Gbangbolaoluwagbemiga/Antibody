@@ -679,3 +679,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
   font-family: var(--mono);
 }
 .precision-foot b { color: var(--text-primary); }
+
+/* The caveat that stops two honest numbers from reading as one cherry-picked one. */
+.precision .sub.caveat {
+  border-left: 2px solid var(--status-flagged);
+  padding-left: 14px;
+  margin-bottom: 18px;
+}

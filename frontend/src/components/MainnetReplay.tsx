@@ -98,6 +98,15 @@ export function MainnetReplay({
           every swap also scores 25 of 25. Replaying {precision.ordinaryBlocks} real mainnet blocks
           that contained trading and <em>no</em> sandwich answered the other half.
         </p>
+        <p className="sub caveat">
+          <strong>These are two different measurements, not a before and after.</strong> The panel
+          above replays each attack as an isolated three-swap block, which tests whether the detector
+          recognises the shape. The numbers below replay real blocks with <em>all</em> their swaps
+          interleaved — three to eleven of them — which is the condition it actually faces. Different
+          scans, no overlap. Recall there is {precision.caughtSandwich} of {precision.sandwichBlocks},
+          not 25 of 25, and that lower figure is the honest one: the idealized replay flatters the
+          detector by handing it a textbook sandwich with nothing else in the block.
+        </p>
 
         <div className="precision-grid">
           <div className="precision-col is-before">

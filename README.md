@@ -313,6 +313,24 @@ whether they at least reuse a bot contract gives nothing usable either — the m
 across the legs is the Uniswap Universal Router, which is what everyone uses. Identity-based defence
 does not reach this attacker, which is the honest limit of the cross-pool memory below.
 
+### Two recall numbers, and which one to believe
+
+This page reports both **25 of 25** and **18 of 23**. They are different measurements, not a
+before-and-after, and the difference matters:
+
+| measurement | how each block is built | recall |
+|---|---|---|
+| [replay](contracts/test/AntibodyMainnetReplay.t.sol) | each attack replayed as an isolated 3-swap block: entry, victim, exit, nothing else | 25 of 25 |
+| [precision](contracts/test/AntibodyPrecision.t.sol) | real blocks replayed with **all** their actual swaps, 3 to 11 of them, interleaved | 18 of 23 |
+
+Different scans, zero block overlap. The replay presents a textbook sandwich with no other flow
+around it, so it measures whether the detector recognises the *shape*. The precision test measures
+whether it still recognises it inside real block traffic, which is the condition it will actually
+face.
+
+**18 of 23 is the honest headline.** The idealized replay overstates real-world recall, and quoting
+it without this caveat would be selecting the friendlier of two tests I ran myself.
+
 ### The question recall cannot answer
 
 25 of 25 is *recall*, and recall alone is worth nothing: a detector that fires on every swap also
