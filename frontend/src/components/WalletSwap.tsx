@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { parseEther, maxUint256 } from "viem";
+import { parseEther } from "viem";
 import {
   useAccount,
   useConnect,
@@ -44,6 +44,13 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Which action is in flight. `writing` alone only says *something* is happening, so the mint and
+   * approve buttons sat inert while the wallet was open and the chain was confirming — the work was
+   * invisible, which reads as a broken button rather than a slow one.
+   */
+  const [pending, setPending] = useState<null | "mint" | "approve" | "swap">(null);
+
   const { data: receipt, isLoading: confirming } = useWaitForTransactionReceipt({ hash: txHash });
 
   const { data: balance, refetch: refetchBalance } = useReadContract({
@@ -73,8 +80,9 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
   const needsApproval = (allowance ?? 0n) < parsed;
   const needsTokens = (balance ?? 0n) < parsed;
 
-  async function run(fn: () => Promise<`0x${string}`>) {
+  async function run(kind: "mint" | "approve" | "swap", fn: () => Promise<`0x${string}`>) {
     setError(null);
+    setPending(kind);
     try {
       const hash = await fn();
       setTxHash(hash);
@@ -82,8 +90,34 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
       // Wallet rejections are routine, not failures worth shouting about.
       const msg = e instanceof Error ? e.message : String(e);
       setError(/User rejected|denied/i.test(msg) ? "Cancelled in wallet." : msg.split("\n")[0]);
+      setPending(null);
     }
   }
+
+  /**
+   * Refetch when the receipt actually lands, rather than guessing with a timer.
+   *
+   * This previously used setTimeout(..., 2500), which is a bet on block time: too early and the
+   * button still says "approve" after a successful approval, too late and the page feels dead. The
+   * receipt is the event that matters, so wait for it.
+   */
+  useEffect(() => {
+    if (!receipt) return;
+    if (pending === "mint") refetchBalance();
+    if (pending === "approve") refetchAllowance();
+    if (pending === "swap") refetchBalance();
+    setPending(null);
+  }, [receipt]);
+
+  /** What a button should say while its transaction is in flight. */
+  const label = (kind: "mint" | "approve" | "swap", idle: string) => {
+    if (pending !== kind) return idle;
+    if (writing) return "Confirm in wallet…";
+    if (confirming) return "Landing on chain…";
+    return "Sending…";
+  };
+  const busy = (kind: "mint" | "approve" | "swap") =>
+    pending === kind && (writing || confirming);
 
   if (!isConnected) {
     return (
@@ -141,50 +175,51 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
             {needsTokens && (
               <button
                 className="btn"
-                disabled={writing}
+                disabled={pending !== null}
                 onClick={() =>
-                  run(async () => {
-                    const h = await writeContractAsync({
+                  run("mint", () =>
+                    writeContractAsync({
                       address: token0,
                       abi: ERC20_ABI,
                       functionName: "mint",
                       args: [address!, parseEther("1000")],
-                    });
-                    setTimeout(() => refetchBalance(), 2500);
-                    return h;
-                  })
+                    })
+                  )
                 }
               >
-                1 · Get test tokens
+                {busy("mint") && <span className="spinner" aria-hidden />}
+                {label("mint", "1 · Get test tokens")}
               </button>
             )}
 
             {!needsTokens && needsApproval && (
               <button
                 className="btn"
-                disabled={writing}
+                disabled={pending !== null}
                 onClick={() =>
-                  run(async () => {
-                    const h = await writeContractAsync({
+                  run("approve", () =>
+                    writeContractAsync({
                       address: token0,
                       abi: ERC20_ABI,
                       functionName: "approve",
-                      args: [ROUTER, maxUint256],
-                    });
-                    setTimeout(() => refetchAllowance(), 2500);
-                    return h;
-                  })
+                      // A bounded allowance rather than maxUint256. Wallets render the unlimited
+                      // value as a 60-digit number, which is alarming and teaches people to approve
+                      // infinity without reading. 1,000 tokens covers any demo swap on this page.
+                      args: [ROUTER, parseEther("1000")],
+                    })
+                  )
                 }
               >
-                2 · Approve router
+                {busy("approve") && <span className="spinner" aria-hidden />}
+                {label("approve", "2 · Approve router")}
               </button>
             )}
 
             <button
               className="btn btn-primary"
-              disabled={writing || confirming || needsTokens || needsApproval || parsed === 0n}
+              disabled={pending !== null || needsTokens || needsApproval || parsed === 0n}
               onClick={() =>
-                run(() =>
+                run("swap", () =>
                   writeContractAsync({
                     address: ROUTER,
                     abi: ROUTER_ABI,
@@ -208,7 +243,8 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
                 )
               }
             >
-              {writing ? "Confirm in wallet…" : confirming ? "Landing…" : "3 · Swap"}
+              {busy("swap") && <span className="spinner" aria-hidden />}
+              {label("swap", "3 · Swap")}
             </button>
           </div>
         </>
@@ -219,7 +255,11 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
       {txHash && (
         <motion.div className="ws-result" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           <div>
-            {confirming ? "waiting for the block…" : receipt?.status === "success" ? "swapped" : "reverted"}
+            {confirming
+              ? "waiting for the block…"
+              : receipt?.status === "success"
+                ? "confirmed"
+                : "reverted"}
           </div>
           <a href={`${EXPLORER}/tx/${txHash}`} target="_blank" rel="noreferrer">
             {txHash.slice(0, 10)}… ↗

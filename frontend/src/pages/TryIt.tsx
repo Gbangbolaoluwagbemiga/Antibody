@@ -43,7 +43,8 @@ export function TryIt() {
             Reading a quote proves the hook has an opinion. Executing a swap proves the chain
             enforces it — the fee on your receipt is set by <code>beforeSwap</code>, and nothing on
             this page can influence it. The demo tokens mint freely, so you can fund yourself in one
-            click.
+            click. You are spending <strong>token0 (ABDB)</strong> and receiving token1 (ABDA); a
+            swap trades one for the other, it does not mint you a share of the pool.
           </p>
           <p className="sub">
             <strong>This swaps against pool A</strong>, whose boundary is the first number on this
