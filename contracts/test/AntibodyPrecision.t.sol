@@ -56,7 +56,7 @@ contract AntibodyPrecisionTest is BaseTest, MEVBench {
     PoolKey internal pool;
     string internal fixture;
 
-    uint256 internal constant ACTORS = 9; // maxDistinctTradersInABlock, from the fixture
+    uint256 internal constant ACTORS = 24; // >= maxDistinctTradersInABlock across both fixtures
     address[ACTORS] internal actors;
     uint256 internal constant TYPICAL = 1e18;
     uint160 internal constant SQRT_PRICE_1_1 = 79228162514264337593543950336;
@@ -97,6 +97,18 @@ contract AntibodyPrecisionTest is BaseTest, MEVBench {
         // cost some detections to O(1) state, and pinning the exact figure would turn an honest
         // limitation into a brittle test. Below three quarters means something regressed.
         assertGe(r.recallBps, 7_500, "recall fell below 75%");
+    }
+
+    /// The same property against a sample nearly three times larger, scanned independently.
+    ///
+    /// A single 117-block sample is thin evidence for a zero. This replays 323 ordinary blocks
+    /// pulled from a separate 2,500-block scan. If the detector fires anywhere in here, the
+    /// headline claim is wrong and gets restated rather than defended.
+    function test_precisionHoldsOnALargerIndependentSample() public {
+        Result memory r = runBench("test/fixtures/mainnet_precision_large.json");
+        logBench(r);
+        assertEq(r.firedOnOrdinary, 0, "fired on an ordinary block in the larger sample");
+        assertGe(r.recallBps, 7_000, "recall fell below 70% on the larger sample");
     }
 
     // ── MEVBench wiring ──────────────────────────────────────────────────────────────────────

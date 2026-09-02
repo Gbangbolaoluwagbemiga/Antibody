@@ -93,7 +93,10 @@ def has_sandwich_shape(swaps):
     for i, entry in enumerate(swaps):
         for j in range(i + 1, len(swaps)):
             exit_ = swaps[j]
-            if exit_["origin"] == entry["origin"] or exit_["zeroForOne"] == entry["zeroForOne"]:
+            # Same-origin and multi-origin sandwiches both count. An earlier version of this
+            # skipped same-origin exits, which silently mislabelled real sandwiches as ordinary
+            # blocks and then scored the detector as wrong for catching one.
+            if exit_["zeroForOne"] == entry["zeroForOne"]:
                 continue
             victims = [m for m in swaps[i + 1:j]
                        if m["origin"] not in (entry["origin"], exit_["origin"])

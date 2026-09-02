@@ -36,7 +36,7 @@ because a detector that fires on every swap also catches 100% of attacks. The nu
 whether a fee-based defence is usable is **precision**: how often does it fire on ordinary trading?
 
 Antibody's `BlockReversal` shipped across six deployments reporting 25-of-25 on real mainnet
-sandwiches. Measured against ordinary blocks for the first time, it fired on **35 of 117**. The
+sandwiches. Measured against ordinary blocks for the first time, it fired on **133 of 322** — 41%. The
 recall number was true the whole time and hid a broken detector.
 
 So the harness is separated from the hook it was written for:
@@ -315,20 +315,21 @@ does not reach this attacker, which is the honest limit of the cross-pool memory
 
 ### Two recall numbers, and which one to believe
 
-This page reports both **25 of 25** and **18 of 23**. They are different measurements, not a
+This page reports both **25 of 25** and **35 of 39**. They are different measurements, not a
 before-and-after, and the difference matters:
 
 | measurement | how each block is built | recall |
 |---|---|---|
 | [replay](contracts/test/AntibodyMainnetReplay.t.sol) | each attack replayed as an isolated 3-swap block: entry, victim, exit, nothing else | 25 of 25 |
-| [precision](contracts/test/AntibodyPrecision.t.sol) | real blocks replayed with **all** their actual swaps, 3 to 11 of them, interleaved | 18 of 23 |
+| [precision, sample 1](contracts/test/AntibodyPrecision.t.sol) | real blocks with **all** their actual swaps interleaved | 18 of 23 |
+| [precision, sample 2](contracts/test/AntibodyPrecision.t.sol) | same, independent 2,500-block scan | 35 of 39 |
 
 Different scans, zero block overlap. The replay presents a textbook sandwich with no other flow
 around it, so it measures whether the detector recognises the *shape*. The precision test measures
 whether it still recognises it inside real block traffic, which is the condition it will actually
 face.
 
-**18 of 23 is the honest headline.** The idealized replay overstates real-world recall, and quoting
+**35 of 39 is the honest headline** — the larger of the two real-block samples. The idealized replay overstates real-world recall, and quoting
 it without this caveat would be selecting the friendlier of two tests I ran myself.
 
 ### The question recall cannot answer
@@ -345,13 +346,24 @@ pl.lastBlock == block.number && pl.lastZeroForOne != zeroForOne && pl.lastTrader
 [The precision test](contracts/test/AntibodyPrecision.t.sol) replays 117 real mainnet blocks that
 contained trading and no sandwich:
 
-| condition | recall | fired on ordinary blocks | precision |
-|---|---|---|---|
-| as shipped | 23 of 23 | **35 of 117** | 40% |
-| victim-gated (deployed now) | 18 of 23 | **0 of 117** | **100%** |
+Two independently scanned samples, 439 ordinary blocks between them:
 
-Around three fifths of everything it flagged was innocent — the same defect as the 23-of-23 false
-positives further down this page, wearing a different variable name.
+| condition | sample | recall | fired on ordinary blocks | precision |
+|---|---|---|---|---|
+| as shipped | 117 blocks | 23 of 23 | **35** (30%) | 40% |
+| as shipped | 322 blocks | 39 of 39 | **133** (41%) | **23%** |
+| victim-gated (deployed now) | 117 blocks | 18 of 23 | **0** | **100%** |
+| victim-gated (deployed now) | 322 blocks | 35 of 39 | **0** | **100%** |
+
+On the larger sample the shipped detector fired on **41% of all ordinary blocks** and was wrong more
+than three times out of four — the same defect as the 23-of-23 false positives further down this
+page, wearing a different variable name.
+
+One correction worth recording: the first version of `build_fixture.py` excluded *same-origin*
+sandwiches from its ground truth, which mislabelled a real attack as an ordinary block and scored
+the detector as wrong for catching it. Fixed, and both fixtures relabelled. Exactly 1 of the 39
+sandwiches in the larger sample was same-origin — so same-origin sandwiches do occur on mainnet,
+they are simply rare, which is a slight refinement of the 0-of-25 finding above.
 
 Requiring a victim in between removes all 35 false positives and costs 5 of 23 detections. Those 5
 are unrecoverable by a hook: `afterSwap` sees one swap and two storage words, not the whole block.

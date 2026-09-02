@@ -135,4 +135,8 @@ export type MainnetPrecisionMeta = {
   caughtSandwich: number;
   beforeGateFiredOnOrdinary: number;
   beforeGateCaughtSandwich: number;
+  /** A second, independently scanned sample. Two samples that agree beat one. */
+  secondSampleOrdinaryBlocks: number;
+  secondSampleFiredOnOrdinary: number;
+  secondSampleBeforeGate: number;
 };

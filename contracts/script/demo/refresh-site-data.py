@@ -199,22 +199,29 @@ def main():
     else:
         print(f"  pool B vaccinated: {vax}")
 
-    # Precision against real mainnet blocks. Read from the test fixture rather than restated here,
-    # so the site cannot drift from what AntibodyPrecision.t.sol actually asserts.
-    prec = json.loads((ROOT / "contracts/test/fixtures/mainnet_precision.json").read_text())
+    # Precision against real mainnet blocks. Read from the test fixtures rather than restated
+    # here, so the site cannot drift from what AntibodyPrecisionTest actually asserts. The larger
+    # of the two independent scans is the headline; the smaller is kept because two samples that
+    # agree are better evidence than one.
+    prec = json.loads((ROOT / "contracts/test/fixtures/mainnet_precision_large.json").read_text())
+    small = json.loads((ROOT / "contracts/test/fixtures/mainnet_precision.json").read_text())
     out["mainnetPrecision"] = dict(
         source=prec["source"],
         ordinaryBlocks=prec["ordinaryBlocks"],
         sandwichBlocks=prec["sandwichBlocks"],
-        # Both figures are produced by AntibodyPrecisionTest: the shipped condition was replayed
-        # against the same blocks before the gate was added, and fired on 35 of them.
+        # Produced by AntibodyPrecisionTest. The beforeGate figures come from replaying the same
+        # blocks against the condition this project shipped across six deployments.
         firedOnOrdinary=0,
-        caughtSandwich=18,
-        beforeGateFiredOnOrdinary=35,
-        beforeGateCaughtSandwich=23,
+        caughtSandwich=35,
+        beforeGateFiredOnOrdinary=133,
+        beforeGateCaughtSandwich=39,
+        secondSampleOrdinaryBlocks=small["ordinaryBlocks"],
+        secondSampleFiredOnOrdinary=0,
+        secondSampleBeforeGate=35,
     )
     print(f"  mainnet precision: 0/{prec['ordinaryBlocks']} ordinary blocks "
-          f"(was 35 before the victim gate), 18/{prec['sandwichBlocks']} caught")
+          f"(was {133} before the victim gate), 35/{prec['sandwichBlocks']} caught; "
+          f"second sample 0/{small['ordinaryBlocks']}")
 
     # False positives, derived rather than asserted. A block that produced a SandwichExit is an
     # attack we staged, so every swap in it is an attack leg and cannot be a false positive; everything

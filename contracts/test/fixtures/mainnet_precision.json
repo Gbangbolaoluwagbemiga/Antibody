@@ -1,6 +1,6 @@
 {
  "source": "Ethereum mainnet, Uniswap v3 USDC/WETH 0.05%",
- "groundTruth": "A block counts as containing a sandwich if it has the mechanical shape: an entry, a different address trading the same direction after it, then a reversal. That is a definition, not an oracle, and is stated so it can be argued with.",
+ "groundTruth": "A block counts as containing a sandwich if it holds the mechanical shape: an entry, a different address trading the same direction after it, then a reversal. Same-origin and multi-origin both count -- an earlier version of this generator wrongly excluded same-origin, mislabelling real sandwiches as ordinary blocks. A definition, not an oracle.",
  "encoding": "t[] are per-block trader indices (distinctness within the block is all that matters, since each block replays into a fresh block number). d[] is zeroForOne as 0/1.",
  "excluded": "Blocks with a single swap. A reversal needs two, so they cannot change either number.",
  "blocksKept": 140,

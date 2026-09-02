@@ -27,6 +27,9 @@ type Props = {
     caughtSandwich: number;
     beforeGateFiredOnOrdinary: number;
     beforeGateCaughtSandwich: number;
+    secondSampleOrdinaryBlocks: number;
+    secondSampleFiredOnOrdinary: number;
+    secondSampleBeforeGate: number;
   };
 };
 
@@ -147,8 +150,15 @@ export function MainnetReplay({
           </div>
         </div>
 
+        <p className="footnote" style={{ marginBottom: 14 }}>
+          Confirmed on a second, independently scanned sample:{" "}
+          <strong>{precision.secondSampleFiredOnOrdinary} of {precision.secondSampleOrdinaryBlocks}</strong>{" "}
+          ordinary blocks flagged, against {precision.secondSampleBeforeGate} before the gate. Two
+          scans that agree are better evidence than one that happens to be clean.
+        </p>
+
         <p className="replay-verdict">
-          <strong>Three fifths of what it flagged was innocent.</strong> "The pool reversed direction
+          <strong>More than three quarters of what it flagged was innocent.</strong> "The pool reversed direction
           under a different address" is also a plain description of two arbitrageurs crossing in a
           busy block — the same defect as the 23-of-23 false positives this project already found
           once, wearing a different variable name. Requiring a victim in between removed all{" "}
