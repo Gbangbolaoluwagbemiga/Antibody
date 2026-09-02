@@ -119,7 +119,15 @@ export default async function handler(req: Request): Promise<Response> {
 
   // ?dry=1 reads nonces and signs, but publishes nothing. Isolates "is the RPC reachable at all"
   // from "did the sends fail", without spending anything.
-  const dry = new URL(req.url).searchParams.get("dry") === "1";
+  // req.url is not guaranteed to be absolute across runtimes, and a crash here would be a worse
+  // failure than the one being diagnosed.
+  const dry = (() => {
+    try {
+      return new URL(req.url, "http://x").searchParams.get("dry") === "1";
+    } catch {
+      return false;
+    }
+  })();
   const ATTACK = parseEther("2");
   const VICTIM = parseEther("0.1"); // inside the calibrated band, so the victim is not itself flagged
 
