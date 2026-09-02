@@ -72,7 +72,7 @@ silently gets sensible defaults.
 
 One extra storage slot per pool, read once in `_beforeInitialize` and then on every `_assess` call
 to get `k` and `minSamples`. That is one additional SLOAD in the hot path — call it ~2,100 gas cold,
-100 warm — on top of the current 37,278 overhead.
+100 warm — on top of the current 38,805 overhead.
 
 Whether that is worth paying for tier flexibility is a real question and I do not think the answer
 is obviously yes.

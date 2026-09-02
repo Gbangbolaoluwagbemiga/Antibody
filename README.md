@@ -9,11 +9,11 @@ confirmed sandwicher is priced in every pool the hook serves.
 It also ships **[MEVBench](contracts/test/bench/MEVBench.sol)** — a harness that measures *any* v4
 hook's precision and recall against real Ethereum blocks. MEV hooks report "it caught N attacks" and
 almost never report how often they fire on ordinary trading. Running Antibody through it found the
-detector I had shipped six times was wrong about three fifths of the time. That is on this page, with
+detector I had shipped six times was wrong more than three times out of four. That is on this page, with
 the fix.
 
 UHI10 Hookathon · Project `HK-UHI10-1010` · Theme: Sustainable Liquidity & MEV Protection
-Deployed and **source-verified** on **Unichain Sepolia** · 82 passing tests
+Deployed and **source-verified** on **Unichain Sepolia** · 83 passing tests
 
 ---
 
@@ -222,7 +222,7 @@ contracts/
   src/AntibodyHook.sol              the hook
   src/libraries/BaselineMath.sol    EWMA + deviation band, no division, no sqrt
   src/interfaces/IAntibodySignal.sol
-  test/                             80 tests
+  test/                             83 tests
   script/                           deploy, calibrate, attack, inspect
 frontend/
   src/components/BaselineChart.tsx  the threshold, as the pool learned it
@@ -358,6 +358,13 @@ Two independently scanned samples, 439 ordinary blocks between them:
 On the larger sample the shipped detector fired on **41% of all ordinary blocks** and was wrong more
 than three times out of four — the same defect as the 23-of-23 false positives further down this
 page, wearing a different variable name.
+
+One thing a reader will notice: the comment inside `AntibodyHook.sol` still cites the *first*
+sample: a 298-block denominator, and 40% precision. That is deliberate. Solidity embeds a hash of the source in the
+deployed bytecode's metadata, so editing even a comment would desync this repo from the
+[Uniscan-verified source](https://sepolia.uniscan.xyz/address/0x0f7b23B7d0E798a551c5F584aE2696eea5B8e0c0#code).
+The deployed source is frozen at what was deployed; the larger measurement lives here and in the
+tests, which is where a number that keeps moving belongs.
 
 One correction worth recording: the first version of `build_fixture.py` excluded *same-origin*
 sandwiches from its ground truth, which mislabelled a real attack as an ordinary block and scored

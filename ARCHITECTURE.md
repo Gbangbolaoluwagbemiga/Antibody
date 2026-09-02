@@ -227,7 +227,7 @@ or a specific Orbitwork mistake.
 |---|---|
 | Hookless swap, same pool shape | 44,061 |
 | Antibody swap | 81,339 |
-| **Overhead** | **37,278** |
+| **Overhead** | **38,805** |
 
 Three SSTOREs per swap — baseline, trader record, pool record — is the floor for cross-transaction
 detection, since transient storage cannot span a sandwich's three transactions. This is a real,

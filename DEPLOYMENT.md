@@ -364,10 +364,15 @@ as evidence. Detection is a classification question, and that is the only questi
 also describes two arbitrageurs crossing, and nobody had checked how often it did. Replaying 117
 real mainnet blocks containing trading and no sandwich:
 
-| condition | recall | fired on ordinary blocks | precision |
-|---|---|---|---|
-| as shipped | 23 of 23 | 35 of 117 | 40% |
-| victim-gated | 18 of 23 | 0 of 117 | 100% |
+| condition | sample | recall | fired on ordinary blocks | precision |
+|---|---|---|---|---|
+| as shipped | 117 blocks | 23 of 23 | 35 (30%) | 40% |
+| as shipped | 322 blocks | 39 of 39 | **133 (41%)** | **23%** |
+| victim-gated | 117 blocks | 18 of 23 | **0** | **100%** |
+| victim-gated | 322 blocks | 35 of 39 | **0** | **100%** |
+
+Two independently scanned samples, 439 ordinary blocks between them. On the larger one the shipped
+condition fired on 41% of all ordinary blocks and was wrong more than three times out of four.
 
 The fix mirrors the one already applied to `SandwichExit`: require a third party to have traded the
 same direction in between. The hook holds the pool's current in-block *run* — who opened it, and one
