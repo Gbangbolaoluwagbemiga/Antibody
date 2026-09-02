@@ -31,7 +31,8 @@ export function How() {
                   │  ├─ SandwichExit  same trader, same block, │
                   │  │                 reversed, victim between │
                   │  ├─ BlockReversal pool reversed in-block,   │
-                  │  │                 different address        │
+                  │  │                 different address,        │
+                  │  │                 victim between            │
                   │  └─ SizeAnomaly   size > μ + kδ             │
                   │       ↓                                     │
                   │  fee | OVERRIDE_FEE_FLAG ──────────────────┼─▶ accrues to LPs
@@ -42,6 +43,7 @@ export function How() {
                   │  μ ← μ + (x − μ)/16      ← THE state write  │
                   │  δ ← δ + (|x − μ| − δ)/16                   │
                   │  record (trader, block, direction, size)     │
+                  │  advance the pool's in-block run (2 words)   │
                   │  emit BaselineUpdated / ToxicFlowDetected    │
                   └─────────────────────────────────────────────┘`}</pre>
           <p className="sub" style={{ marginTop: 16 }}>
