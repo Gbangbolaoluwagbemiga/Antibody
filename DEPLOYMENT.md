@@ -11,15 +11,15 @@ Every address and transaction below is real and verifiable, and the hook's **sou
 
 | | |
 |---|---|
-| **AntibodyHook** | [`0x7BDeB74cDdf22d0FAfA5e323426fbD3bdCd8A0c0`](https://sepolia.uniscan.xyz/address/0x7BDeB74cDdf22d0FAfA5e323426fbD3bdCd8A0c0) |
-| Pool ID | `0x567e46f26b3ffecb4a78bee5354c7a9794f65c70ddc9e25aa07538d68fa0f85e` |
+| **AntibodyHook** | [`0x0f7b23B7d0E798a551c5F584aE2696eea5B8e0c0`](https://sepolia.uniscan.xyz/address/0x0f7b23B7d0E798a551c5F584aE2696eea5B8e0c0) |
+| Pool ID | `0xb4463fcec8f4c6151166985d2896f9a961170ff8119aee511ecc0db3ac675816` |
 | Demo token 0 (ABDA) | `0x2975200DA18f21bF8ecE746Bed6281e4B373D548` |
 | Demo token 1 (ABDB) | `0x5906F35B86A6AC0281A5655933eE37253aA42ef4` |
 | Owner / deployer | `0x3Be7fbBDbC73Fc4731D60EF09c4BA1A94DC58E41` |
 | v4 PoolManager | `0x00B036B58a818B1BC34d502D3fE730Db729e62AC` |
 | v4 Swap Router | `0x9cD2b0a732dd5e023a5539921e0FD1c30E198Dba` |
 
-The hook address encodes its permissions in its low bits: `0x…a0c0 & 0x3FFF = 0x20C0` =
+The hook address encodes its permissions in its low bits: `0x…e0c0 & 0x3FFF = 0x20C0` =
 `BEFORE_INITIALIZE | BEFORE_SWAP | AFTER_SWAP`, matching `getHookPermissions()`. Salt mined with
 `HookMiner` against the canonical CREATE2 proxy. The pool is initialised with `DYNAMIC_FEE_FLAG`;
 without it the PoolManager would silently discard every fee the hook computes, so
