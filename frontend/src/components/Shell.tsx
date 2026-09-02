@@ -9,7 +9,16 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const H = seed as unknown as History;
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
-const short = (s: string) => `${s.slice(0, 6)}…${s.slice(-4)}`;
+/**
+ * Truncate an address for display.
+ *
+ * Deliberately weighted to the FRONT. A v4 hook's address is mined so its low 14 bits encode its
+ * permissions — Antibody needs beforeInitialize | beforeSwap | afterSwap, which is 0x20C0 — so every
+ * deployment of this hook ends in the same characters. Showing the tail displays the one part that
+ * is identical across every deploy, which is worse than useless: it reads as "unchanged" precisely
+ * when the contract has changed. The leading bytes are the only part that identifies a deployment.
+ */
+const short = (s: string) => `${s.slice(0, 10)}…`;
 
 const PAGES = [
   { to: "/", label: "Overview", hint: "two pools, one hook", end: true },
