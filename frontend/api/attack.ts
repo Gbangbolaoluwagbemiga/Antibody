@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, http, defineChain, parseEther, encodeFunctionData } from "viem";
+import { createPublicClient, http, defineChain, parseEther, encodeFunctionData } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
 /**
@@ -98,8 +98,6 @@ export default async function handler(req: Request): Promise<Response> {
 
   const attacker = privateKeyToAccount(DEMO_ATTACKER_KEY as `0x${string}`);
   const victim = privateKeyToAccount(DEMO_VICTIM_KEY as `0x${string}`);
-  const attackerWallet = createWalletClient({ account: attacker, chain: unichainSepolia, transport });
-  const victimWallet = createWalletClient({ account: victim, chain: unichainSepolia, transport });
 
   const poolKey = {
     currency0: TOKEN0 as `0x${string}`,
@@ -118,32 +116,50 @@ export default async function handler(req: Request): Promise<Response> {
       publicClient.getTransactionCount({ address: victim.address }),
     ]);
 
-    // Sign all three up front so publishing costs no round trips.
+    // Sign all three offline, on the ACCOUNT rather than the wallet client.
+    //
+    // walletClient.signTransaction still makes a round trip per signature even with every field
+    // supplied -- measured at ~270ms each against this endpoint. account.signTransaction is pure
+    // local crypto and returns in under 2ms.
+    //
+    // This previously used prepareTransactionRequest, which looks up chain id and fee data per
+    // transaction even when gas is fixed. Together with the client-side signing round trips that is
+    // roughly fourteen calls against the public Unichain Sepolia endpoint, and it pushed the
+    // function past Vercel's 60s ceiling: the deployed attack button returned
+    // FUNCTION_INVOCATION_TIMEOUT while the identical code ran fine locally, because a datacenter
+    // IP is throttled harder than a laptop. It is five calls now -- two nonce reads and three
+    // sends -- and none of them are avoidable.
+    //
+    // Fees are hardcoded well above the measured 0.0005 gwei this chain actually charges. 0.05 gwei
+    // is a hundred times that, which absorbs any spike, and at ~200k gas a leg still costs about
+    // 0.00001 ETH -- the demo wallets fund hundreds of runs.
+    const MAX_FEE = 50_000_000n; // 0.05 gwei
+    const PRIORITY = 5_000_000n; // 0.005 gwei
+    const common = {
+      to: ROUTER,
+      gas: 900_000n,
+      maxFeePerGas: MAX_FEE,
+      maxPriorityFeePerGas: PRIORITY,
+      chainId: unichainSepolia.id,
+      type: "eip1559",
+    } as const;
+
     const [raw1, raw3, raw2] = await Promise.all([
-      attackerWallet.signTransaction(
-        await attackerWallet.prepareTransactionRequest({
-          to: ROUTER,
-          nonce: an,
-          gas: 900_000n,
-          data: encodeSwap(ATTACK, true, attacker.address, poolKey, deadline),
-        })
-      ),
-      attackerWallet.signTransaction(
-        await attackerWallet.prepareTransactionRequest({
-          to: ROUTER,
-          nonce: an + 1,
-          gas: 900_000n,
-          data: encodeSwap(ATTACK, false, attacker.address, poolKey, deadline),
-        })
-      ),
-      victimWallet.signTransaction(
-        await victimWallet.prepareTransactionRequest({
-          to: ROUTER,
-          nonce: vn,
-          gas: 900_000n,
-          data: encodeSwap(VICTIM, true, victim.address, poolKey, deadline),
-        })
-      ),
+      attacker.signTransaction({
+        ...common,
+        nonce: an,
+        data: encodeSwap(ATTACK, true, attacker.address, poolKey, deadline),
+      }),
+      attacker.signTransaction({
+        ...common,
+        nonce: an + 1,
+        data: encodeSwap(ATTACK, false, attacker.address, poolKey, deadline),
+      }),
+      victim.signTransaction({
+        ...common,
+        nonce: vn,
+        data: encodeSwap(VICTIM, true, victim.address, poolKey, deadline),
+      }),
     ]);
 
     // Narrative order with a short stagger: the victim must land *between* the attacker's legs, and
