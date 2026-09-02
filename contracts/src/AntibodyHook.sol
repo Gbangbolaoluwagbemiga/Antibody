@@ -407,7 +407,8 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         //
         // Catches an attacker who splits entry and exit across two EOAs, which measurement says is
         // not an edge case but the norm: 610 live mainnet blocks produced 25 sandwich-shaped
-        // events and every one was multi-address. Zero were same-origin. Resolving the actual
+        // events and every one was multi-address. A later, larger scan found same-origin does
+        // occur -- 1 of 39 -- so it is rare rather than absent. Resolving the actual
         // senders confirmed it is deliberate — all 25 exits used a *fresh* address, and no
         // (entry, exit) pair ever repeated. Address rotation is the standard evasion.
         //
@@ -416,18 +417,22 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         // under a different address", which is also a plain description of two arbitrageurs
         // crossing in a busy block. Replaying it over 321 real mainnet blocks:
         //
-        //     as shipped        recall 23/23 (100%)   fired on 35/298 ordinary blocks   precision  40%
-        //     victim-gated      recall 18/23  (78%)   fired on  0/298 ordinary blocks   precision 100%
+        //   sample   condition      recall            fired on ordinary blocks   precision
+        //   117       as shipped     23/23 (100%)      35  (30%)                   40%
+        //   322       as shipped     39/39 (100%)      133 (41%)                   23%
+        //   117       victim-gated   18/23  (78%)      0                          100%
+        //   322       victim-gated   35/39  (90%)      0                          100%
         //
-        // So it was firing on 11.7% of ordinary blocks, and around three fifths of everything it
-        // flagged was innocent. That is the same defect as the 23-of-23 false positives above,
-        // with a different variable name: a rule that describes an attack and ordinary behaviour
-        // equally well.
+        // Two independently scanned samples, 439 ordinary blocks between them. On the larger one
+        // the shipped condition fired on 41% of all ordinary blocks and was wrong more than three
+        // times out of four. That is the same defect as the 23-of-23 false positives above, with a
+        // different variable name: a rule that describes an attack and ordinary behaviour equally
+        // well.
         //
-        // The gate costs 5 of 23 in recall, and that is a deliberate trade rather than a
-        // regression. Those 5 are lost to the O(1) state a hook can afford — an offline pass with
-        // the whole block in view keeps all 23 at zero false positives, but `afterSwap` sees one
-        // swap and two storage words, so some interleavings are unrecoverable. Given the choice,
+        // The gate costs 4 of 39 in recall on the larger sample, and that is a deliberate trade
+        // rather than a regression. Those are lost to the O(1) state a hook can afford — an
+        // offline pass with the whole block in view keeps every one at zero false positives, but
+        // `afterSwap` sees one swap and two storage words, so some interleavings are unrecoverable. Given the choice,
         // precision wins: a false positive here overcharges an innocent trader, which is precisely
         // the "coarse rule engine driven by subjective inputs" criticism this design exists to
         // answer. Missing an attack costs the pool nothing it was not already losing.

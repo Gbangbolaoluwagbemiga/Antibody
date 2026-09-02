@@ -49,7 +49,7 @@ def forbid(pattern, why, files, allow=()):
                 FAIL.append(f"{f}:{i}  {why}\n      {line.strip()[:110]}")
 
 # ── superseded hook addresses ──────────────────────────────────────────────────────────────
-forbid(r"0x8Ca88762|0x7BDeB74c|0x1A73Df4c", "superseded hook address", DOCS + UI)
+forbid(r"0x8Ca88762|0x7BDeB74c|0x1A73Df4c|0x0f7b23B7", "superseded hook address", DOCS + UI)
 
 # ── superseded gas figure. DEPLOYMENT.md states the before/after of the victim gate. ────────
 forbid(r"37,?278", f"superseded gas overhead (now {GAS:,})", DOCS + UI,

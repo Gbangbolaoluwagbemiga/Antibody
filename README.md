@@ -359,12 +359,12 @@ On the larger sample the shipped detector fired on **41% of all ordinary blocks*
 than three times out of four — the same defect as the 23-of-23 false positives further down this
 page, wearing a different variable name.
 
-One thing a reader will notice: the comment inside `AntibodyHook.sol` still cites the *first*
-sample: a 298-block denominator, and 40% precision. That is deliberate. Solidity embeds a hash of the source in the
-deployed bytecode's metadata, so editing even a comment would desync this repo from the
-[Uniscan-verified source](https://sepolia.uniscan.xyz/address/0x0f7b23B7d0E798a551c5F584aE2696eea5B8e0c0#code).
-The deployed source is frozen at what was deployed; the larger measurement lives here and in the
-tests, which is where a number that keeps moving belongs.
+The comment inside `AntibodyHook.sol` carries this same table, and the contract was redeployed so
+that it could. Solidity embeds a hash of the source in the deployed bytecode's metadata, so a stale
+comment cannot be corrected without redeploying — and leaving a claim a later scan had disproved
+("zero were same-origin") inside verified source was not worth avoiding that for. The repo compiles
+to exactly the deployed bytecode, immutables aside; `scripts/check-bytecode.sh` proves it against
+the live chain.
 
 One correction worth recording: the first version of `build_fixture.py` excluded *same-origin*
 sandwiches from its ground truth, which mislabelled a real attack as an ordinary block and scored
