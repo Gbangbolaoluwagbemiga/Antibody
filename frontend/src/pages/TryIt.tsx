@@ -38,12 +38,18 @@ export function TryIt() {
       </Reveal>
       <Reveal>
         <section className="panel">
-          <h2>Swap it yourself</h2>
+          <h2>Swap it yourself — against pool A</h2>
           <p className="sub">
             Reading a quote proves the hook has an opinion. Executing a swap proves the chain
             enforces it — the fee on your receipt is set by <code>beforeSwap</code>, and nothing on
             this page can influence it. The demo tokens mint freely, so you can fund yourself in one
             click.
+          </p>
+          <p className="sub">
+            <strong>This swaps against pool A</strong>, whose boundary is the first number on this
+            page — not pool B's directly above. They are different pools with different learned
+            boundaries, so a size that looks unremarkable against one can be an anomaly against the
+            other. That is the whole point of the two panels, and it is easy to trip over here.
           </p>
           <WalletSwap
             hook={H.hook as `0x${string}`}
