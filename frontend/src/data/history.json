@@ -1049,5 +1049,14 @@
   "flaggedAsSandwich": 0,
   "sizeFlagged": 1,
   "attackLegs": 6
+ },
+ "mainnetPrecision": {
+  "source": "Ethereum mainnet, Uniswap v3 USDC/WETH 0.05%",
+  "ordinaryBlocks": 117,
+  "sandwichBlocks": 23,
+  "firedOnOrdinary": 0,
+  "caughtSandwich": 18,
+  "beforeGateFiredOnOrdinary": 35,
+  "beforeGateCaughtSandwich": 23
  }
 }

@@ -1,0 +1,1939 @@
+{
+ "source": "Ethereum mainnet, Uniswap v3 USDC/WETH 0.05%",
+ "groundTruth": "A block counts as containing a sandwich if it has the mechanical shape: an entry, a different address trading the same direction after it, then a reversal. That is a definition, not an oracle, and is stated so it can be argued with.",
+ "encoding": "t[] are per-block trader indices (distinctness within the block is all that matters, since each block replays into a fresh block number). d[] is zeroForOne as 0/1.",
+ "excluded": "Blocks with a single swap. A reversal needs two, so they cannot change either number.",
+ "blocksKept": 140,
+ "maxDistinctTradersInABlock": 9,
+ "maxSwapsInABlock": 11,
+ "sandwichBlocks": 23,
+ "ordinaryBlocks": 117,
+ "blocks": [
+  {
+   "block": 25884688,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884692,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884695,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "d": [
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884696,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884697,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884710,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884711,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884716,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884717,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884722,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884729,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884749,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884750,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884755,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884761,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884762,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884765,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884770,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884771,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "d": [
+    0,
+    1,
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884778,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884779,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884780,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884784,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884786,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884795,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "d": [
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884802,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884811,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884814,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884821,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884823,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884825,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884831,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884833,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884837,
+   "sandwich": false,
+   "t": [
+    0,
+    0,
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884840,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884841,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884842,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884861,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884862,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884863,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884864,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "d": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884867,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884870,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884879,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884883,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884886,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884889,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884890,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    3,
+    4,
+    5
+   ],
+   "d": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884892,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884894,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884897,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    1
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884904,
+   "sandwich": false,
+   "t": [
+    0,
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884912,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884913,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884917,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884919,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884920,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884923,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "d": [
+    0,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25884926,
+   "sandwich": false,
+   "t": [
+    0,
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884945,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884952,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884955,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884956,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "d": [
+    0,
+    1,
+    0,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884958,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884959,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884960,
+   "sandwich": false,
+   "t": [
+    0,
+    0
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884964,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884966,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884976,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884984,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884990,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884991,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "d": [
+    0,
+    1,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25884993,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884996,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25884997,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25884998,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885004,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885012,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885013,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885016,
+   "sandwich": false,
+   "t": [
+    0,
+    0
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885019,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885020,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885025,
+   "sandwich": false,
+   "t": [
+    0,
+    0,
+    0,
+    1,
+    1
+   ],
+   "d": [
+    0,
+    1,
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885030,
+   "sandwich": false,
+   "t": [
+    0,
+    0
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885036,
+   "sandwich": true,
+   "t": [
+    0,
+    0,
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885037,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885040,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885041,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885044,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885045,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885051,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885061,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885063,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885065,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885068,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885072,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885073,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885074,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25885080,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25885083,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885089,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885095,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885098,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885105,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885106,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "d": [
+    1,
+    0,
+    1,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885107,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885108,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885120,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885126,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885127,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885134,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885136,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885146,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885148,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885163,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2,
+    2,
+    3
+   ],
+   "d": [
+    1,
+    1,
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885165,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885168,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885173,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885178,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885181,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885182,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885183,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885185,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885186,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885194,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    0
+   ]
+  },
+  {
+   "block": 25885216,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885219,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885222,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885228,
+   "sandwich": false,
+   "t": [
+    0,
+    0
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885232,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885236,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885239,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885244,
+   "sandwich": false,
+   "t": [
+    0,
+    0
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885248,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885251,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885261,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885274,
+   "sandwich": false,
+   "t": [
+    0,
+    1,
+    2
+   ],
+   "d": [
+    1,
+    0,
+    1
+   ]
+  },
+  {
+   "block": 25885278,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  },
+  {
+   "block": 25885283,
+   "sandwich": true,
+   "t": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "d": [
+    0,
+    0,
+    1,
+    1
+   ]
+  },
+  {
+   "block": 25885285,
+   "sandwich": false,
+   "t": [
+    0,
+    1
+   ],
+   "d": [
+    0,
+    0
+   ]
+  }
+ ]
+}

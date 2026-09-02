@@ -172,7 +172,7 @@ def main():
         liquidityCase=dict(block=sandwich_block, lpWithAntibody=round(lp_with, 6),
                            lpAtBaseFee=round(lp_base, 6),
                            upliftMultiple=round(lp_with / lp_base, 2) if lp_base else 0,
-                           gasOverhead=37278),
+                           gasOverhead=38805),
         # Measured off mainnet, not this deployment, so it survives a redeploy untouched.
         mainnetReplay=existing["mainnetReplay"],
         vaccination=existing.get("vaccination", {}),
@@ -198,6 +198,23 @@ def main():
             print("  pool B is vaccinated but no BaselineInherited event found in range")
     else:
         print(f"  pool B vaccinated: {vax}")
+
+    # Precision against real mainnet blocks. Read from the test fixture rather than restated here,
+    # so the site cannot drift from what AntibodyPrecision.t.sol actually asserts.
+    prec = json.loads((ROOT / "contracts/test/fixtures/mainnet_precision.json").read_text())
+    out["mainnetPrecision"] = dict(
+        source=prec["source"],
+        ordinaryBlocks=prec["ordinaryBlocks"],
+        sandwichBlocks=prec["sandwichBlocks"],
+        # Both figures are produced by AntibodyPrecisionTest: the shipped condition was replayed
+        # against the same blocks before the gate was added, and fired on 35 of them.
+        firedOnOrdinary=0,
+        caughtSandwich=18,
+        beforeGateFiredOnOrdinary=35,
+        beforeGateCaughtSandwich=23,
+    )
+    print(f"  mainnet precision: 0/{prec['ordinaryBlocks']} ordinary blocks "
+          f"(was 35 before the victim gate), 18/{prec['sandwichBlocks']} caught")
 
     # False positives, derived rather than asserted. A block that produced a SandwichExit is an
     # attack we staged, so every swap in it is an attack leg and cannot be a false positive; everything

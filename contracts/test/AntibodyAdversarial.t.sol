@@ -168,6 +168,7 @@ contract AntibodyAdversarialTest is BaseTest {
         PoolKey memory poolA = _pool(60);
         _calibrate(poolA);
 
+        vm.roll(block.number + 1);
         _swap(poolA, arb, true, TYPICAL * 2); // leg one of the route
         _swap(poolA, other, true, TYPICAL); // unrelated flow, in between
         _swap(poolA, arb, false, TYPICAL * 2); // route closes through the same pool
@@ -187,6 +188,12 @@ contract AntibodyAdversarialTest is BaseTest {
         PoolKey memory poolA = _pool(60);
         PoolKey memory poolB = _pool(10);
         _calibrate(poolA);
+
+        // Calibration's final swap lands in this block, running the same direction. Roll, so the
+        // attack opens the pool's run rather than joining one already in progress -- otherwise this
+        // test measures the run-nesting gap (covered separately below) instead of what it is named
+        // for.
+        vm.roll(block.number + 1);
 
         // The round-trip route above, which the detector treats as a sandwich.
         _swap(poolA, arb, true, TYPICAL * 2);
@@ -283,6 +290,12 @@ contract AntibodyAdversarialTest is BaseTest {
         uint24 span = hook.MAX_TOTAL_FEE() - hook.baseFee();
 
         // Attacker enters, victim follows, a *different* address closes the position.
+        // Calibration's final swap lands in this block, running the same direction. Roll, so the
+        // attack opens the pool's run rather than joining one already in progress -- otherwise this
+        // test measures the run-nesting gap (covered separately below) instead of what it is named
+        // for.
+        vm.roll(block.number + 1);
+
         _swap(pool, attacker, true, TYPICAL * 2);
         _swap(pool, other, true, TYPICAL);
 
@@ -301,6 +314,10 @@ contract AntibodyAdversarialTest is BaseTest {
         PoolKey memory pool = _pool(60);
         _calibrate(pool);
 
+        // Calibration's last swap sits in this block running the same direction, so without a roll
+        // the attacker joins an existing run instead of opening one, and this measures the
+        // run-nesting gap rather than the price of proof against the price of inference.
+        vm.roll(block.number + 1);
         _swap(pool, attacker, true, TYPICAL * 2);
         _swap(pool, other, true, TYPICAL);
         vm.recordLogs();
@@ -367,5 +384,32 @@ contract AntibodyAdversarialTest is BaseTest {
             vm.roll(block.number + 1);
             _swap(key, other, true, TYPICAL);
         }
+    }
+
+    /// A sandwich nested inside a run somebody else opened, where that same address is also the
+    /// victim, is NOT caught. This is the cost of the victim gate, recorded rather than hidden.
+    ///
+    /// The hook holds two storage words for the pool's current run: who opened it, and one further
+    /// distinct address that traded the same way. When the opener is also the party in the middle,
+    /// there is no third slot for them to occupy, and the exit reads as "the victim closing their
+    /// own position" instead of an attack.
+    ///
+    /// Measured against 321 real mainnet blocks the gate costs 5 of 23 detections and removes all
+    /// 35 false positives, which is the trade this design takes deliberately: over-charging an
+    /// innocent trader is the failure mode this whole project exists to argue against. A variant
+    /// that closes this specific gap was written and measured (a sliding window of the last two
+    /// distinct traders) and bought no extra recall on real data while re-introducing a false
+    /// positive, so it was not adopted.
+    function test_sandwichNestedInAnotherTradersRun_isMissed() public {
+        PoolKey memory pool = _pool(60);
+        _calibrate(pool); // ends with `other` swapping true, in this block
+
+        _swap(pool, attacker, true, TYPICAL * 2); // joins other's run rather than opening one
+        _swap(pool, other, true, TYPICAL); // the victim -- but also the run's opener
+        vm.recordLogs();
+        _swap(pool, attacker, false, TYPICAL * 2);
+
+        (uint32 exits,) = hook.immunity(attacker);
+        assertEq(exits, 0, "documented gap: the run's opener cannot also be recorded as its victim");
     }
 }

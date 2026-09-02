@@ -20,6 +20,14 @@ type Props = {
   caughtBySandwichExit: number;
   caughtByBlockReversal: number;
   missed: number;
+  precision: {
+    ordinaryBlocks: number;
+    sandwichBlocks: number;
+    firedOnOrdinary: number;
+    caughtSandwich: number;
+    beforeGateFiredOnOrdinary: number;
+    beforeGateCaughtSandwich: number;
+  };
 };
 
 export function MainnetReplay({
@@ -29,6 +37,7 @@ export function MainnetReplay({
   caughtBySandwichExit,
   caughtByBlockReversal,
   missed,
+  precision,
 }: Props) {
   const rows = [
     { label: "SandwichExit", note: "maximum penalty", hits: caughtBySandwichExit, tone: "miss" },
@@ -81,6 +90,67 @@ export function MainnetReplay({
         have fired on a single live attack. The layer built for multi-EOA attackers caught all of
         them, and was repriced from half the span to three quarters as a result.
       </p>
+
+      <div className="precision">
+        <h3>Then the question nobody had asked: how often does it fire on nothing?</h3>
+        <p className="sub">
+          Catching 25 of 25 is recall, and recall alone is worth nothing — a detector that fires on
+          every swap also scores 25 of 25. Replaying {precision.ordinaryBlocks} real mainnet blocks
+          that contained trading and <em>no</em> sandwich answered the other half.
+        </p>
+
+        <div className="precision-grid">
+          <div className="precision-col is-before">
+            <div className="precision-head">
+              shipped for six deployments
+              <em>reversal by any different address</em>
+            </div>
+            <div className="precision-stat">
+              <strong>{precision.beforeGateFiredOnOrdinary}</strong>
+              <span>of {precision.ordinaryBlocks} ordinary blocks flagged</span>
+            </div>
+            <div className="precision-foot">
+              caught {precision.beforeGateCaughtSandwich}/{precision.sandwichBlocks} ·{" "}
+              <b>
+                {Math.round(
+                  (precision.beforeGateCaughtSandwich /
+                    (precision.beforeGateCaughtSandwich + precision.beforeGateFiredOnOrdinary)) *
+                    100,
+                )}
+                % precision
+              </b>
+            </div>
+          </div>
+
+          <div className="precision-col is-after">
+            <div className="precision-head">
+              deployed now
+              <em>…and a third party must have traded in between</em>
+            </div>
+            <div className="precision-stat">
+              <strong>{precision.firedOnOrdinary}</strong>
+              <span>of {precision.ordinaryBlocks} ordinary blocks flagged</span>
+            </div>
+            <div className="precision-foot">
+              caught {precision.caughtSandwich}/{precision.sandwichBlocks} ·{" "}
+              <b>100% precision</b>
+            </div>
+          </div>
+        </div>
+
+        <p className="replay-verdict">
+          <strong>Three fifths of what it flagged was innocent.</strong> "The pool reversed direction
+          under a different address" is also a plain description of two arbitrageurs crossing in a
+          busy block — the same defect as the 23-of-23 false positives this project already found
+          once, wearing a different variable name. Requiring a victim in between removed all{" "}
+          {precision.beforeGateFiredOnOrdinary} false positives and cost{" "}
+          {precision.beforeGateCaughtSandwich - precision.caughtSandwich} of{" "}
+          {precision.sandwichBlocks} detections, which a hook cannot recover:{" "}
+          <code>afterSwap</code> sees one swap and two storage words, not the whole block. That trade
+          was taken deliberately. Overcharging an innocent trader is the failure this design exists
+          to argue against.
+        </p>
+      </div>
 
       <p className="footnote">
         Profit is deliberately not modelled. Those are v2/v3 pools with static fees and different

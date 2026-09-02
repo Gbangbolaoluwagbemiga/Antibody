@@ -124,10 +124,21 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     /// @notice One slot. Pool-level last swap, identity-independent.
     /// @dev Separate from `TraderRecord` so an attacker splitting legs across two EOAs is still
     ///      visible: the *pool* saw a reversal even if no single address did.
+    /// @notice The pool's current in-block "run": a stretch of swaps all pushing the same way.
+    /// @dev Replaces a plain record of the previous swap, which could not distinguish a sandwich
+    ///      from two arbitrageurs crossing. See `_classify` for the measurement that forced this.
+    ///
+    ///      `runVictim` is the load-bearing field: a *second, distinct* address that traded in the
+    ///      same direction as whoever opened the run. That is the third party a sandwich needs in
+    ///      order to be a sandwich. Without one there is nobody to extract from.
+    ///
+    ///      Held in real storage, not transient. A sandwich spans three transactions, and tstore is
+    ///      scoped to one, so transient storage cannot see across the legs.
     struct PoolLastSwap {
         uint32 lastBlock;
-        bool lastZeroForOne;
-        address lastTrader;
+        bool runZeroForOne;
+        address runOpener;
+        address runVictim;
     }
 
     /// @notice What a trader carries with them, independent of any pool.
@@ -330,8 +341,7 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
             lastSizeRatio: uint64(ratio)
         });
 
-        poolLastSwap[poolId] =
-            PoolLastSwap({lastBlock: uint32(block.number), lastZeroForOne: params.zeroForOne, lastTrader: trader});
+        _advanceRun(poolId, params.zeroForOne, trader);
 
         _recordConfirmedExit(poolId, trader);
 
@@ -387,32 +397,48 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
         // convicted regardless of which way the trade between the legs went.
         if (
             tr.lastBlock == uint32(block.number) && tr.lastZeroForOne != zeroForOne
-                && pl.lastBlock == uint32(block.number) && pl.lastTrader != trader
-                && pl.lastZeroForOne == tr.lastZeroForOne
+                && pl.lastBlock == uint32(block.number) && pl.runVictim != address(0)
+                && pl.runVictim != trader && pl.runZeroForOne == tr.lastZeroForOne
         ) {
             return (IAntibodySignal.Signal.SandwichExit, MAX_TOTAL_FEE - baseFee, thresholdScore);
         }
 
-        // ── Signal 2: the pool reversed direction within the block, under a different address.
+        // ── Signal 2: the pool reversed direction within the block, against a victim.
         //
-        // This catches an attacker who splits entry and exit across two EOAs — and measurement
-        // says that is not the edge case it was originally treated as, it is the norm. Scanning
-        // 610 live mainnet blocks containing Uniswap v3 swaps produced 25 sandwich-shaped events,
-        // and *every one of them* was multi-address. Zero were same-origin. Splitting addresses is
-        // precisely how production searchers evade same-origin detection.
+        // Catches an attacker who splits entry and exit across two EOAs, which measurement says is
+        // not an edge case but the norm: 610 live mainnet blocks produced 25 sandwich-shaped
+        // events and every one was multi-address. Zero were same-origin. Resolving the actual
+        // senders confirmed it is deliberate — all 25 exits used a *fresh* address, and no
+        // (entry, exit) pair ever repeated. Address rotation is the standard evasion.
         //
-        // So this was repriced from half the span to three quarters. Not to the full maximum:
-        // same-origin is *proof* of common control, while a pool-level reversal is *inference*,
-        // and charging identically for proof and inference would be sloppy. But half was
-        // under-pricing the only shape the data actually shows, which made the strongest penalty
-        // in the design apply to a threat model that has largely moved on.
+        // The `runVictim` clause is not decoration, and this is the second time this project has
+        // learned that lesson. The condition shipped originally was "the pool reversed direction
+        // under a different address", which is also a plain description of two arbitrageurs
+        // crossing in a busy block. Replaying it over 321 real mainnet blocks:
         //
-        // The false-positive surface is unchanged and still real: two unrelated traders crossing
-        // in one block look the same from here. What changed is the evidence about how often that
-        // costs an innocent party versus how often it catches an attacker — 585 of those 610
-        // blocks had swap activity and no sandwich shape at all, so the pattern is specific rather
-        // than constant.
-        if (pl.lastBlock == uint32(block.number) && pl.lastZeroForOne != zeroForOne && pl.lastTrader != trader) {
+        //     as shipped        recall 23/23 (100%)   fired on 35/298 ordinary blocks   precision  40%
+        //     victim-gated      recall 18/23  (78%)   fired on  0/298 ordinary blocks   precision 100%
+        //
+        // So it was firing on 11.7% of ordinary blocks, and around three fifths of everything it
+        // flagged was innocent. That is the same defect as the 23-of-23 false positives above,
+        // with a different variable name: a rule that describes an attack and ordinary behaviour
+        // equally well.
+        //
+        // The gate costs 5 of 23 in recall, and that is a deliberate trade rather than a
+        // regression. Those 5 are lost to the O(1) state a hook can afford — an offline pass with
+        // the whole block in view keeps all 23 at zero false positives, but `afterSwap` sees one
+        // swap and two storage words, so some interleavings are unrecoverable. Given the choice,
+        // precision wins: a false positive here overcharges an innocent trader, which is precisely
+        // the "coarse rule engine driven by subjective inputs" criticism this design exists to
+        // answer. Missing an attack costs the pool nothing it was not already losing.
+        //
+        // Priced at three quarters of the span rather than the maximum: same-origin is *proof* of
+        // common control, a gated reversal is *inference*, and charging identically for proof and
+        // inference would be sloppy.
+        if (
+            pl.lastBlock == uint32(block.number) && pl.runZeroForOne != zeroForOne
+                && pl.runVictim != address(0) && pl.runVictim != trader
+        ) {
             uint24 inferred = ((MAX_TOTAL_FEE - baseFee) * 3) / 4;
             uint24 withCarry = inferred + _immunitySurcharge(trader);
             return (
@@ -530,6 +556,36 @@ contract AntibodyHook is BaseHook, Ownable, IAntibodySignal {
     ///      pool for the first time, which is rare once a pool has warmed up. Reconsidering the
     ///      donor on every swap would put extra reads in the hot path to answer a question whose
     ///      input had not changed.
+    /// @dev Advance the pool's in-block run by one swap.
+    ///
+    ///      A "run" is a maximal stretch of same-direction swaps inside one block. Opening a run
+    ///      records who started it; a *different* address then pushing the same way is recorded as
+    ///      `runVictim`, because that is the trade a sandwich exists to extract from. A reversal
+    ///      ends the run and starts the next one, clearing the victim with it.
+    ///
+    ///      Two storage words, written once per swap, regardless of how busy the block is.
+    function _advanceRun(PoolId poolId, bool zeroForOne, address trader) private {
+        PoolLastSwap memory pl = poolLastSwap[poolId];
+
+        if (pl.lastBlock != uint32(block.number) || pl.runZeroForOne != zeroForOne) {
+            // A new block, or a reversal within this one: either way, this swap opens a fresh run.
+            poolLastSwap[poolId] = PoolLastSwap({
+                lastBlock: uint32(block.number),
+                runZeroForOne: zeroForOne,
+                runOpener: trader,
+                runVictim: address(0)
+            });
+            return;
+        }
+
+        // Continuing the run. Only a second, distinct address counts — the opener trading again in
+        // their own direction is not a victim of anything.
+        if (trader != pl.runOpener && pl.runVictim != trader) {
+            pl.runVictim = trader;
+            poolLastSwap[poolId] = pl;
+        }
+    }
+
     function _recordBreadth(PoolKey calldata key, PoolId poolId, address trader) private {
         if (traderRecords[poolId][trader].lastBlock != 0) return;
 

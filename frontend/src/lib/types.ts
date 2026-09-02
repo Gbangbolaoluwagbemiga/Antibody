@@ -27,6 +27,7 @@ export type History = {
   mainnetReplay: MainnetReplayMeta;
   liquidityCase: LiquidityCaseMeta;
   falsePositives: FalsePositiveMeta;
+  mainnetPrecision: MainnetPrecisionMeta;
 };
 
 export type Leg = {
@@ -119,4 +120,19 @@ export type FalsePositiveMeta = {
   flaggedAsSandwich: number;
   sizeFlagged: number;
   attackLegs: number;
+};
+
+/**
+ * Precision on real mainnet blocks — the question recall alone cannot answer. Asserted by
+ * AntibodyPrecisionTest, which replays each block against the real hook; the `beforeGate` figures
+ * come from replaying the same blocks against the condition this project shipped six times.
+ */
+export type MainnetPrecisionMeta = {
+  source: string;
+  ordinaryBlocks: number;
+  sandwichBlocks: number;
+  firedOnOrdinary: number;
+  caughtSandwich: number;
+  beforeGateFiredOnOrdinary: number;
+  beforeGateCaughtSandwich: number;
 };

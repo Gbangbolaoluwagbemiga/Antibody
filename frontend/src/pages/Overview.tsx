@@ -166,7 +166,7 @@ export function Overview() {
             live Uniswap v3 blocks on Ethereum mainnet, scanned for the mechanical signature of a
             sandwich, replayed against the hook. The result changed the design.
           </p>
-          <MainnetReplay {...H.mainnetReplay} />
+          <MainnetReplay {...H.mainnetReplay} precision={H.mainnetPrecision} />
         </section>
       </Reveal>
 

@@ -122,7 +122,7 @@ consistent flow arrives.
 | signal | condition | confidence | penalty |
 |---|---|---|---|
 | `SandwichExit` | same trader, same block, opposite direction — **and a third party traded in between** | structural | maximum |
-| `BlockReversal` | pool reversed direction in-block under a *different* address | **the shape 25 of 25 real mainnet sandwiches actually used** | three quarters |
+| `BlockReversal` | pool reversed direction in-block under a *different* address — **and a third party traded the same way in between** | **the shape 25 of 25 real mainnet sandwiches actually used** | three quarters |
 | `SizeAnomaly` | size-to-liquidity outside the pool's own `μ + kδ` band | graduated by distance past the band | proportional + recency surcharge |
 | `CrossPoolMemory` | a confirmed sandwich exit in *any* pool this hook serves, still within the decay window | carried, not local | 0.50% per exit, decaying to zero |
 
@@ -152,7 +152,7 @@ make the temporal clustering that sandwiching requires progressively expensive.
 |---|---|
 | hookless swap | 44,061 |
 | Antibody swap | 81,339 |
-| **overhead** | **37,278** |
+| **overhead** | **38,805** |
 
 Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
 
@@ -258,6 +258,41 @@ and the one every demo here is built on, would not have fired on a single live a
 
 `BlockReversal`, the layer built for multi-EOA attackers, caught all of them. The architecture was
 right; the pricing was not, so **`BlockReversal` was repriced from half the span to three quarters**.
+
+Resolving the real senders behind those 50 legs shows the evasion is deliberate rather than
+incidental: **all 25 exits used a fresh address, and no (entry, exit) pair ever repeated.** Checking
+whether they at least reuse a bot contract gives nothing usable either — the most common contract
+across the legs is the Uniswap Universal Router, which is what everyone uses. Identity-based defence
+does not reach this attacker, which is the honest limit of the cross-pool memory below.
+
+### The question recall cannot answer
+
+25 of 25 is *recall*, and recall alone is worth nothing: a detector that fires on every swap also
+scores 25 of 25. Precision went unmeasured for six deployments, which mattered, because the
+condition as shipped —
+
+```solidity
+pl.lastBlock == block.number && pl.lastZeroForOne != zeroForOne && pl.lastTrader != trader
+```
+
+— describes a sandwich exit *and* describes two arbitrageurs crossing in a busy block.
+[The precision test](contracts/test/AntibodyPrecision.t.sol) replays 117 real mainnet blocks that
+contained trading and no sandwich:
+
+| condition | recall | fired on ordinary blocks | precision |
+|---|---|---|---|
+| as shipped | 23 of 23 | **35 of 117** | 40% |
+| victim-gated (deployed now) | 18 of 23 | **0 of 117** | **100%** |
+
+Around three fifths of everything it flagged was innocent — the same defect as the 23-of-23 false
+positives further down this page, wearing a different variable name.
+
+Requiring a victim in between removes all 35 false positives and costs 5 of 23 detections. Those 5
+are unrecoverable by a hook: `afterSwap` sees one swap and two storage words, not the whole block.
+An offline pass with the full block in view keeps all 23 at zero false positives, and that is simply
+not a thing a hook can run. The trade was taken deliberately — over-charging an honest trader is the
+failure this project exists to argue against, and a missed attack costs the pool nothing it was not
+already losing.
 Not to the maximum: same-origin is *proof* of common control while a pool-level reversal is
 *inference*, and charging identically for proof and inference would be sloppy.
 

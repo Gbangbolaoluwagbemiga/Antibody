@@ -1,0 +1,2344 @@
+{
+ "pool": "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640",
+ "stats": {
+  "blocksWithSwaps": 333,
+  "ordinaryBlocks": 309,
+  "fires_FP": 39,
+  "sandwichBlocks": 24,
+  "fires_TP": 24,
+  "gated_TP": 24
+ },
+ "blocks": [
+  {
+   "block": 25884648,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884650,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884651,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884652,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884653,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884654,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884655,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884656,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884657,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884659,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884660,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884661,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884662,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884664,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884665,
+   "swaps": 12,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884666,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884667,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884670,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884672,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884673,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884674,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884675,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884676,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884679,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884681,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884683,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884687,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884688,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884689,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884692,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884693,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884695,
+   "swaps": 7,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884696,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884697,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884700,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884701,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884702,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884703,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884704,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884709,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884710,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884711,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884712,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884713,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884714,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884715,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884716,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884717,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884719,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884722,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884725,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884728,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884729,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884730,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884735,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884737,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884738,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884746,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884747,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884749,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884750,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884751,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884752,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884755,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884759,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884761,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884762,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884763,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884764,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884765,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884768,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884769,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884770,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884771,
+   "swaps": 5,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884772,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884777,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884778,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884779,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884780,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884781,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884782,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884783,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884784,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884785,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884786,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884788,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884794,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884795,
+   "swaps": 9,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884802,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884804,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884807,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884810,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884811,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884812,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884813,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884814,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884816,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884817,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884821,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884823,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884825,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884829,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884831,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884833,
+   "swaps": 5,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884837,
+   "swaps": 5,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884840,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884841,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884842,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884843,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884845,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884846,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884847,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884850,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884851,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884852,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884853,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884854,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884860,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884861,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884862,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884863,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884864,
+   "swaps": 6,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884865,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884866,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884867,
+   "swaps": 5,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884868,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884869,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884870,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884872,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884873,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884877,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884879,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884882,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884883,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884884,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884886,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884889,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884890,
+   "swaps": 11,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884891,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884892,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884894,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884895,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884896,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884897,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884899,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884900,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884903,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884904,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884906,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884908,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884911,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884912,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884913,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884914,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884915,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884916,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884917,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884918,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884919,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884920,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884922,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884923,
+   "swaps": 7,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884926,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884932,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884934,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884942,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884944,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884945,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884950,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884951,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884952,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884953,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884954,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884955,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884956,
+   "swaps": 6,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884957,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884958,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884959,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884960,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884963,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884964,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884965,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884966,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884967,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884969,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884976,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884977,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884979,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884984,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884985,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884990,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884991,
+   "swaps": 6,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884992,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884993,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25884994,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884996,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25884997,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25884998,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885002,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885004,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885006,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885007,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885009,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885010,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885012,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885013,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885015,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885016,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885017,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885018,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885019,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885020,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885022,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885023,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885025,
+   "swaps": 5,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885026,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885030,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885035,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885036,
+   "swaps": 5,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25885037,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885039,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885040,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25885041,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885042,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885044,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885045,
+   "swaps": 3,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25885046,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885047,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885048,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885051,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885054,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885055,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885056,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885059,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885060,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885061,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885063,
+   "swaps": 4,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25885065,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885067,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885068,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885069,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885070,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885071,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885072,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885073,
+   "swaps": 6,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885074,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885076,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885077,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885080,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885082,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885083,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885085,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885086,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885087,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885089,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885094,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885095,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885096,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885097,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885098,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885099,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885101,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885104,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885105,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885106,
+   "swaps": 5,
+   "sandwich": true,
+   "blockReversal": true,
+   "victimGated": true
+  },
+  {
+   "block": 25885107,
+   "swaps": 4,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885108,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885110,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885111,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885114,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885118,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885120,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885123,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885126,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885127,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885129,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885134,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885136,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885138,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885144,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885146,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885148,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885149,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885150,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885151,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885153,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885157,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885161,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885162,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885163,
+   "swaps": 5,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885165,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885168,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885170,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885171,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885173,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885176,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885178,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885179,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885180,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885181,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885182,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885183,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885184,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885185,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885186,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885187,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885191,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885194,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885195,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885199,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885200,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885205,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885209,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885211,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885213,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885215,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885216,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885218,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885219,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885222,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885223,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885226,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885228,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885229,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885231,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885232,
+   "swaps": 3,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885236,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": true,
+   "victimGated": false
+  },
+  {
+   "block": 25885239,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885241,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885242,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885243,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885244,
+   "swaps": 2,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  },
+  {
+   "block": 25885245,
+   "swaps": 1,
+   "sandwich": false,
+   "blockReversal": false,
+   "victimGated": false
+  }
+ ]
+}

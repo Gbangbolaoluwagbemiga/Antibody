@@ -609,3 +609,73 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
                   border: 1px solid var(--border); border-left: 3px solid var(--status-flagged);
                   border-radius: var(--radius); background: var(--surface-2); }
 .lpcase-tension strong { color: var(--text-primary); }
+
+/* ── Precision panel ──────────────────────────────────────────────────────────
+   The before/after of the victim gate. Deliberately given the same visual weight
+   as the replay above it: recall without precision is half a measurement, and the
+   page should not imply otherwise by making one look like a footnote. */
+.precision {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.precision h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.precision .sub {
+  margin: 0 0 18px;
+  color: var(--text-secondary);
+  max-width: 62ch;
+}
+.precision-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+.precision-col {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  background: var(--surface-2);
+}
+.precision-col.is-before { border-color: color-mix(in srgb, var(--status-flagged) 45%, var(--border)); }
+.precision-col.is-after  { border-color: color-mix(in srgb, var(--series-mean) 45%, var(--border)); }
+.precision-head {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.precision-head em {
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.precision-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 14px 0 10px;
+}
+.precision-stat strong {
+  font-family: var(--mono);
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.is-before .precision-stat strong { color: var(--status-flagged); }
+.is-after  .precision-stat strong { color: var(--series-mean); }
+.precision-stat span { color: var(--text-secondary); font-size: 13px; }
+.precision-foot {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+}
+.precision-foot b { color: var(--text-primary); }

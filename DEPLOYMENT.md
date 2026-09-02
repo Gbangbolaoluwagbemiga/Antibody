@@ -358,6 +358,30 @@ Profit is deliberately not modelled. Those pools are v2/v3 with static fees and 
 mechanics, so any "Antibody would have taken $X from these attackers" figure would be a guess dressed
 as evidence. Detection is a classification question, and that is the only question answered.
 
+## Precision, measured after six deployments without it
+
+`BlockReversal` shipped as "the pool reversed direction in-block under a different address". That
+also describes two arbitrageurs crossing, and nobody had checked how often it did. Replaying 117
+real mainnet blocks containing trading and no sandwich:
+
+| condition | recall | fired on ordinary blocks | precision |
+|---|---|---|---|
+| as shipped | 23 of 23 | 35 of 117 | 40% |
+| victim-gated | 18 of 23 | 0 of 117 | 100% |
+
+The fix mirrors the one already applied to `SandwichExit`: require a third party to have traded the
+same direction in between. The hook holds the pool's current in-block *run* — who opened it, and one
+further distinct address that joined it — in two storage words, costing **+1,527 gas** per swap
+(37,278 → 38,805).
+
+It costs 5 of 23 detections. An offline pass with the whole block in view keeps all 23 at zero false
+positives; `afterSwap` cannot run one. `test_sandwichNestedInAnotherTradersRun_isMissed` pins the
+specific gap: when the run's opener is *also* the party in the middle, there is no third slot for
+them, and the exit reads as the victim closing their own position.
+
+A variant that closes that gap — a sliding window of the last two distinct traders — was written and
+measured before being rejected: identical recall on real data, and it reintroduced a false positive.
+
 ## Known limitations
 
 - **Cross-pool memory is keyed on `tx.origin`.** A determined attacker rotates addresses and sheds
