@@ -65,7 +65,14 @@ export function Overview() {
                 accent: "var(--series-threshold)",
                 points: H.points as Point[],
                 story:
-                  `Earned its baseline from scratch over ${H.points.length} swaps, then absorbed two sandwich attacks. Its band widened to account for what it had just experienced.`,
+                  (() => {
+                    const hits = new Set(
+                      H.points.filter((p) => p.signal === "SandwichExit").map((p) => p.block),
+                    ).size;
+                    return `Earned its baseline from scratch over ${H.points.length} swaps, then absorbed ${
+                      hits === 1 ? "a sandwich attack" : `${hits} sandwich attacks`
+                    }. Its band widened to account for what it had just experienced.`;
+                  })(),
               },
               {
                 label: "Pool B",

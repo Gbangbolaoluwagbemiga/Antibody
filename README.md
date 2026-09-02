@@ -106,12 +106,11 @@ Read from pool A on the deployed hook:
 | after | mean | deviation | threshold |
 |---|---|---|---|
 | 19 swaps | 0.0895% | 0.0280% | *none — uncalibrated* |
-| 20 swaps | 0.0895% | **0.0262%** | **0.1682%** — first opinion |
-| 26 swaps | 0.1957% | 0.1241% | 0.5678% — after absorbing an attack |
-| 31 swaps | 0.4535% | 0.3660% | **1.5515%** — current |
+| 20 swaps | 0.0895% | 0.0262% | **0.1682%** — first opinion |
+| 63 swaps | 0.1957% | 0.1079% | **0.5193%** — after a large probe |
+| 65 swaps | 0.2891% | 0.2010% | **0.8922%** — current |
 
-Sizes are a fraction of pool liquidity. Across **73 ordinary swaps** on both live pools, the hook
-has returned **zero** sandwich verdicts; the six attack legs it did flag are the staged attacks.
+Sizes are a fraction of pool liquidity. Across **96 ordinary swaps** on both live pools, the hook has returned **0** sandwich verdicts; the 3 attack legs it did flag are the staged attack.
 
 Below `minSamples` the hook publishes **no threshold at all** — a baseline with insufficient data
 reports no opinion rather than a misleading one. Then it appears, and the band *tightens* as
