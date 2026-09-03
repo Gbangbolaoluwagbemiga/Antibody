@@ -777,3 +777,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .ws-pool.is-on em { color: var(--accent); }
 .ws-pool:disabled { opacity: .5; cursor: default; }
 .ws-balance em { font-style: normal; color: var(--text-muted); }
+/* Tokens in and out per attack leg. Without them the three rows are roles and fees with no
+   quantities, and a run that lands as a round trip rather than a sandwich reads as arbitrary. */
+.leg-amt { font-family: var(--mono); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
+@media (max-width: 860px) { .leg-amt { display: none; } }

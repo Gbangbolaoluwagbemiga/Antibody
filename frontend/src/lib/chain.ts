@@ -206,6 +206,11 @@ export type LegResult = {
   block: number;
   signal: string | null;
   penalty: number;
+  /** Tokens in and out, decoded from the PoolManager's own Swap event. */
+  amountIn: number;
+  amountOut: number;
+  /** true when token0 was sold. Distinguishes the entry leg from the exit. */
+  zeroForOne: boolean;
 };
 
 /**
@@ -214,6 +219,15 @@ export type LegResult = {
  * Confirmation is the browser's job, not the server's — see the note in api/attack.ts. Doing it
  * here also means each leg can be revealed the moment it confirms.
  */
+/** PoolManager's Swap(bytes32,address,int128,int128,uint160,uint128,int24,uint24). */
+const SWAP_TOPIC = "0x40e9cecb9f5f1f1c5b9c97dec2917b7ee92e57ba5563708daca94dd84ad7112f";
+
+/** int128 packed in the low 16 bytes of a 32-byte word, two's complement. */
+function readInt128(word: string): bigint {
+  const v = BigInt("0x" + word.slice(-32));
+  return v >= 1n << 127n ? v - (1n << 128n) : v;
+}
+
 export async function watchLeg(role: string, tx: `0x${string}`): Promise<LegResult> {
   const receipt = await client.waitForTransactionReceipt({ hash: tx, timeout: 90_000 });
   const log = receipt.logs.find((l) => l.topics[0]?.toLowerCase() === TOXIC_TOPIC);
@@ -226,7 +240,26 @@ export async function watchLeg(role: string, tx: `0x${string}`): Promise<LegResu
     penalty = parseInt(d.slice(192, 256), 16);
   }
 
-  return { role, tx, block: Number(receipt.blockNumber), signal, penalty };
+  // Amounts come from the pool's own Swap event rather than from what was requested, so the
+  // numbers shown are what the chain actually moved. Without them the three legs are roles and
+  // fees with no quantities, and a run that lands as a round trip rather than a sandwich looks
+  // arbitrary instead of self-evident.
+  let amountIn = 0;
+  let amountOut = 0;
+  let zeroForOne = true;
+  const swap = receipt.logs.find((l) => l.topics[0]?.toLowerCase() === SWAP_TOPIC);
+  if (swap) {
+    const d = swap.data.slice(2);
+    const a0 = readInt128(d.slice(0, 64));
+    const a1 = readInt128(d.slice(64, 128));
+    zeroForOne = a0 > 0n;                       // positive amount0 = token0 into the pool
+    const inRaw = zeroForOne ? a0 : a1;
+    const outRaw = zeroForOne ? a1 : a0;
+    amountIn = Number(inRaw < 0n ? -inRaw : inRaw) / 1e18;
+    amountOut = Number(outRaw < 0n ? -outRaw : outRaw) / 1e18;
+  }
+
+  return { role, tx, block: Number(receipt.blockNumber), signal, penalty, amountIn, amountOut, zeroForOne };
 }
 
 const CONSTANTS_ABI = [

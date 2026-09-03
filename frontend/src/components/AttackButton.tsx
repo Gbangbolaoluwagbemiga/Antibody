@@ -176,6 +176,11 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
                     {l.role}
                   </span>
                   <span className="step-what">{STEP[l.role]?.what}</span>
+                  <span className="leg-amt">
+                    {l.amountIn > 0
+                      ? `${l.amountIn.toFixed(4)} ${l.zeroForOne ? "t0" : "t1"} → ${l.amountOut.toFixed(4)} ${l.zeroForOne ? "t1" : "t0"}`
+                      : ""}
+                  </span>
                   <span className="feed-block">#{l.block}</span>
                   <span className={`sig ${!l.signal ? "sig-none" : l.signal === "SandwichExit" || l.signal === "BlockReversal" ? "sig-flag" : "sig-priced"}`}>{l.signal ?? "not flagged"}</span>
                   <span className="feed-fee">{((baseFee + l.penalty) / 10000).toFixed(2)}%</span>
