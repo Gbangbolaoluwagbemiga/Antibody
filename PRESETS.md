@@ -92,6 +92,6 @@ is obviously yes.
 It is a feature, and the last three things that went wrong here were found by running the contract
 on a real chain rather than by adding to it. Shipping a fourth mechanism in the final week — after
 four redeploys, each of which reset every pool's accumulated state — trades a real risk of new
-unknowns for a benefit judges are unlikely to weight heavily.
+unknowns for a benefit that does not justify the risk.
 
 Three real layers with measured limitations beat four with a thin one.

@@ -41,7 +41,7 @@ type Props = { hook: `0x${string}`; poolId: `0x${string}`; baseFee: number; maxT
 
 export function QuoteProbe({ hook, poolId, baseFee, maxTotalFee }: Props) {
   // Deep-linkable: ?size=2 opens straight into the flagged state, which is what the walkthrough
-  // and the demo video need. Falls back to a size comfortably inside the band.
+  // needs. Falls back to a size comfortably inside the band.
   const [amount, setAmount] = useState(() => {
     const q = Number(new URLSearchParams(window.location.search).get("size"));
     return Number.isFinite(q) && q >= 0.01 && q <= 3 ? q : 0.1;

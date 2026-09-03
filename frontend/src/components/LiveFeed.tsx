@@ -8,7 +8,7 @@ import { fetchRecentActivity, unichainSepolia, type Activity } from "../lib/chai
  * The value here is not decoration. Everything else on this site is evidence about the past, which
  * a sufficiently cynical reader can treat as a screenshot. A feed that keeps moving while nobody
  * touches it is the cheapest possible proof that there is a real contract on a real chain behind
- * all of it — and it means the demo video has ambient motion without anyone driving.
+ * all of it — and the page has ambient motion without anyone driving it.
  */
 
 const EXPLORER = unichainSepolia.blockExplorers.default.url;

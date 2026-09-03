@@ -26,7 +26,7 @@ coupling) with a real, measurable cost, and it honestly earns the Time-Weighted 
 transactions in the block. Detection happens at the attacker's **back-run** — the closing leg —
 which is the moment the sandwich becomes identifiable on-chain. The victim's fill is already done
 at that point; what we destroy is the *profit*, by taxing the exit and paying it to LPs. Sandwiching
-stops being +EV. This must be described accurately in pitch copy: **Antibody makes sandwiches
+stops being +EV. This must be described accurately everywhere: **Antibody makes sandwiches
 unprofitable, it does not make them impossible.** That claim is defensible and true. The stronger
 claim is not.
 
@@ -85,7 +85,7 @@ delta. Drives the routing-signal severity and the UI chart. Tick before the swap
 
 **Cold-start gate:** below `MIN_SAMPLES` (default 20) observed swaps, Signal B is disabled. A
 baseline with no data has no opinion, and pretending otherwise would produce exactly the
-"subjective inputs" the judges called out. Signal A stays live from swap one — it is structural,
+the "subjective inputs" criticism this design exists to answer. Signal A stays live from swap one — it is structural,
 not statistical.
 
 ### 1.2 Detection
@@ -231,7 +231,7 @@ or a specific Orbitwork mistake.
 
 Three SSTOREs per swap — baseline, trader record, pool record — is the floor for cross-transaction
 detection, since transient storage cannot span a sandwich's three transactions. This is a real,
-permanent cost paid by every swapper, and the submission should quote it rather than let a judge
+permanent cost paid by every swapper, and it is quoted plainly rather than left for a reader
 find it. The test asserts a 120,000 ceiling so a regression can't quietly erode the tradeoff.
 
 ### Bugs caught before they shipped
@@ -277,7 +277,7 @@ in `src/`.
   must match or deployment fails.
 - **Deploy target: Unichain Sepolia.** Qualifies for the Unichain prize track automatically.
 - **Demo:** deployed hook on Unichain Sepolia, driven by a `forge script` attacker that executes a
-  genuine front-run / victim / back-run sequence against it. Real transaction hashes a judge can
+  genuine front-run / victim / back-run sequence against it. Real transaction hashes anyone can
   click.
 
 ---
@@ -296,7 +296,7 @@ Four things it must *show*, in priority order:
 3. **Before/after.** Same trade against a control pool with no hook vs. the Antibody pool:
    attacker profit extracted, versus attacker profit taxed and LP fees increased. Two numbers, side
    by side.
-4. Legible to a non-technical judge in 30 seconds.
+4. Legible to a non-specialist reader in 30 seconds.
 
 ---
 
@@ -315,7 +315,7 @@ Today is **Aug 13**. PU1 is **Aug 24**, PU2 **Aug 31**, final **Sept 3**.
 | **Aug 24** | **PU1** — deployed hook, passing suite, sandwich caught in a test. Real, not a slide. |
 | Aug 25–29 | Frontend: baseline chart first, then live detection, then before/after. |
 | Aug 30–31 | **PU2** — working demo end to end. Fuzz + gas tests. |
-| Sept 1–2 | README, demo video, pitch copy. Verify every claim maps to a passing test. |
+| Sept 1–2 | Documentation pass. Verify every claim maps to a passing test. |
 | **Sept 3** | **Final submission** — https://tally.so/r/mVNEAE, Project ID `HK-UHI10-1010`. |
 
 Frontend starts Aug 25 with three days of slack before PU2. If contract work slips, it eats slack,
@@ -325,6 +325,6 @@ not the demo.
 
 ## 8. The standing rule
 
-Every claim in the pitch copy must name a passing test. If a sentence in the README has no test
+Every claim in the documentation must name a passing test. If a sentence in the README has no test
 behind it, either write the test or delete the sentence. That rule, applied without exception, is
 the whole difference between this and Orbitwork.

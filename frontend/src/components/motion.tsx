@@ -13,7 +13,7 @@ export function Ticker({ value, decimals = 2, suffix = "", prefix = "" }: {
 }
 
 /**
- * Reveal on scroll. Honours `prefers-reduced-motion` — a judge with vestibular sensitivity should
+ * Reveal on scroll. Honours `prefers-reduced-motion` — a reader with vestibular sensitivity should
  * get the content, not the choreography.
  */
 export function Reveal({ children, delay = 0, className }: {

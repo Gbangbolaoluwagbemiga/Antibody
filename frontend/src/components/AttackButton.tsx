@@ -16,7 +16,7 @@ import { unichainSepolia, watchLeg, type LegResult } from "../lib/chain";
  * What each leg is doing, in the order it happens.
  *
  * The three rows are the whole mechanic, and as a bare table they read as output rather than as a
- * story. A judge should be able to follow front-run → victim → exit without being told; these lines
+ * story. A reader should be able to follow front-run → victim → exit without being told; these lines
  * do that work, and the shared block number underneath is what makes it a sandwich rather than
  * three unrelated trades.
  */

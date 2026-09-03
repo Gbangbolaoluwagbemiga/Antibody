@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
  * would ask first: what is in it for me. The chain is LPs earn more under attack -> liquidity
  * prefers pools where it is not being skimmed -> a pool creator adopts the hook to attract it.
  *
- * The tension is stated rather than hidden, because it is real and a judge will find it in ten
+ * The tension is stated rather than hidden, because it is real and a reader will find it in ten
  * seconds otherwise: honest traders pay the gas overhead on every swap, while the LP upside only
  * materialises when an attack happens. That is a genuine trade, not a free win, and the honest
  * version of this argument is more persuasive than the one-sided one.

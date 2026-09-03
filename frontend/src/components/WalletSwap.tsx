@@ -21,7 +21,7 @@ import { unichainSepolia } from "../lib/chain";
  *
  * Every read on this site works without a wallet; this is strictly additive. The tokens are
  * unrestricted-mint mocks, so a visitor can fund themselves in one click rather than hunting a
- * faucet — the failure mode for a judge is otherwise "nice demo, can't try it".
+ * faucet — the failure mode is otherwise "nice demo, can't try it".
  */
 
 const EXPLORER = unichainSepolia.blockExplorers.default.url;

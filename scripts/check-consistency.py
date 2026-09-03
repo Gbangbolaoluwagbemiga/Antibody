@@ -35,7 +35,7 @@ HOOK = hist["hook"]
 GAS = hist["liquidityCase"]["gasOverhead"]
 PREC = hist["mainnetPrecision"]
 
-DOCS = ["README.md", "DEPLOYMENT.md", "DEMO-SCRIPT.md", "ARCHITECTURE.md", "PRESETS.md"]
+DOCS = ["README.md", "DEPLOYMENT.md", "ARCHITECTURE.md", "PRESETS.md"]
 UI = [str(p.relative_to(ROOT)) for p in (ROOT / "frontend/src").rglob("*.tsx")]
 
 def forbid(pattern, why, files, allow=()):
@@ -74,8 +74,7 @@ if PREC["secondSampleOrdinaryBlocks"] != small["ordinaryBlocks"]:
 # ── the deployed address must appear nowhere stale and everywhere it matters ────────────────
 if HOOK.lower() not in read("DEPLOYMENT.md").lower():
     FAIL.append(f"DEPLOYMENT.md does not mention the deployed hook {HOOK}")
-if HOOK.lower() not in read("DEMO-SCRIPT.md").lower():
-    FAIL.append(f"DEMO-SCRIPT.md does not mention the deployed hook {HOOK}")
+
 
 if FAIL:
     print(f"\n  {len(FAIL)} consistency problem(s):\n")

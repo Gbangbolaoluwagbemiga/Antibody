@@ -11,7 +11,7 @@ import { quoteSwap, unichainSepolia } from "../lib/chain";
  * block, two different answers.
  *
  * Both figures are read live, so if the memory has decayed since the attack the gap will have
- * narrowed — which is the honest thing for it to do, and worth a judge seeing.
+ * narrowed — which is the honest thing for it to do, and worth showing.
  */
 
 const EXPLORER = unichainSepolia.blockExplorers.default.url;

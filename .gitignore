@@ -27,8 +27,8 @@ artifacts/
 .forge-snapshots/
 
 # Deployment simulations. The real broadcast logs ARE committed — they are the
-# submission's on-chain evidence and contain only tx hashes and addresses, never
-# keys (verified). Dry runs are noise.
+# on-chain evidence for everything this README claims, and contain only
+# transaction hashes and addresses, never keys (verified). Dry runs are noise.
 **/broadcast/**/dry-run/
 **/broadcast/*/31337/
 
@@ -43,10 +43,7 @@ dist/
 .idea/
 *.swp
 
-# ── Internal planning documents ──────────────────────────────────────────────
-# Deliberately NOT published. This repository is public; these are internal
-# strategy notes (prior-submission scores and judge feedback) and an unsent draft
-# to the organizers. Kept local on purpose — remove these lines to publish them.
+# ── Local working notes ──────────────────────────────────────────────────────
 BRIEF.md
 CORRECTION-NOTICE.md
 

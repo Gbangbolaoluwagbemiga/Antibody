@@ -262,7 +262,7 @@ arbitrageur who closes a loop through a single pool across intervening same-dire
 priced as an extractor, in every pool, until the memory decays. That is a real cost imposed on a
 possibly-legitimate actor, and it is the sharpest edge in the design.
 
-## Questions a judge will ask
+## Questions worth answering
 
 ### Why not just use a private RPC?
 
