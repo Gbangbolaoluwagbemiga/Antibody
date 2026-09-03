@@ -12,6 +12,20 @@ import { unichainSepolia, watchLeg, type LegResult } from "../lib/chain";
  * call it a sandwich is itself the point.
  */
 
+/**
+ * What each leg is doing, in the order it happens.
+ *
+ * The three rows are the whole mechanic, and as a bare table they read as output rather than as a
+ * story. A judge should be able to follow front-run → victim → exit without being told; these lines
+ * do that work, and the shared block number underneath is what makes it a sandwich rather than
+ * three unrelated trades.
+ */
+const STEP: Record<string, { n: number; what: string }> = {
+  "front-run": { n: 1, what: "attacker buys first — this pushes the price up" },
+  victim: { n: 2, what: "an ordinary trader fills at the worsened price" },
+  exit: { n: 3, what: "attacker sells back — the difference is the profit" },
+};
+
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
 
 type Pending = { role: string; tx: `0x${string}` };
@@ -133,6 +147,21 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
       <AnimatePresence>
         {legs.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="attack-result">
+            {legs.length === 3 && (
+              <div className="step-head">
+                {new Set(legs.map((l) => l.block)).size === 1 ? (
+                  <>
+                    <span className="live-dot" /> all three in block {legs[0].block} — this is what
+                    makes it a sandwich rather than three unrelated trades
+                  </>
+                ) : (
+                  <>
+                    spread across {new Set(legs.map((l) => l.block)).size} blocks — the victim was
+                    already settled, so there was nothing to sandwich
+                  </>
+                )}
+              </div>
+            )}
             <ul className="feed">
               {legs.map((l, i) => (
                 <motion.li
@@ -142,9 +171,12 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
                   transition={{ delay: i * 0.18 }}
                   className={l.signal === "SandwichExit" ? "is-flagged" : undefined}
                 >
-                  <span className="feed-pool">{l.role}</span>
+                  <span className="feed-pool">
+                    <b className="step-n">{STEP[l.role]?.n}</b>
+                    {l.role}
+                  </span>
+                  <span className="step-what">{STEP[l.role]?.what}</span>
                   <span className="feed-block">#{l.block}</span>
-                  <span className="feed-size" />
                   <span className={`sig ${!l.signal ? "sig-none" : l.signal === "SandwichExit" || l.signal === "BlockReversal" ? "sig-flag" : "sig-priced"}`}>{l.signal ?? "not flagged"}</span>
                   <span className="feed-fee">{((baseFee + l.penalty) / 10000).toFixed(2)}%</span>
                   <a className="feed-tx" href={`${EXPLORER}/tx/${l.tx}`} target="_blank" rel="noreferrer">

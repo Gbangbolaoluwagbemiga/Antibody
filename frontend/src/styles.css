@@ -743,3 +743,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
   font-size: 12px; color: var(--text-muted);
   margin: 0 0 12px; font-family: var(--mono);
 }
+
+/* Three-step attack narration. The legs are the mechanic; as a bare table they read as output
+   rather than as a sequence, and the shared block number — the fact that decides whether it is a
+   sandwich at all — was just another column. */
+.step-head {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12.5px; color: var(--text-secondary);
+  margin-bottom: 10px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.step-n {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; margin-right: 8px;
+  border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+  font-family: var(--mono); font-size: 10.5px; font-weight: 700;
+}
+.step-what { color: var(--text-muted); font-size: 12px; }
+@media (max-width: 720px) { .step-what { display: none; } }
