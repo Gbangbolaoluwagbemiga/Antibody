@@ -188,6 +188,26 @@ make the temporal clustering that sandwiching requires progressively expensive.
 
 Three SSTOREs per swap, paid by honest flow too. Quoted here rather than left to be discovered.
 
+## Partner integrations
+
+**Unichain.** Antibody is deployed and source-verified on **Unichain Sepolia** (chain 1301). The
+hook, both demo pools, every calibration swap and every staged attack in the evidence on this page
+executed there, and the live site reads its state directly from a Unichain RPC rather than from a
+snapshot. The contract address is
+[`0x747E6584C01C1BA6f11652f97E2C99F42dD1e0C0`](https://sepolia.uniscan.xyz/address/0x747E6584C01C1BA6f11652f97E2C99F42dD1e0C0#code),
+verified on Uniscan, and `scripts/check-bytecode.sh` proves this repository compiles to exactly the
+bytecode running at it.
+
+Stated precisely, because the difference matters: this is a **deployment on Unichain**, not a
+dependency on a Unichain-only capability. The hook uses no Unichain-specific opcode, precompile or
+extension — it is portable Uniswap v4 code that would run on any chain with a PoolManager. What
+Unichain provides is the environment the entire demonstration actually runs in, including the
+sub-second block times that make a same-block sandwich reproducible on a public testnet at all:
+blocks land in about 0.75s here, and the attack endpoint publishes its three legs 50ms apart.
+
+**No other partner integrations.** EigenLayer, Arbitrum, Chainlink, Flaunch, Brevis, Ink, Across,
+Circle, Fhenix and Reactive Network are not used, and nothing in this repository claims otherwise.
+
 ## A public toxicity signal, not just a fee
 
 The baseline each pool learns is useful to more than the hook that computes it. Everything is
