@@ -141,10 +141,9 @@ Read from pool A on the deployed hook:
 |---|---|---|---|
 | 19 swaps | 0.0895% | 0.0280% | *none — uncalibrated* |
 | 20 swaps | 0.0895% | 0.0262% | **0.1682%** — first opinion |
-| 63 swaps | 0.1957% | 0.1079% | **0.5193%** — after a large probe |
-| 65 swaps | 0.2891% | 0.2010% | **0.8922%** — current |
+| 555 swaps | 0.1963% | 0.0647% | **0.3904%** — current |
 
-Sizes are a fraction of pool liquidity. Across **96 ordinary swaps** on both live pools, the hook has returned **0** sandwich verdicts; the 3 attack legs it did flag are the staged attack.
+Sizes are a fraction of pool liquidity. Across **551 ordinary swaps** on both live pools the hook has returned **0** structural sandwich verdicts. The 10 size-flagged and 11 carrying a cross-pool surcharge are prices, not accusations, and are counted separately.
 
 Below `minSamples` the hook publishes **no threshold at all** — a baseline with insufficient data
 reports no opinion rather than a misleading one. Then it appears, and the band *tightens* as
