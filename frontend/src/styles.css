@@ -781,3 +781,4 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
    quantities, and a run that lands as a round trip rather than a sandwich reads as arbitrary. */
 .leg-amt { font-family: var(--mono); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
 @media (max-width: 860px) { .leg-amt { display: none; } }
+.imm-addr em { font-style: normal; font-family: var(--sans); font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px; }

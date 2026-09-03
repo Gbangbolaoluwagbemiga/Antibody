@@ -15,6 +15,13 @@ import { quoteSwap, unichainSepolia } from "../lib/chain";
  */
 
 const EXPLORER = unichainSepolia.blockExplorers.default.url;
+/**
+ * The control address for the comparison.
+ *
+ * The burn address, chosen because it is the one address guaranteed to have no trading history
+ * anywhere. Truncated to the first ten characters it renders as "0x00000000…", which reads as a
+ * null placeholder rather than a deliberate choice, so the label shows both ends and says why.
+ */
 const STRANGER = "0x000000000000000000000000000000000000dEaD" as const;
 const PROBE = 0.1;
 
@@ -60,7 +67,9 @@ export function Immunity({ hook, poolB, attacker, attackBlock, window: immWindow
                     viewport={{ once: true }} transition={{ duration: 0.4 }}>
           <div className="imm-head">Never attacked anything</div>
           <div className="imm-fee">{(s / 10000).toFixed(2)}%</div>
-          <code className="imm-addr">{STRANGER.slice(0, 10)}…</code>
+          <code className="imm-addr" title={STRANGER}>
+            0x0000…dEaD <em>the burn address, chosen because it has no history</em>
+          </code>
           <p>Pool B has no record of this address, so it pays the ordinary fee.</p>
         </motion.div>
 

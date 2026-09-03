@@ -50,6 +50,13 @@ export function MainnetReplay({
 
   return (
     <div className="replay">
+      <p className="footnote" style={{ marginTop: 0, marginBottom: 14 }}>
+        These 25 are historical Ethereum mainnet sandwiches replayed against the hook in a test.
+        They are a fixed measurement over data from another chain, so nothing you do on this site
+        changes them — that is the point of using them. The panel that responds to your own runs is{" "}
+        <em>Every detection in this pool</em>, on the attack page.
+      </p>
+
       <div className="replay-scope">
         <div>
           <span>blocks with swaps</span>
