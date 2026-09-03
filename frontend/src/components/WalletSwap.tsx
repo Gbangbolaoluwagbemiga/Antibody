@@ -11,7 +11,7 @@ import {
   useSwitchChain,
 } from "wagmi";
 import { ERC20_ABI, ROUTER_ABI, ROUTER, DYNAMIC_FEE_FLAG } from "../lib/abi";
-import { unichainSepolia } from "../lib/chain";
+import { quoteSwap, unichainSepolia } from "../lib/chain";
 
 /**
  * Swap against the live pool with your own wallet, and pay whatever fee the hook decides you owe.
@@ -31,7 +31,7 @@ type Props = {
   token0: `0x${string}`;
   token1: `0x${string}`;
   /** Pools this widget can trade against. The first is the default. */
-  pools: Array<{ label: string; tickSpacing: number; boundary: number }>;
+  pools: Array<{ label: string; tickSpacing: number; poolId: `0x${string}` }>;
 };
 
 export function WalletSwap({ hook, token0, token1, pools }: Props) {
@@ -44,6 +44,17 @@ export function WalletSwap({ hook, token0, token1, pools }: Props) {
    */
   const [poolIdx, setPoolIdx] = useState(0);
   const pool = pools[poolIdx];
+
+  /**
+   * Each pool's boundary, read from chain rather than from the bundled snapshot.
+   *
+   * This label came from history.json, which is written at build time. So a swap would move the
+   * real boundary -- a 50-token trade took pool A from 0.39% to 14.29% -- while the number beside
+   * the pool name sat still, on a page whose whole argument is that the number responds to flow.
+   * The quote panels above were already live; this is now the same source. Re-read after every
+   * receipt so your own swap is reflected immediately.
+   */
+  const [bands, setBands] = useState<Array<number | null>>(() => pools.map(() => null));
   const tickSpacing = pool.tickSpacing;
   const { address, isConnected, chainId } = useAccount();
   const { connect, connectors, isPending: connecting } = useConnect();
@@ -128,6 +139,26 @@ export function WalletSwap({ hook, token0, token1, pools }: Props) {
     return () => clearTimeout(again);
   }, [receipt]);
 
+  useEffect(() => {
+    let stop = false;
+    const read = () =>
+      Promise.all(
+        pools.map((p) =>
+          quoteSwap(hook, p.poolId, "0x000000000000000000000000000000000000dEaD", true, 0.1)
+            .then((q) => q.threshold)
+            .catch(() => null)
+        )
+      ).then((v) => {
+        if (!stop) setBands(v);
+      });
+    read();
+    const id = setInterval(read, 12_000);
+    return () => {
+      stop = true;
+      clearInterval(id);
+    };
+  }, [hook, pools, receipt]);
+
   /** What a button should say while its transaction is in flight. */
   const label = (kind: "mint" | "approve" | "swap", idle: string) => {
     if (pending !== kind) return idle;
@@ -196,7 +227,7 @@ export function WalletSwap({ hook, token0, token1, pools }: Props) {
                   disabled={pending !== null}
                 >
                   {p.label}
-                  <em>{p.boundary.toFixed(3)}%</em>
+                  <em>{bands[i] != null ? `${bands[i]!.toFixed(3)}%` : "reading…"}</em>
                 </button>
               ))}
             </div>

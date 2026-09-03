@@ -56,16 +56,8 @@ export function TryIt() {
             token0={"0x2975200DA18f21bF8ecE746Bed6281e4B373D548"}
             token1={"0x5906F35B86A6AC0281A5655933eE37253aA42ef4"}
             pools={[
-              {
-                label: "pool A",
-                tickSpacing: H.poolA.tickSpacing,
-                boundary: H.points[H.points.length - 1]?.threshold ?? 0,
-              },
-              {
-                label: "pool B",
-                tickSpacing: H.poolB.tickSpacing,
-                boundary: (H.poolB.points ?? [])[(H.poolB.points ?? []).length - 1]?.threshold ?? 0,
-              },
+              { label: "pool A", tickSpacing: H.poolA.tickSpacing, poolId: H.poolA.poolId as `0x${string}` },
+              { label: "pool B", tickSpacing: H.poolB.tickSpacing, poolId: H.poolB.poolId as `0x${string}` },
             ]}
           />
         </section>
