@@ -399,7 +399,14 @@ a { color: var(--accent); }
 .scrim { display: none; }
 
 @media (max-width: 860px) {
-  .layout { grid-template-columns: 1fr; }
+  /* minmax(0, 1fr), not 1fr. `1fr` is shorthand for minmax(auto, 1fr), and `auto` refuses to
+     shrink below the content's intrinsic width -- so the leg table, which is white-space: nowrap
+     and therefore ~600px wide whatever the screen, forced this column wider than the phone and
+     pushed every panel's right edge off-screen. The values in the right-hand column of the
+     before/after cards were simply not visible. .table-scroll could never engage, because its
+     parent had already grown to fit it. The desktop rule above gets this right; the mobile
+     override had lost it. */
+  .layout { grid-template-columns: minmax(0, 1fr); }
   .sidebar-toggle { display: inline-flex; align-items: center; gap: 8px; position: fixed; top: 14px; left: 14px;
                     z-index: 40; font: inherit; font-size: 13px; padding: 8px 13px; border-radius: 8px;
                     border: 1px solid var(--border-strong); background: var(--surface-1); color: var(--text-primary); }
