@@ -228,7 +228,14 @@ def main():
     # else is ordinary flow. The claim we make on the site is specifically about *sandwich* verdicts:
     # SizeAnomaly is a size flag, not an accusation, so it is counted and shown separately rather
     # than folded into either number.
-    SANDWICH_VERDICTS = {"SandwichExit", "BlockReversal", "CrossPoolMemory"}
+    # Only the STRUCTURAL verdicts are accusations about the swap in front of them. This set used
+    # to include CrossPoolMemory, and that was a category error: CrossPoolMemory does not claim the
+    # current swap is a sandwich, it prices a trader who has confirmed exits on record elsewhere.
+    # Once the demo attacker had accumulated a few, its ordinary swaps started counting as false
+    # positives and the site briefly reported 8 -- the carried surcharge working exactly as designed,
+    # mislabelled by the metric measuring it. Counted separately below, alongside SizeAnomaly, which
+    # is likewise a price on size rather than an accusation.
+    SANDWICH_VERDICTS = {"SandwichExit", "BlockReversal"}
     attack_blocks = {pt["block"] for pts in (pools["A"], pools["B"])
                      for pt in pts if pt["signal"] == "SandwichExit"}
     ordinary = [pt for pts in (pools["A"], pools["B"])
@@ -237,11 +244,13 @@ def main():
         ordinarySwaps=len(ordinary),
         flaggedAsSandwich=sum(1 for pt in ordinary if pt["signal"] in SANDWICH_VERDICTS),
         sizeFlagged=sum(1 for pt in ordinary if pt["signal"] == "SizeAnomaly"),
+        carriedSurcharge=sum(1 for pt in ordinary if pt["signal"] == "CrossPoolMemory"),
         attackLegs=sum(len(pts) for pts in (pools["A"], pools["B"])) - len(ordinary),
     )
     f = out["falsePositives"]
-    print(f"  false positives: {f['flaggedAsSandwich']} sandwich verdicts across "
+    print(f"  false positives: {f['flaggedAsSandwich']} structural verdicts across "
           f"{f['ordinarySwaps']} ordinary swaps ({f['sizeFlagged']} size-flagged, "
+          f"{f['carriedSurcharge']} carrying a cross-pool surcharge, "
           f"{f['attackLegs']} attack legs excluded)")
 
     (ROOT / "frontend/src/data/history.json").write_text(json.dumps(out, indent=1))

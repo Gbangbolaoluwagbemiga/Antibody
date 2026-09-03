@@ -119,6 +119,8 @@ export type FalsePositiveMeta = {
   ordinarySwaps: number;
   flaggedAsSandwich: number;
   sizeFlagged: number;
+  /** CrossPoolMemory on a known attacker's ordinary swap: a carried surcharge, not an accusation. */
+  carriedSurcharge: number;
   attackLegs: number;
 };
 

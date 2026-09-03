@@ -42,7 +42,7 @@ export function Overview() {
             <Ticker value={H.falsePositives.flaggedAsSandwich} decimals={0} />
           </div>
           <div className="note">
-            across {H.falsePositives.ordinarySwaps} ordinary swaps on both pools
+            structural verdicts across {H.falsePositives.ordinarySwaps} ordinary swaps on both pools
           </div>
         </div>
       </div>
