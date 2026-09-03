@@ -72,6 +72,29 @@ const ROUTER_ABI = [
 let lastRun = 0;
 const COOLDOWN_MS = 20_000;
 
+/** First endpoint to answer eth_chainId within 4s. Returns null if none do. */
+async function pickEndpoint(urls: string[]): Promise<string | null> {
+  for (const url of urls) {
+    try {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), 4_000);
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_chainId", params: [] }),
+        signal: ctl.signal,
+      });
+      clearTimeout(t);
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (parseInt(j?.result ?? "0", 16) === unichainSepolia.id) return url;
+    } catch {
+      // unreachable or too slow from here: try the next one
+    }
+  }
+  return null;
+}
+
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export default async function handler(req: Request): Promise<Response> {
@@ -93,10 +116,25 @@ export default async function handler(req: Request): Promise<Response> {
     return Response.json({ error: "server not configured" }, { status: 500 });
   }
 
-  // The public endpoint throttles datacenter IPs far harder than laptops, which is how this
-  // function came to time out on Vercel while running fine locally. RPC_URL lets a dedicated
-  // endpoint be swapped in from the dashboard without a redeploy of the code.
-  const rpcUrl = process.env.RPC_URL || unichainSepolia.rpcUrls.default.http[0];
+  // Pick an endpoint that actually answers from here, rather than trusting one.
+  //
+  // sepolia.unichain.org serves a laptop in under a second and does not answer Vercel at all: the
+  // function burned its whole 60s budget on two eth_getTransactionCount calls and returned
+  // FUNCTION_INVOCATION_TIMEOUT, while the identical code ran fine locally. Datacenter IPs are
+  // treated differently, and which provider is unhappy on a given day is not something this demo
+  // should depend on.
+  //
+  // So: probe each candidate with a 4s eth_chainId and take the first that responds. Worst case
+  // this costs a few seconds; the alternative is a dead button during judging.
+  const rpcUrl = await pickEndpoint([
+    ...(process.env.RPC_URL ? [process.env.RPC_URL] : []),
+    "https://unichain-sepolia.drpc.org",
+    "https://unichain-sepolia-rpc.publicnode.com",
+    unichainSepolia.rpcUrls.default.http[0],
+  ]);
+  if (!rpcUrl) {
+    return Response.json({ error: "no reachable rpc endpoint" }, { status: 503 });
+  }
   const transport = http(rpcUrl, { timeout: 8_000, retryCount: 1 });
   const publicClient = createPublicClient({ chain: unichainSepolia, transport });
 
