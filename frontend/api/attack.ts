@@ -97,7 +97,16 @@ async function pickEndpoint(urls: string[]): Promise<string | null> {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-export default async function handler(req: Request): Promise<Response> {
+/**
+ * Vercel runs files in api/ as NODE functions: it calls (req, res) and waits for res to be sent.
+ * This handler was written Web-style, returning a Response object that the Node runtime simply
+ * discards -- so every request, including a GET that should 405 on the first line, hung until the
+ * 60s ceiling and surfaced as FUNCTION_INVOCATION_TIMEOUT. It looked like an RPC problem for three
+ * deploy cycles because the timings pointed at the network.
+ *
+ * The logic below stays Web-style, and the adapter at the bottom of the file translates it.
+ */
+async function run(req: Request): Promise<Response> {
   if (req.method !== "POST") {
     return Response.json({ error: "POST only" }, { status: 405 });
   }
@@ -274,4 +283,31 @@ function encodeSwap(
     functionName: "swapExactTokensForTokens",
     args: [amountIn, 0n, zeroForOne, poolKey, "0x", receiver, deadline],
   });
+}
+
+
+/** Node-runtime entry point. Translates the Web-style handler above into (req, res). */
+export default async function handler(req: any, res: any) {
+  try {
+    const url = `http://localhost${req.url ?? "/"}`;
+    const body =
+      req.body === undefined
+        ? undefined
+        : typeof req.body === "string"
+          ? req.body
+          : JSON.stringify(req.body);
+    const out = await run(
+      new Request(url, {
+        method: req.method ?? "GET",
+        headers: { "content-type": "application/json" },
+        ...(req.method === "POST" ? { body: body ?? "{}" } : {}),
+      })
+    );
+    const text = await out.text();
+    res.status(out.status);
+    res.setHeader("content-type", out.headers.get("content-type") ?? "application/json");
+    res.send(text);
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : String(e) });
+  }
 }
