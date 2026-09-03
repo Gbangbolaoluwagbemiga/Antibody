@@ -191,7 +191,11 @@ th { color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform
 td { font-family: var(--mono); color: var(--text-secondary); }
 td.num-primary { color: var(--text-primary); }
 tr.flagged td { background: color-mix(in srgb, var(--status-flagged) 9%, transparent); }
-.sig { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid currentColor; }
+/* nowrap + justify-self: start, because the badge draws its own border. In a grid column narrower
+   than the label the text overflowed while the border stayed at column width, so "SandwichExit"
+   rendered with a box drawn through the middle of the word. */
+.sig { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 4px;
+       border: 1px solid currentColor; white-space: nowrap; justify-self: start; }
 .sig-none { color: var(--text-muted); border-color: var(--border); }
 .sig-flag { color: var(--status-flagged); }
 /* SizeAnomaly and CrossPoolMemory are PRICES, not accusations. SizeAnomaly says "this trade is
@@ -782,3 +786,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .leg-amt { font-family: var(--mono); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
 @media (max-width: 860px) { .leg-amt { display: none; } }
 .imm-addr em { font-style: normal; font-family: var(--sans); font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px; }
+
+/* The attack legs carry two columns the live feed does not: what the step is doing, and the tokens
+   it moved. Seven children in a six-column grid pushed the badge into a 62px slot and wrapped the
+   transaction link onto an implicit row. */
+.feed li.is-leg,
+.feed-legs li {
+  grid-template-columns: 96px minmax(84px, 0.9fr) auto 1fr auto auto auto;
+  gap: 10px;
+}
+@media (max-width: 860px) {
+  .feed-legs li { grid-template-columns: 1fr auto auto; }
+  .feed-legs .step-what, .feed-legs .leg-amt { display: none; }
+}

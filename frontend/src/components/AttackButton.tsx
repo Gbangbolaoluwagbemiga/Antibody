@@ -162,7 +162,7 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
                 )}
               </div>
             )}
-            <ul className="feed">
+            <ul className="feed feed-legs">
               {legs.map((l, i) => (
                 <motion.li
                   key={l.tx}
