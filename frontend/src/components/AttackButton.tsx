@@ -29,6 +29,14 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
   const sameBlock = Boolean(front && exit && front.block === exit.block);
   const caught = exit?.signal === "SandwichExit";
 
+  /**
+   * The attack is a serverless function. A dev server does not run one, so the button can only
+   * fail there — better to say that up front than to spend fifteen seconds looking broken.
+   */
+  const isLocal =
+    typeof window !== "undefined" &&
+    /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
+
   async function run() {
     setState("running");
     setLegs([]);
@@ -59,7 +67,13 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
       );
       setState("done");
     } catch {
-      setMessage("Could not reach the attack endpoint — this only runs on the deployed site.");
+      // A dev server serves the React app but not the serverless function, so /api/attack 404s.
+      // Saying "could not reach the endpoint" there is technically true and practically useless.
+      setMessage(
+        isLocal
+          ? "This runs on the deployed site, not a dev server — the attack is a serverless function, and `vite dev` does not serve one. Nothing is wrong with the hook."
+          : "Could not reach the attack endpoint. The rest of this page reads the chain directly and is unaffected."
+      );
       setState("error");
     }
   }
@@ -67,11 +81,18 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
   return (
     <div className="attack">
       <div className="attack-bar">
-        <button className="btn btn-primary" onClick={run} disabled={state === "running" || state === "confirming"}>
+        <button
+          className="btn btn-primary"
+          onClick={run}
+          disabled={isLocal || state === "running" || state === "confirming"}
+          title={isLocal ? "Only available on the deployed site" : undefined}
+        >
           {state === "running" ? "Broadcasting…" : state === "confirming" ? "Waiting for blocks…" : "Run a live sandwich attack"}
         </button>
         <span className="attack-note">
-          three real transactions on Unichain Sepolia · takes about 15 seconds
+          {isLocal
+            ? "disabled on a dev server — this is a serverless function, run it on the deployed site"
+            : "three real transactions on Unichain Sepolia · takes about 15 seconds"}
         </span>
       </div>
 
