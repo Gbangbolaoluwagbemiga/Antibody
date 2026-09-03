@@ -202,8 +202,12 @@ export function WalletSwap({ hook, token0, token1, pools }: Props) {
             </div>
           )}
 
+          {/* "balance" alone, directly under a pool selector, reads as though it might be
+              per-pool. It is not: both pools trade the same pair, so this is one wallet balance
+              shared across the choice above. */}
           <div className="ws-balance">
-            balance {balance != null ? (Number(balance) / 1e18).toFixed(3) : "—"} token0
+            {balance != null ? (Number(balance) / 1e18).toFixed(3) : "—"} token0 in your wallet
+            {pools.length > 1 && <em> · the same balance whichever pool you pick</em>}
           </div>
 
           <div className="ws-actions">

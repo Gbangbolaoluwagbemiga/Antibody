@@ -776,3 +776,4 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .ws-pool.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--text-primary); }
 .ws-pool.is-on em { color: var(--accent); }
 .ws-pool:disabled { opacity: .5; cursor: default; }
+.ws-balance em { font-style: normal; color: var(--text-muted); }
