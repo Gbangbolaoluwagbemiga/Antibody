@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { unichainSepolia, watchLeg, type LegResult } from "../lib/chain";
 
@@ -37,6 +37,21 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
     typeof window !== "undefined" &&
     /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
 
+  /**
+   * Seconds left on the endpoint's cooldown, ticked down locally.
+   *
+   * This used to render the number the server sent and then leave it there, so "try again in 7s"
+   * was still on screen a minute later — a static number that reads as a stuck UI rather than a
+   * wait. Counting it down makes the wait legible and re-enables the button by itself.
+   */
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setTimeout(() => setCooldown((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [cooldown]);
+
   async function run() {
     setState("running");
     setLegs([]);
@@ -47,11 +62,12 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
       if (!res.ok) {
         setMessage(
           body.error === "cooling down"
-            ? `Cooling down — try again in ${Math.ceil((body.retryInMs ?? 0) / 1000)}s.`
+            ? "" // handled by the live countdown below
             : body.error === "server not configured"
               ? "The attack endpoint isn't configured on this deployment. Everything else on this page still works."
               : body.error ?? "Something went wrong."
         );
+        if (body.error === "cooling down") setCooldown(Math.ceil((body.retryInMs ?? 0) / 1000));
         setState("error");
         return;
       }
@@ -84,10 +100,16 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
         <button
           className="btn btn-primary"
           onClick={run}
-          disabled={isLocal || state === "running" || state === "confirming"}
+          disabled={isLocal || cooldown > 0 || state === "running" || state === "confirming"}
           title={isLocal ? "Only available on the deployed site" : undefined}
         >
-          {state === "running" ? "Broadcasting…" : state === "confirming" ? "Waiting for blocks…" : "Run a live sandwich attack"}
+          {cooldown > 0
+            ? `Cooling down — ${cooldown}s`
+            : state === "running"
+              ? "Broadcasting…"
+              : state === "confirming"
+                ? "Waiting for blocks…"
+                : "Run a live sandwich attack"}
         </button>
         <span className="attack-note">
           {isLocal

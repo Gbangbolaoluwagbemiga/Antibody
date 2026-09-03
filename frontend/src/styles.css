@@ -730,3 +730,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .precision .sub {
   max-width: 96ch;
 }
+
+/* Detection log status line: says whether the rows are live or a stale fallback. */
+.detect-meta {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: var(--text-muted);
+  margin: 0 0 12px; font-family: var(--mono);
+}
