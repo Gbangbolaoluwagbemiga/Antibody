@@ -761,3 +761,18 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 }
 .step-what { color: var(--text-muted); font-size: 12px; }
 @media (max-width: 720px) { .step-what { display: none; } }
+
+/* Pool selector on the swap widget. The two-pool claim was previously demonstrable by reading a
+   quote but not by trading — you could see the pools disagree and never make them disagree about
+   your own swap. */
+.ws-pools { display: flex; gap: 8px; margin: 4px 0 14px; }
+.ws-pool {
+  flex: 1; display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+  font: inherit; font-size: 13px; text-align: left; cursor: pointer;
+  padding: 10px 13px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: var(--surface-2); color: var(--text-secondary);
+}
+.ws-pool em { font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--text-muted); }
+.ws-pool.is-on { border-color: var(--accent); background: var(--accent-soft); color: var(--text-primary); }
+.ws-pool.is-on em { color: var(--accent); }
+.ws-pool:disabled { opacity: .5; cursor: default; }

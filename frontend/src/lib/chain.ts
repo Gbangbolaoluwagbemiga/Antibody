@@ -165,7 +165,7 @@ export async function fetchRecentActivity(
   hook: `0x${string}`,
   pools: Array<{ id: `0x${string}`; label: string }>,
   baseFee = 3000,
-  lookback = 4_000n
+  lookback = 9_000n // ~2h. 4,000 blocks is 50 minutes here, so the feed looked empty between runs
 ): Promise<Activity[]> {
   const head = await client.getBlockNumber();
   const fromBlock = head > lookback ? head - lookback : 0n;

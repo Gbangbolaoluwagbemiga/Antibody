@@ -30,10 +30,21 @@ type Props = {
   hook: `0x${string}`;
   token0: `0x${string}`;
   token1: `0x${string}`;
-  tickSpacing: number;
+  /** Pools this widget can trade against. The first is the default. */
+  pools: Array<{ label: string; tickSpacing: number; boundary: number }>;
 };
 
-export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
+export function WalletSwap({ hook, token0, token1, pools }: Props) {
+  /**
+   * Which pool this swap goes to.
+   *
+   * The widget used to be wired to pool A only, so the two-pool claim was demonstrable by reading a
+   * quote but not by actually trading: you could see that the pools disagreed, and never make them
+   * disagree about your own swap. Choosing the pool is the point of the panel.
+   */
+  const [poolIdx, setPoolIdx] = useState(0);
+  const pool = pools[poolIdx];
+  const tickSpacing = pool.tickSpacing;
   const { address, isConnected, chainId } = useAccount();
   const { connect, connectors, isPending: connecting } = useConnect();
   const { disconnect } = useDisconnect();
@@ -174,6 +185,22 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
               onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))}
             />
           </label>
+
+          {pools.length > 1 && (
+            <div className="ws-pools">
+              {pools.map((p, i) => (
+                <button
+                  key={p.label}
+                  className={`ws-pool ${i === poolIdx ? "is-on" : ""}`}
+                  onClick={() => setPoolIdx(i)}
+                  disabled={pending !== null}
+                >
+                  {p.label}
+                  <em>{p.boundary.toFixed(3)}%</em>
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="ws-balance">
             balance {balance != null ? (Number(balance) / 1e18).toFixed(3) : "—"} token0

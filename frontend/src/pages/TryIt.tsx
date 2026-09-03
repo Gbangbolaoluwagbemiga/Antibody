@@ -38,7 +38,7 @@ export function TryIt() {
       </Reveal>
       <Reveal>
         <section className="panel">
-          <h2>Swap it yourself — against pool A</h2>
+          <h2>Swap it yourself</h2>
           <p className="sub">
             Reading a quote proves the hook has an opinion. Executing a swap proves the chain
             enforces it — the fee on your receipt is set by <code>beforeSwap</code>, and nothing on
@@ -47,16 +47,26 @@ export function TryIt() {
             swap trades one for the other, it does not mint you a share of the pool.
           </p>
           <p className="sub">
-            <strong>This swaps against pool A</strong>, whose boundary is the first number on this
-            page — not pool B's directly above. They are different pools with different learned
-            boundaries, so a size that looks unremarkable against one can be an anomaly against the
-            other. That is the whole point of the two panels, and it is easy to trip over here.
+            <strong>Pick the pool.</strong> The same size can be ordinary in one and an anomaly in
+            the other — that is the two-pool claim, made against your own wallet rather than a
+            quote. The boundary beside each name is what that pool currently thinks is normal.
           </p>
           <WalletSwap
             hook={H.hook as `0x${string}`}
             token0={"0x2975200DA18f21bF8ecE746Bed6281e4B373D548"}
             token1={"0x5906F35B86A6AC0281A5655933eE37253aA42ef4"}
-            tickSpacing={H.poolA.tickSpacing}
+            pools={[
+              {
+                label: "pool A",
+                tickSpacing: H.poolA.tickSpacing,
+                boundary: H.points[H.points.length - 1]?.threshold ?? 0,
+              },
+              {
+                label: "pool B",
+                tickSpacing: H.poolB.tickSpacing,
+                boundary: (H.poolB.points ?? [])[(H.poolB.points ?? []).length - 1]?.threshold ?? 0,
+              },
+            ]}
           />
         </section>
       </Reveal>
