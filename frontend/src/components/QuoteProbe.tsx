@@ -20,7 +20,12 @@ const SIGNAL_COPY: Record<number, { name: string; note: string }> = {
   0: { name: "No signal", note: "inside the pool's normal range — ordinary flow, ordinary fee" },
   1: { name: "SandwichExit", note: "same block, reversed direction, with a third party in between" },
   2: { name: "BlockReversal", note: "the pool reversed direction in-block under another address" },
-  3: { name: "SizeAnomaly", note: "outside the band this pool computed from its own history" },
+  // Deliberately not phrased as an accusation. A large honest trade lands here, and the earlier
+  // wording made that read as being caught attacking something.
+  3: {
+    name: "SizeAnomaly",
+    note: "large for this pool — priced by size, not accused of anything",
+  },
   4: { name: "CrossPoolMemory", note: "carries a confirmed sandwich exit from another pool — fades with time" },
 };
 

@@ -17,7 +17,8 @@ const POLL_MS = 6000;
 const SIGNAL_TONE: Record<string, string> = {
   SandwichExit: "sig-flag",
   BlockReversal: "sig-flag",
-  SizeAnomaly: "sig-flag",
+  SizeAnomaly: "sig-priced",
+  CrossPoolMemory: "sig-priced",
 };
 
 export function LiveFeed({ hook, pools }: { hook: `0x${string}`; pools: Array<{ id: `0x${string}`; label: string }> }) {

@@ -145,7 +145,7 @@ export function AttackButton({ baseFee }: { baseFee: number }) {
                   <span className="feed-pool">{l.role}</span>
                   <span className="feed-block">#{l.block}</span>
                   <span className="feed-size" />
-                  <span className={`sig ${l.signal ? "sig-flag" : "sig-none"}`}>{l.signal ?? "not flagged"}</span>
+                  <span className={`sig ${!l.signal ? "sig-none" : l.signal === "SandwichExit" || l.signal === "BlockReversal" ? "sig-flag" : "sig-priced"}`}>{l.signal ?? "not flagged"}</span>
                   <span className="feed-fee">{((baseFee + l.penalty) / 10000).toFixed(2)}%</span>
                   <a className="feed-tx" href={`${EXPLORER}/tx/${l.tx}`} target="_blank" rel="noreferrer">
                     {l.tx.slice(0, 8)}…

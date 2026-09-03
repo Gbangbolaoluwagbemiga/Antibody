@@ -194,6 +194,12 @@ tr.flagged td { background: color-mix(in srgb, var(--status-flagged) 9%, transpa
 .sig { font-family: var(--mono); font-size: 11px; padding: 2px 7px; border-radius: 4px; border: 1px solid currentColor; }
 .sig-none { color: var(--text-muted); border-color: var(--border); }
 .sig-flag { color: var(--status-flagged); }
+/* SizeAnomaly and CrossPoolMemory are PRICES, not accusations. SizeAnomaly says "this trade is
+   large for this pool"; CrossPoolMemory says "this address has confirmed exits elsewhere". Neither
+   claims the swap in front of it is a sandwich — only SandwichExit and BlockReversal do that.
+   They were all rendered in the same red, so an honest trader making a large swap saw the identical
+   treatment as a caught attacker and reasonably concluded they had been accused of something. */
+.sig-priced { color: #d99a2b; }
 
 .footnote { color: var(--text-muted); font-size: 12px; margin-top: 14px; }
 a { color: var(--accent); }

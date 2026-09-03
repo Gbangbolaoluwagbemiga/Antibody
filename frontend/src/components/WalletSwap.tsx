@@ -103,10 +103,18 @@ export function WalletSwap({ hook, token0, token1, tickSpacing }: Props) {
    */
   useEffect(() => {
     if (!receipt) return;
-    if (pending === "mint") refetchBalance();
-    if (pending === "approve") refetchAllowance();
-    if (pending === "swap") refetchBalance();
+    const refresh = () => {
+      refetchBalance();
+      refetchAllowance();
+    };
+    // Twice, deliberately. The receipt can arrive before the RPC node has the post-block state
+    // indexed, so an immediate read returns the OLD balance and the panel shows "confirmed" beside
+    // a number that has not moved -- which is exactly how a successful 100-token swap looked like a
+    // failure. The second pass a beat later catches up.
+    refresh();
+    const again = setTimeout(refresh, 2500);
     setPending(null);
+    return () => clearTimeout(again);
   }, [receipt]);
 
   /** What a button should say while its transaction is in flight. */

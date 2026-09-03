@@ -29,6 +29,9 @@ type Props = {
   fallback: Array<{ n: number; tx: string; signal: string | null; penalty: number }>;
 };
 
+/** Only these two claim the swap in front of them IS a sandwich. The rest are prices. */
+const ACCUSATIONS = new Set(["SandwichExit", "BlockReversal"]);
+
 const short = (h: string) => `${h.slice(0, 8)}…`;
 
 export function DetectionLog({ hook, pools, baseFee, fallback }: Props) {
@@ -107,7 +110,11 @@ export function DetectionLog({ hook, pools, baseFee, fallback }: Props) {
               <tr key={r.key} className={r.signal === "SandwichExit" ? "flagged" : undefined}>
                 <td className="num-primary">{r.label}</td>
                 <td>{r.n}</td>
-                <td><span className="sig sig-flag">{r.signal}</span></td>
+                <td>
+                  <span className={`sig ${ACCUSATIONS.has(r.signal) ? "sig-flag" : "sig-priced"}`}>
+                    {r.signal}
+                  </span>
+                </td>
                 <td className="num-primary">{r.fee.toFixed(2)}%</td>
                 <td>
                   <a href={`${EXPLORER}/tx/${r.tx}`} target="_blank" rel="noreferrer">
